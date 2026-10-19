@@ -1,0 +1,59 @@
+# AGENTS.md
+
+## What this is
+
+- **Al-Utsmani LMS** — Learning Management System untuk lembaga Al-Utsmani, dibangun di atas CodeIgniter **3.1.13** (framework vendored di `system/`, lihat `system/core/CodeIgniter.php`). Bukan composer-managed.
+- Served by XAMPP dari `C:\xampp\htdocs\Al-Utsmani` → `http://localhost/Al-Utsmani/`.
+- Task management: **`TASKS.md`** (sumber utama progres; jangan ubah AGENTS.md untuk perubahan biasa).
+- **Edit hanya `application/` + file proyek di root (database.sql, TASKS.md, uploads/, assets/). Treat `system/` as read-only vendor code.**
+- Starter awal hampir stock CI3 (`Welcome.php` + `welcome_message.php` adalah sisa starter, tidak dipakai — route default sudah `beranda`).
+
+## Business context (ringkas)
+
+- **Level**: Idad, Level 1–5, Talaqi, Tahfidz (tabel `level`, di-seed, tanpa CRUD). Level **bukan pilihan peserta**: `kelas.level_id` = target level kelas, sedangkan `peserta.level_id` = level/rank peserta hasil **penempatan** yang ditetapkan admin (riwayat di tabel `penempatan_level`, `peserta.level_id` NULL = belum ditempatkan). Level hanya jadi *title* profil, belum membatasi pendaftaran kelas.
+- **Mode**: online / offline. **Program** (tabel `program`, di-seed, tanpa CRUD): BIHAR (anak-remaja), BADAL (dewasa/lembaga), BILAL (luar lembaga: private/kelompok/perusahaan/instansi), PDHQ (khusus Bogor, santri muqim).
+- **Cabang** = 12 lokasi dikelompokkan per wilayah: Jakarta Timur (Condet, Dukuh, Pinang Ranti), Bekasi (Jati Asih, Jati Sampurna), Cirebon, Padang (Nanggalo, Air Tawar, Padang Utara), Bogor (Tamansari, Megamendung), Sorong. Cabang/guru/kelas punya status aktif-nonaktif (dipakai hitungan dashboard).
+- **Kelas** = program + level + cabang + mode + guru (satu guru per kelas) + jadwal teks (sertakan zona WIB/WITA/WIT) + biaya pendaftaran (boleh 0) + biaya SPP bulanan. Link meeting hanya tampil untuk peserta terdaftar di kelas itu + guru pengampu. Aturan: **PDHQ hanya cabang wilayah Bogor + offline**; **BILAL wajib punya tipe peserta** (+ nama instansi opsional) tetap terikat satu cabang pengelola.
+- **Akun**: satu akun peserta/wali bisa menaungi **banyak profil peserta** (orang tua dengan beberapa anak). Login satu field **email atau username** (`users.email` & `users.username` unik). Guru dibuat admin; registrasi publik hanya akun peserta/wali (langsung aktif).
+- **Alur pendaftaran**: beranda & `/daftar` memakai **pemilih dua arah** (Cabang→Program atau Program→Cabang) → pilih kelas → `/daftar/registrasi/<kelas_id>`. Tamu mengisi **satu form** (data akun + data peserta) dan pendaftaran dibuat sekaligus (akun + profil + pendaftaran); peserta yang sudah login cukup memilih profil anak. Bila kelas berbiaya, bukti (JPG/PNG/PDF ≤2 MB, nama acak) boleh langsung diunggah di form itu atau menyusul di halaman Pendaftaran → admin verifikasi → aktif. Kelas biaya 0 → langsung aktif. SPP juga via upload + verifikasi; semua pembayaran manual transfer (tanpa gateway). Tolak bukti = `pembayaran.status='ditolak'`, pendaftaran/tagihan tetap menunggu → boleh upload ulang (mengganti file yang sama).
+- **Katalog**: `/katalog` = **carousel program** (bukan lagi daftar kelas dengan filter level) → `/katalog/program/<id>` untuk kelas satu program (filter cabang + mode). Level tidak difilter karena bukan pilihan peserta.
+- **SPP**: tagihan dibuat admin per peserta per bulan, **nominal diisi manual** (prefill dari biaya SPP kelas), `UNIQUE(peserta_id, periode)`, jatuh tempo default tgl 10. Tunggakan = belum lunas + lewat jatuh tempo.
+- **Absensi + progres digabung di tabel `absensi`** (1 form per pertemuan per guru): status hadir/izin/sakit/alpa + hal_mulai/hal_selesai/catatan_guru. Pertemuan dibuat guru per kelas (`UNIQUE(kelas_id, nomor)`).
+- **Definisi dashboard**: peserta aktif = punya ≥1 pendaftaran berstatus aktif; peserta baru = peserta aktif yang pendaftarannya pertama jatuh pada periode (default bulan berjalan), lama = sebelum periode. Pemasukan = `pembayaran.status='diverifikasi'` dihitung dari **tanggal verifikasi**, cabang mengikuti kelas (SPP memakai cabang pendaftaran aktif **pertama/terlama** peserta agar tidak dobel).
+- **Perkembangan per cabang** = rekap **realtime** per cabang (peserta aktif, program aktif, kelas aktif, guru, pemasukan, tunggakan) + drill-down detail peserta aktif — bukan riwayat historis, tanpa grafik.
+- Tidak ada hard delete untuk data ber-riwayat — nonaktifkan lewat `status` (kecuali data pribadi yang di-edit). Program & level hanya di-seed (tanpa halaman CRUD).
+- **Out of scope saat ini**: payment gateway, notifikasi WA/email, sertifikat, app mobile, automated testing (user testing manual).
+
+## Tech decisions & conventions
+
+- MVC standar CI3, Query Builder (raw/derived SQL hanya untuk agregasi dashboard — komentar di kode), Form Validation server-side, **CSRF aktif** (`form_open()` menyertakan token; `csrf_regenerate = FALSE` demi halaman multi-form), `password_hash()`, session-based auth + guard role.
+- Base controller di **satu file** `application/core/MY_Controller.php` (CI3 hanya auto-require `MY_*Controller.php`): `MY_Controller` → `Admin_Controller` / `Guru_Controller` / `Peserta_Controller`. Semua halaman lewat `$this->render($view, $data)` (layouts/header+footer, flash message otomatis).
+- **Design system** (tema "Donezo", lihat `design-system.md`): token (warna `primary`/`canvas`/`ink`/`muted`/`line`, font Plus Jakarta Sans, radius, shadow) didefinisikan **sekali** di `views/layouts/header.php` lewat `tailwind.config`, plus peta ulang skala `emerald`/`teal`/`slate` sehingga kelas Tailwind lama otomatis ikut brand. Kelas komponen (dipakai di view): `card`, `card-head`, `card-body`, `page-title`, `btn`/`btn-primary`/`btn-outline`/`btn-ghost`/`btn-danger`/`btn-sm`/`btn-icon`, `input`, `label`, `error` (untuk `form_error()` CI3), `badge`, `stat-card`, `th`, `td`, `nav-item`/`nav-item-active`. **Admin** memakai **sidebar melayang** (desktop) + drawer mobile (partial item nav `views/layouts/_nav_admin.php`, aktif dari segmen URL ke-2); role lain/publik memakai floating pill nav. View `layouts/footer.php` menutup wrapper sesuai layout (`$isiAdmin`).
+- `application/libraries/MY_Form_validation.php`: pesan validasi default Bahasa Indonesia (override per rule di controller bila perlu). **Wajib di `libraries/`** (bukan `core/`) karena CI3 hanya mencari subclass library di `libraries/`; `form_validation` sudah di-autoload.
+- Controller PascalCase (subfolder `admin/`, `guru/`, `peserta/` → URL `/admin/...`), method/variable camelCase, tabel/kolom snake_case, istilah domain Indonesia (peserta, guru, kelas, cabang, pendaftaran, absensi, pembayaran) + istilah teknis Inggris.
+- Naming model: `Xxx_model` (property `$this->Xxx_model`), **semua model + helper `url/form/format` + library `session/database` di-autoload** (`autoload.php`).
+- Rate limiting: helper `rate_limit($key, $max, $menit)` (CI cache file) untuk login, registrasi, dan upload bukti.
+- Upload bukti: `uploads/bukti_pembayaran/` (**.htaccess deny-all**), divalidasi server (CI Upload + whitelist ekstensi), nama file acak (`random_bytes`), diakses **hanya** via controller (`pembayaran/bukti/<id>` dengan cek pemilik/admin) — jangan pernah tautkan file langsung.
+- Gambar publik (hero, kartu program, kartu cabang) di `assets/img/` — **bukan** di `uploads/`, jadi memang disajikan langsung. Dipetakan lewat helper `program_gambar($kode)` (per kode program), `hero_gambar()`, dan `cabang_gambar($wilayah)` (per wilayah): mengembalikan `NULL` bila berkas tidak ada → view memakai **fallback gradient + kode/singkatan** (jangan hapus fallback ini). Kredit & lisensi tiap berkas dicatat di `assets/img/CREDITS.md`.
+- Penempatan level: `Penempatan_model::tetapkan($pesertaId, $levelId, $penilaiUserId, $catatan)` menulis riwayat + memperbarui level terkini dalam **satu transaksi**; UI-nya di `admin/penempatan` (daftar + filter "belum ditempatkan") dan kartu riwayat di detail peserta. Badge level ditampilkan lewat helper `badge_level($level_nama, $level_urutan)`. Distribusi metrik "belum ditempatkan" lewat `Peserta_model::countBelumLevel()`.
+- Komponen UI berulang ditaruh sebagai partial view yang dimuat dari view lain: `daftar/_pilih.php` (pemilih dua arah; ekspektasi `$programs`, `$cabangs`, `$rekap`, `$aksi`), sub-partial `daftar/_kartu_program.php` (ekspektasi `$p`, `$rekap`, `$maksBaris`; kartu program bergambar + daftar kelas/jam, data diambil dari `$rekap[pid]['kelas']`) dan `daftar/_kartu_cabang.php` (ekspektasi `$c`; kartu cabang bergambar per wilayah), serta `katalog/carousel.php` (ekspektasi `$programs`, `$rekap`) — dipakai bersama oleh beranda, `/daftar`, dan `/katalog`. `Kelas_model::rekapProgram()` mengembalikan `jumlah` + `cabang` + `kelas` (daftar kelas aktif) dari **satu query**. JS kecil inline (tab, filter opsi, pembaruan daftar kelas per cabang lewat payload `<script id="data-pilih">`, scroll-snap carousel tanpa autoplay); tanpa JS tetap berfungsi.
+- Uang `INT` (Rupiah bulat, helper `rupiah()`), waktu `Asia/Jakarta` (diset di `constants.php`), tanggal via `tanggal_indo()` / `nama_bulan()`, label kelas via `label_kelas($row)` (expects join aliases `program_kode, program_nama, level_nama, cabang_nama, mode`).
+- **Escape semua output data user**: `html_escape()` di view (CI3 Query Builder + prepared statement untuk input).
+- Dashboard agregat dipusatkan di `Dashboard_model` (1 query per metrik, bukan per cabang — hindari N+1). Transaksi DB: buat akun+profil, verifikasi pembayaran, simpan absensi per pertemuan, buat tagihan batch.
+- Indentasi **tab**, LF, UTF-8 (`.editorconfig`); tiap file PHP `application/` diawali `defined('BASEPATH') OR exit('No direct script access allowed');`; file `index.html` kosong tiap folder = penjaga listing, jangan dihapus.
+
+## Verification (no tooling)
+
+- Tidak ada test/linter/CI/`vendor/`. Script `composer.json` `test:coverage` boilerplate upstream (path `tests/travis/…` tidak ada) — **jangan dijalankan**.
+- Syntax check: `C:/xampp/php/php.exe -l <file>`. DB: `C:/xampp/mysql/bin/mysql.exe -u root -e "USE al_utsmani_lms; ..."`. Import ulang: drop DB lalu `< database.sql` (schema belum punya perubahan struktur selain file ini).
+- **Tidak ada GD maupun ImageMagick** di XAMPP ini (`imagecreatetruecolor` tidak ada), jadi gambar tidak bisa di-resize/kompres di sisi server — atur ukuran dari sisi unduhan (Wikimedia Commons hanya mengizinkan sebagian lebar thumbnail: 500/960/1280 terbukti jalan, 800/1024 tidak).
+- Smoke test HTTP tanpa browser: `curl` (mingw64) dengan cookie jar + token CSRF (`csrf_token_name = csrf_test_name`) — halaman tanpa form tidak punya token, jadi POST ke halaman itu wajar 403 ("The action you have requested is not allowed"), bukan bug. Login form memakai field **`identifier`** (email/username), bukan `username`.
+- Verify manual via browser `http://localhost/Al-Utsmani/` (Apache & MySQL lokal berjalan). `log_threshold = 0`, `ENVIRONMENT` default `development` → error PHP tampil di respons.
+- Admin seed: username `admin` / email `admin@al-utsmani.id` / password `admin123` — **wajib ganti setelah deploy** (dicatat juga di `database.sql`).
+- `base_url` sudah `http://localhost/Al-Utsmani/`; `index_page = ''` + rewrite `.htaccess` → URL bersih tanpa `index.php`, pakai `site_url()`/`base_url()` (helper `url` sudah di-autoload).
+- DB `al_utsmani_lms`, user `root`/tanpa password (default XAMPP) di `application/config/database.php`.
+
+## `.htaccess` (customized)
+
+- Root: blokir akses HTTP dotfile + ekstensi `.sql .md .log .bak .json .yml .lock` dll → jangan sajikan aset `.json`/`.md` dari docroot (403). HTTPS-redirect sengaja dikomentari (biarkan, agar localhost jalan).
+- `uploads/bukti_pembayaran/.htaccess`: `Require all denied` — semua file hanya lewat controller.

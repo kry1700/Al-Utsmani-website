@@ -1,0 +1,3 @@
+# Semua file bukti pembayaran hanya boleh diakses lewat controller
+# (pembayaran/bukti/<id>) yang memeriksa pemilik/admin.
+Require all denied
