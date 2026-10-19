@@ -13,6 +13,9 @@ class Beranda extends MY_Controller {
 
 		$data = array(
 			'title' => 'Beranda',
+			// Hero beranda tampil full-bleed (menyentuh tepi layar) sehingga
+			// layout melepas batas max-w-6xl; section lain membungkus dirinya sendiri.
+			'main_penuh' => TRUE,
 			'programs' => $programs,
 			'cabangs' => $this->Cabang_model->aktif(),
 			'rekap' => $this->Kelas_model->rekapProgram(),

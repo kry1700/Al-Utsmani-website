@@ -182,8 +182,9 @@ $seg2 = $this->uri->segment(2);
 
 <?php else: ?>
 	<header class="sticky top-0 z-30 px-3 pt-3 sm:px-4">
-		<div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 rounded-full border border-line bg-white/80 px-4 py-2 shadow-card backdrop-blur">
-			<a href="<?= site_url('') ?>" class="flex items-center gap-2 font-bold text-primary">
+		<?php // Tamu: 3 kolom di md+ (logo kiri, Beranda+Katalog tengah, Login+Registrasi kanan). ?>
+		<div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 rounded-full border border-line bg-white/80 px-4 py-2 shadow-card backdrop-blur <?= empty($user) ? 'md:grid md:grid-cols-[1fr_auto_1fr]' : '' ?>">
+			<a href="<?= site_url('') ?>" class="flex items-center gap-2 font-bold text-primary <?= empty($user) ? 'md:justify-self-start' : '' ?>">
 				<?php if ($logo): ?>
 					<img src="<?= html_escape($logo) ?>" alt="LBQ Al-Utsmani" class="h-8 w-auto sm:h-9">
 				<?php else: ?>
@@ -192,55 +193,66 @@ $seg2 = $this->uri->segment(2);
 				<?php endif; ?>
 			</a>
 
-			<nav class="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm">
-				<?php if (empty($user)): ?>
+			<?php if (empty($user)): ?>
+				<nav class="flex items-center gap-1 text-sm md:justify-self-center">
 					<a href="<?= site_url('beranda') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Beranda</a>
 					<a href="<?= site_url('katalog') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Katalog Kelas</a>
+				</nav>
+				<div class="ml-auto flex items-center gap-1 text-sm md:ml-0 md:justify-self-end">
 					<a href="<?= site_url('auth/login') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Login</a>
 					<a href="<?= site_url('auth/registrasi') ?>" class="btn-primary btn-sm">Registrasi</a>
+				</div>
 
-				<?php elseif ($user['role'] === 'guru'): ?>
-					<a href="<?= site_url('guru/dashboard') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Dashboard</a>
-					<a href="<?= site_url('guru/kelas') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Kelas Saya</a>
-					<span class="px-1 text-slate-300">|</span>
-					<span class="px-1 text-slate-500"><?= html_escape($user['nama']) ?></span>
-					<a href="<?= site_url('auth/logout') ?>" class="rounded-full px-3 py-1.5 font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
+			<?php else: ?>
+				<nav class="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm">
+					<?php if ($user['role'] === 'guru'): ?>
+						<a href="<?= site_url('guru/dashboard') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Dashboard</a>
+						<a href="<?= site_url('guru/kelas') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Kelas Saya</a>
+						<span class="px-1 text-slate-300">|</span>
+						<span class="px-1 text-slate-500"><?= html_escape($user['nama']) ?></span>
+						<a href="<?= site_url('auth/logout') ?>" class="rounded-full px-3 py-1.5 font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
 
-				<?php elseif ($user['role'] === 'admin'): ?>
-					<a href="<?= site_url('admin/dashboard') ?>" class="rounded-full px-3 py-1.5 font-semibold text-primary hover:bg-primary-soft">Panel Admin</a>
-					<a href="<?= site_url('katalog') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Katalog</a>
-					<span class="px-1 text-slate-300">|</span>
-					<span class="px-1 text-slate-500"><?= html_escape($user['nama']) ?></span>
-					<a href="<?= site_url('auth/logout') ?>" class="rounded-full px-3 py-1.5 font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
+					<?php elseif ($user['role'] === 'admin'): ?>
+						<a href="<?= site_url('admin/dashboard') ?>" class="rounded-full px-3 py-1.5 font-semibold text-primary hover:bg-primary-soft">Panel Admin</a>
+						<a href="<?= site_url('katalog') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Katalog</a>
+						<span class="px-1 text-slate-300">|</span>
+						<span class="px-1 text-slate-500"><?= html_escape($user['nama']) ?></span>
+						<a href="<?= site_url('auth/logout') ?>" class="rounded-full px-3 py-1.5 font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
 
-				<?php else: /* peserta / wali */ ?>
-					<a href="<?= site_url('peserta/dashboard') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Dashboard</a>
-					<a href="<?= site_url('daftar') ?>" class="rounded-full px-3 py-1.5 font-semibold text-primary hover:bg-primary-soft">Daftar Kelas</a>
-					<a href="<?= site_url('peserta/pendaftaran') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Pendaftaran</a>
-					<a href="<?= site_url('peserta/riwayat/absensi') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Riwayat Absensi</a>
-					<a href="<?= site_url('peserta/riwayat/progres') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Progres</a>
-					<a href="<?= site_url('peserta/pembayaran') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Pembayaran</a>
-					<a href="<?= site_url('peserta/profil') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Profil</a>
-					<span class="px-1 text-slate-300">|</span>
-					<span class="px-1 text-slate-500"><?= html_escape($user['nama']) ?></span>
-					<a href="<?= site_url('auth/logout') ?>" class="rounded-full px-3 py-1.5 font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
-				<?php endif; ?>
-			</nav>
+					<?php else: /* peserta / wali */ ?>
+						<a href="<?= site_url('peserta/dashboard') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Dashboard</a>
+						<a href="<?= site_url('daftar') ?>" class="rounded-full px-3 py-1.5 font-semibold text-primary hover:bg-primary-soft">Daftar Kelas</a>
+						<a href="<?= site_url('peserta/pendaftaran') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Pendaftaran</a>
+						<a href="<?= site_url('peserta/riwayat/absensi') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Riwayat Absensi</a>
+						<a href="<?= site_url('peserta/riwayat/progres') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Progres</a>
+						<a href="<?= site_url('peserta/pembayaran') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Pembayaran</a>
+						<a href="<?= site_url('peserta/profil') ?>" class="rounded-full px-3 py-1.5 text-slate-600 hover:bg-primary-soft hover:text-primary">Profil</a>
+						<span class="px-1 text-slate-300">|</span>
+						<span class="px-1 text-slate-500"><?= html_escape($user['nama']) ?></span>
+						<a href="<?= site_url('auth/logout') ?>" class="rounded-full px-3 py-1.5 font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
+					<?php endif; ?>
+				</nav>
+			<?php endif; ?>
 		</div>
 	</header>
-	<main class="mx-auto max-w-6xl px-4 py-6">
+	<?php // $main_penuh = konten mengatur wadahnya sendiri (mis. hero full-bleed di beranda). ?>
+	<main class="<?= ! empty($main_penuh) ? 'w-full' : 'mx-auto max-w-6xl px-4 py-6' ?>">
 
 <?php endif; ?>
 
-	<?php if (! empty($flash_sukses)): ?>
-		<div class="mb-5 flex items-start gap-3 rounded-lg border border-emerald-200 bg-primary-soft px-4 py-3 text-sm text-primary-dark">
-			<svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-			<span><?= html_escape($flash_sukses) ?></span>
-		</div>
-	<?php endif; ?>
-	<?php if (! empty($flash_gagal)): ?>
-		<div class="mb-5 flex items-start gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-			<svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-			<span><?= html_escape($flash_gagal) ?></span>
-		</div>
+	<?php if (! empty($flash_sukses) || ! empty($flash_gagal)): ?>
+	<div class="<?= ! empty($main_penuh) ? 'mx-auto max-w-6xl px-4 pt-6' : '' ?>">
+		<?php if (! empty($flash_sukses)): ?>
+			<div class="mb-5 flex items-start gap-3 rounded-lg border border-emerald-200 bg-primary-soft px-4 py-3 text-sm text-primary-dark">
+				<svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+				<span><?= html_escape($flash_sukses) ?></span>
+			</div>
+		<?php endif; ?>
+		<?php if (! empty($flash_gagal)): ?>
+			<div class="mb-5 flex items-start gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+				<svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+				<span><?= html_escape($flash_gagal) ?></span>
+			</div>
+		<?php endif; ?>
+	</div>
 	<?php endif; ?>

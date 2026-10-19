@@ -16,9 +16,9 @@ foreach ($programs as $p) {
 		<p class="text-sm text-muted">Geser untuk melihat program lainnya.</p>
 		<div class="flex gap-2">
 			<button type="button" data-prev aria-label="Program sebelumnya"
-				class="h-9 w-9 rounded-full border border-line bg-white text-muted transition-colors hover:bg-canvas disabled:opacity-40">&#8592;</button>
+				class="h-10 w-10 rounded-full border border-line bg-white text-muted transition-colors hover:bg-canvas disabled:opacity-40">&#8592;</button>
 			<button type="button" data-next aria-label="Program berikutnya"
-				class="h-9 w-9 rounded-full border border-line bg-white text-muted transition-colors hover:bg-canvas disabled:opacity-40">&#8594;</button>
+				class="h-10 w-10 rounded-full border border-line bg-white text-muted transition-colors hover:bg-canvas disabled:opacity-40">&#8594;</button>
 		</div>
 	</div>
 
@@ -26,18 +26,18 @@ foreach ($programs as $p) {
 		<?php foreach ($programs as $p): $pid = (int) $p->id; $info = isset($rekap[$pid]) ? $rekap[$pid] : array('jumlah' => 0, 'cabang' => array()); ?>
 			<?php $gambar = program_gambar($p->kode); ?>
 			<article class="card flex w-[86%] shrink-0 snap-start flex-col overflow-hidden sm:w-[47%] lg:w-[31.5%]">
-				<div class="relative h-40">
+				<div class="relative h-52">
 					<?php if ($gambar): ?>
 						<img src="<?= html_escape($gambar) ?>" alt="Program <?= html_escape($p->nama) ?>" loading="lazy" class="h-full w-full object-cover">
 					<?php else: ?>
 						<div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary to-primary-deep">
-							<span class="text-4xl font-black tracking-wider text-white/90"><?= html_escape($p->kode) ?></span>
+							<span class="text-5xl font-black tracking-wider text-white/90"><?= html_escape($p->kode) ?></span>
 						</div>
 					<?php endif; ?>
 					<span class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-primary"><?= html_escape($p->kode) ?></span>
 				</div>
-				<div class="flex flex-1 flex-col p-5">
-					<h3 class="font-semibold text-ink"><?= html_escape($p->nama) ?></h3>
+				<div class="flex flex-1 flex-col p-6">
+					<h3 class="text-lg font-bold text-ink"><?= html_escape($p->nama) ?></h3>
 					<p class="mt-1 flex-1 text-sm leading-relaxed text-muted"><?= html_escape($p->deskripsi) ?></p>
 
 					<?php $kelasInfo = isset($info['kelas']) ? $info['kelas'] : array(); ?>
