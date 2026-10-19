@@ -1,8 +1,8 @@
-# TASKS.md — Al-Utsmani LMS
+# TASKS.md — LBQ Al-Utsmani
 
 Task management utama proyek. Centang setelah selesai. Panduan teknis: lihat `AGENTS.md`.
 
-Status: [x] Fase 1, [x] Fase 2, [x] Fase 3, [x] Fase 4 — **selesai & sudah diuji end-to-end** (smoke test curl + verifikasi DB). [x] Fase 5 — **redesign sisi peserta, selesai & teruji** (smoke test curl + verifikasi DB). [x] Fase 6 — **kartu program bergambar + daftar kelas/jam, selesai & teruji** (smoke test curl + verifikasi DB + simulasi logika JS). [x] Fase 7 — **design system "Donezo" (token global + panel admin bersidebar), selesai & teruji** (php -l + smoke test curl semua halaman admin, tanpa error PHP). [x] Fase 8 — **poles komponen Donezo ke halaman guru, peserta, & publik, selesai & teruji** (php -l + smoke test curl semua halaman role/publik, tanpa error PHP); menunggu konfirmasi testing manual user.
+Status: [x] Fase 1, [x] Fase 2, [x] Fase 3, [x] Fase 4 — **selesai & sudah diuji end-to-end** (smoke test curl + verifikasi DB). [x] Fase 5 — **redesign sisi peserta, selesai & teruji** (smoke test curl + verifikasi DB). [x] Fase 6 — **kartu program bergambar + daftar kelas/jam, selesai & teruji** (smoke test curl + verifikasi DB + simulasi logika JS). [x] Fase 7 — **design system "Donezo" (token global + panel admin bersidebar), selesai & teruji** (php -l + smoke test curl semua halaman admin, tanpa error PHP). [x] Fase 8 — **poles komponen Donezo ke halaman guru, peserta, & publik, selesai & teruji** (php -l + smoke test curl semua halaman role/publik, tanpa error PHP); menunggu konfirmasi testing manual user. [x] Fase 9 — **rebrand "LBQ Al-Utsmani" + tema coklat Caramel + logo + hero baru, selesai & teruji** (php -l + smoke test curl publik & admin, tanpa error PHP).
 
 ## Fase 1 — Fondasi
 
@@ -111,6 +111,16 @@ Melanjutkan Fase 7: kelas komponen yang sama (`card`/`card-head`/`card-body`/`pa
 - [x] JS tetap utuh: kelas yang di-toggle JS (`bg-emerald-600`, `text-slate-600`, `bg-slate-300`) sengaja dibiarkan karena skala `emerald`/`slate` sudah dipetakan ke token brand.
 - [x] Uji: `php -l` 24 berkas view bersih; smoke test curl — publik (`/`, `/katalog`, `/katalog/program/1`, `/daftar`, `/daftar/kelas?…`, `/auth/login`, `/auth/registrasi`), guru (dashboard, kelas, kelas detail, absensi isi/riwayat), peserta (dashboard, pendaftaran, pembayaran, profil, form profil, riwayat absensi/progres) **semua 200 tanpa error PHP**; DOM seimbang; link meeting tampil untuk peserta terdaftar aktif; data uji dihapus (DB kembali bersih: 1 admin).
 - [x] **Perbaikan bug (layout admin bocor ke halaman publik)**: `$isiAdmin` sebelumnya hanya melihat role, sehingga admin yang membuka beranda/katalog tetap mendapat sidebar admin (dan nav publik menampilkan menu peserta). Kini `$isiAdmin` mensyaratkan segmen URL pertama = `admin` (disamakan di `header.php` & `footer.php`), dan admin di halaman publik memakai **nav publik** dengan tautan "Panel Admin". Uji: admin login → `/`, `/katalog` tanpa sidebar/top bar admin (nav publik tampil); `/admin/dashboard`, `/admin/peserta` tetap sidebar; DOM seimbang, tanpa error PHP.
+
+## Fase 9 — Rebrand "LBQ Al-Utsmani" + tema coklat Caramel + logo + hero baru
+
+Permintaan user: (1) nama aplikasi "Al-Utsmani LMS" → **"LBQ Al-Utsmani"**; (2) warna brand hijau → **coklat** (nuansa Caramel/Gold-brown); (3) terapkan file logo lembaga; (4) ganti isi hero beranda.
+
+- [x] **Rename**: `views/layouts/header.php` (`<title>` + alt logo), `views/layouts/footer.php` (kredit), `AGENTS.md`, `TASKS.md`, `design-system.md`, komentar `database.sql`. (`base_url`/path folder `Al-Utsmani` sengaja tidak diubah.)
+- [x] **Tema coklat Caramel/Gold-brown**: token `primary` (`#8B5E34` / light `#C89B6A` / soft `#F7EFE3` / dark `#6B4423` / deep `#3F2915`), `canvas #FAF6F0`, `ink #1F1A16`, `muted #7A6A5A`, `line #EDE3D7`, peta ulang `emerald` & `teal` → gradasi krem→coklat, `boxShadow.glow` → `rgba(139,94,52,.25)`. Berlaku global (semua view ikut otomatis lewat pemetaan skala). `design-system.md` palet diselaraskan + catatan rebrand.
+- [x] **Logo**: `img/utsmani.jpg` dipindah ke `assets/img/logo-utsmani.jpg` (folder root `img/` dihapus, sesuai konvensi gambar publik di `assets/img/`); helper baru **`logo()`** di `format_helper.php` (NULL bila berkas tidak ada → fallback badge "AU" tetap ada); logo dipasang di sidebar admin, drawer admin, top bar mobile admin, dan pill nav publik; **favicon** memakai logo.
+- [x] **Hero beranda** (`views/beranda.php`): badge "LBQ Al-Utsmani"; H1 **"Yuk, Ngaji Bareng Al-Utsmani!"**; paragraf baru (metode Al-Utsmani sejak 1990); tombol **"Temukan Program"** → `/katalog` dan **"Pelajari Metode Kami"** → `#metode`; tautan "Sudah punya akun? Login" tetap untuk tamu. Section baru **"Metode Kami"** (`id="metode"`) berisi 5 poin keunggulan (ikon centang, grid responsif). Section statistik/pemilih/carousel/cara mendaftar dipertahankan.
+- [x] Uji: `php -l` bersih; smoke test curl (publik & login admin) 200 tanpa error PHP; DOM seimbang; `assets/img/logo-utsmani.jpg` tersaji 200.
 
 ## Di luar scope (jangan dikerjakan)
 

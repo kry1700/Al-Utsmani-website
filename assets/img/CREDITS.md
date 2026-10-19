@@ -18,6 +18,15 @@ Gambar diunduh lokal agar situs tidak bergantung pada server luar.
 | `cabang-bogor.jpg` | Kartu cabang wilayah Bogor | ["Kolam Astrid" in Bogor Botanical Garden](https://commons.wikimedia.org/wiki/File:%22Kolam_Astrid%22_in_Bogor_Botanical_Garden.jpg) | Apri DAV | CC BY-SA 4.0 |
 | `cabang-sorong.jpg` | Kartu cabang wilayah Sorong | [Sorong view-1](https://commons.wikimedia.org/wiki/File:Sorong_view-1.jpg) | Lord Mountbatten | CC BY-SA 4.0 |
 
+## Logo lembaga
+
+| Berkas | Dipakai untuk | Sumber | Lisensi |
+|---|---|---|---|
+| `logo-utsmani.jpg` | Logo LBQ Al-Utsmani (nav admin & publik, favicon) | Aset internal Lembaga Al-Utsmani (diberikan pemilik proyek) | Milik Lembaga Al-Utsmani — **bukan** dari Wikimedia Commons |
+
+Dipetakan lewat helper `logo()` di `application/helpers/format_helper.php`
+(mengembalikan `NULL` bila berkas tidak ada → nav memakai fallback badge inisial "AU").
+
 Catatan:
 - Resolusi 960–1280 px, ukuran berkas ≤ ~280 KB (tanpa GD/ImageMagick di server XAMPP ini).
 - Bila gambar diganti, cukup timpa berkas dengan nama sama — helper `program_gambar()`

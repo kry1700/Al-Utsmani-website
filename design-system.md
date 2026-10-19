@@ -1,4 +1,9 @@
-# Design System Guidelines (Donezo Theme)
+# Design System Guidelines (Donezo Theme — Rebrand LBQ Al-Utsmani)
+
+> **Catatan rebrand**: Palet brand kini **coklat Caramel/Gold-brown** (menggantikan
+> Forest Green). Warna di bawah sudah diselaraskan dengan token di
+> `application/views/layouts/header.php`. Skala `emerald`/`teal` Tailwind dipetakan
+> ulang ke palet coklat, sehingga kelas lama otomatis mengikuti brand.
 
 Dokumen ini berisi panduan sistem desain berdasarkan analisis visual aplikasi dashboard "Donezo". Panduan ini dirancang menggunakan pendekatan **Mobile-First** dan mencakup ekstensi gaya untuk halaman non-admin/publik agar konsisten secara brand.
 
@@ -10,7 +15,7 @@ Dokumen ini berisi panduan sistem desain berdasarkan analisis visual aplikasi da
 * **Core Personality**: Professional, Efficient, Calming, Tech-forward.
 * **Aesthetic Characteristics**:
   * Sudut membulat yang lembut dan konsisten (*high border radius*).
-  * Kontras warna yang seimbang antara hijau hutan dalam (*forest green*), hijau mint segar, abu-abu lembut, dan latar belakang putih/krem pucat.
+  * Kontras warna yang seimbang antara coklat karamel/gold-brown, krem hangat, abu-abu lembut, dan latar belakang putih/krem pucat.
   * *Pill-shaped elements* pada tombol, pencarian, badge status, dan item navigasi aktif.
   * Penggunaan elemen visual dengan *pattern/texture* bertema organik (misal pada widget *Time Tracker* dan *Download App*).
 
@@ -19,19 +24,19 @@ Dokumen ini berisi panduan sistem desain berdasarkan analisis visual aplikasi da
 ## 2. Color Palette
 
 ### Primary Colors (Brand Identity)
-* **Primary Main**: `#1E5A3E` (Forest Green - Digunakan untuk tombol utama, kartu prioritas, dan status aktif)
-* **Primary Light**: `#3DBB7A` (Emerald / Mint Green - Digunakan untuk progress bar, grafik, dan aksen positif)
-* **Primary Soft**: `#EAF5EF` (Light Mint Background - Untuk state hover, latar item aktif, dan badge soft)
+* **Primary Main**: `#8B5E34` (Caramel / Gold-Brown - Digunakan untuk tombol utama, kartu prioritas, dan status aktif)
+* **Primary Light**: `#C89B6A` (Gold-Tan - Digunakan untuk progress bar, grafik, dan aksen positif)
+* **Primary Soft**: `#F7EFE3` (Cream Background - Untuk state hover, latar item aktif, dan badge soft)
 
 ### Neutral Colors
-* **Background Canvas**: `#F4F6F5` (Off-White / Light Gray - Latar belakang utama aplikasi)
+* **Background Canvas**: `#FAF6F0` (Warm Off-White - Latar belakang utama aplikasi)
 * **Surface / Container**: `#FFFFFF` (Pure White - Kartu, sidebar, header)
-* **Text Primary**: `#111827` (Dark Charcoal - Headings & teks utama)
-* **Text Secondary**: `#6B7280` (Muted Gray - Sub-heading, label pendukung, dan placeholder)
-* **Border / Divider**: `#E5E7EB` (Soft Gray Border)
+* **Text Primary**: `#1F1A16` (Dark Charcoal - Headings & teks utama)
+* **Text Secondary**: `#7A6A5A` (Muted Gray - Sub-heading, label pendukung, dan placeholder)
+* **Border / Divider**: `#EDE3D7` (Soft Gray Border)
 
 ### Status & Semantic Colors
-* **Success / Completed**: `#1E5A3E` (Text) | `#EBF6EE` (Bg Badge)
+* **Success / Completed**: `#8B5E34` (Text) | `#F7EFE3` (Bg Badge)
 * **In Progress / Warning**: `#D97706` (Text) | `#FEF3C7` (Bg Badge)
 * **Pending / Alert**: `#E11D48` (Text) | `#FFE4E6` (Bg Badge)
 
@@ -78,10 +83,10 @@ Menggunakan basis **4pt / 8pt grid system**:
 
 ## 6. Elevation & Shadows
 
-* **Flat Neutral** (Default Kartu Dashboard): `none` dengan border `1px solid #E5E7EB` atau tanpa border pada background `#F4F6F5`.
+* **Flat Neutral** (Default Kartu Dashboard): `none` dengan border `1px solid #EDE3D7` atau tanpa border pada background `#FAF6F0`.
 * **Low Elevation (Card Hover & Dropdown)**: `0px 4px 12px rgba(0, 0, 0, 0.04)`
 * **Medium Elevation (Modal & Floating Navigation)**: `0px 12px 32px rgba(0, 0, 0, 0.08)`
-* **Glow Elevation (Primary Focus / Dark Card)**: `0px 8px 20px rgba(30, 90, 62, 0.25)`
+* **Glow Elevation (Primary Focus / Dark Card)**: `0px 8px 20px rgba(139, 94, 52, 0.25)`
 
 ---
 
@@ -89,44 +94,44 @@ Menggunakan basis **4pt / 8pt grid system**:
 
 ### Buttons
 * **Primary Button**:
-  * Background: `#1E5A3E`
+  * Background: `#8B5E34`
   * Text: `#FFFFFF`
   * Radius: Full Pill (`9999px`) atau `12px`
   * Padding: Vertical `10px`, Horizontal `20px`
-  * Hover: `#16442E`
+  * Hover: `#6B4423`
 * **Secondary / Outlined Button**:
   * Background: `Transparent` / `#FFFFFF`
-  * Border: `1px solid #1E5A3E`
-  * Text: `#1E5A3E`
+  * Border: `1px solid #8B5E34`
+  * Text: `#8B5E34`
   * Radius: Full Pill (`9999px`)
 * **Icon-Only / Action Button**:
   * Shape: Circle (`36px` x `36px` atau `40px` x `40px`)
-  * Border: `1px solid #E5E7EB`
+  * Border: `1px solid #EDE3D7`
 
 ### Form Controls
 * **Search Input**:
   * Background: `#FFFFFF` atau `#F9FAFB`
-  * Border: `1px solid #E5E7EB`
+  * Border: `1px solid #EDE3D7`
   * Radius: Full Pill (`9999px`)
   * Prefix Icon: Magnifying Glass
   * Suffix: Shortcut Key Badge (misal `⌘F`)
 * **Standard Inputs**:
   * Height: `42px` - `48px`
   * Radius: `10px`
-  * Focus Ring: `2px solid #1E5A3E` dengan opacity soft.
+  * Focus Ring: `2px solid #8B5E34` dengan opacity soft.
 
 ### Cards
 * **Metric Stat Card**:
   * Default: Background White (`#FFFFFF`), Border Radius `16px`, Padding `20px`.
-  * Highlight / Active Card: Background `#1E5A3E`, Teks Putih, Icon Lingkaran dengan panah diagonal top-right (`↗`).
+  * Highlight / Active Card: Background `#8B5E34`, Teks Putih, Icon Lingkaran dengan panah diagonal top-right (`↗`).
 * **Feature Dark Card (Time Tracker / CTA)**:
-  * Background: Gradient Dark Forest (`#0A2619` ke `#1E5A3E`) dengan pola garis/wave transparan.
+  * Background: Gradient Dark Caramel (`#3F2915` ke `#8B5E34`) dengan pola garis/wave transparan.
   * Radius: `16px` - `20px`.
 
 ### Navigation
 * **Sidebar (Desktop)**:
   * Container melayang (*floating/inset layout*) dengan background `#FFFFFF` dan border radius `20px`.
-  * Item Navigasi Aktif: Background `#1E5A3E`, Teks White, Left Accent Icon/Pill.
+  * Item Navigasi Aktif: Background `#8B5E34`, Teks White, Left Accent Icon/Pill.
   * Badge Notifikasi: Pill kecil warna gelap atau kontras (`12+`).
 * **Header Bar**:
   * Search Bar di kiri/tengah.
@@ -150,16 +155,16 @@ Menggunakan basis **4pt / 8pt grid system**:
 Untuk halaman beranda, landing page, atau portal pengguna publik yang menggunakan tema desain ini:
 
 1. **Hero Section**:
-   * Gunakan judul besar (`36px` - `48px`) dengan warna `#111827`.
-   * Berikan highlight kata kunci menggunakan badge hijau mint soft (`#EAF5EF`) atau teks hijau `#1E5A3E`.
+   * Gunakan judul besar (`36px` - `48px`) dengan warna `#1F1A16`.
+   * Berikan highlight kata kunci menggunakan badge krem hangat (`#F7EFE3`) atau teks coklat `#8B5E34`.
 2. **Cards & Feature Showcase**:
    * Terapkan gaya kartu melayang (Floating Cards dengan radius `20px` dan shadow halus).
    * Sertakan elemen abstrak berbentuk wave/lines berpola (seperti pada widget Time Tracker) sebagai latar ilustrasi fitur.
 3. **Public Navigation Bar**:
    * Layout: *Floating Pill Bar* melayang di bagian atas halaman.
-   * Background: Semi-transparent White `#FFFFFF` + `backdrop-blur(12px)` + Border `1px solid #E5E7EB`.
+   * Background: Semi-transparent White `#FFFFFF` + `backdrop-blur(12px)` + Border `1px solid #EDE3D7`.
    * Radius: `9999px`.
-   * Action Button: Primary Pill Button (`#1E5A3E`).
+   * Action Button: Primary Pill Button (`#8B5E34`).
 
 ---
 

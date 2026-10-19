@@ -1,5 +1,5 @@
 -- =====================================================================
--- Al-Utsmani LMS — Skema Database + Seed
+-- LBQ Al-Utsmani — Skema Database + Seed
 -- ---------------------------------------------------------------------
 -- Cara import (pilih salah satu):
 --   1. phpMyAdmin > Import > pilih file ini (nama database di atas file

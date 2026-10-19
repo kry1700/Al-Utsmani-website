@@ -165,6 +165,24 @@ if (! function_exists('hero_gambar'))
 	}
 }
 
+if (! function_exists('logo'))
+{
+	/**
+	 * URL logo lembaga (navbar admin/publik).
+	 * Mengembalikan NULL bila berkas belum tersedia → view memakai fallback
+	 * badge inisial "AU" (jangan hapus fallback ini).
+	 *
+	 * @return string|null URL logo atau NULL
+	 */
+	function logo()
+	{
+		if (! is_file(FCPATH.'assets/img/logo-utsmani.jpg')) {
+			return NULL;
+		}
+		return base_url('assets/img/logo-utsmani.jpg');
+	}
+}
+
 if (! function_exists('cabang_gambar'))
 {
 	/**

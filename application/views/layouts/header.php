@@ -23,7 +23,9 @@ $seg2 = $this->uri->segment(2);
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?= html_escape(! empty($title) ? $title.' — Al-Utsmani LMS' : 'Al-Utsmani LMS') ?></title>
+	<title><?= html_escape(! empty($title) ? $title.' — LBQ Al-Utsmani' : 'LBQ Al-Utsmani') ?></title>
+	<?php $logo = logo(); ?>
+	<?php if ($logo): ?><link rel="icon" href="<?= html_escape($logo) ?>"><?php endif; ?>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,16 +35,16 @@ $seg2 = $this->uri->segment(2);
 		theme: {
 			extend: {
 				colors: {
-					primary: { DEFAULT: '#1E5A3E', light: '#3DBB7A', soft: '#EAF5EF', dark: '#16442E', deep: '#0A2619' },
-					canvas: '#F4F6F5',
-					ink: '#111827',
-					muted: '#6B7280',
-					line: '#E5E7EB',
-					// Peta ulang emerald/teal ke palet Forest Green Donezo agar seluruh
+					primary: { DEFAULT: '#8B5E34', light: '#C89B6A', soft: '#F7EFE3', dark: '#6B4423', deep: '#3F2915' },
+					canvas: '#FAF6F0',
+					ink: '#1F1A16',
+					muted: '#7A6A5A',
+					line: '#EDE3D7',
+					// Peta ulang emerald/teal ke palet Caramel/Gold-brown agar seluruh
 					// kelas lama (bg-emerald-600, dst.) otomatis konsisten brand.
-					emerald: { 50: '#F2F8F4', 100: '#EAF5EF', 200: '#C9E4D5', 300: '#A3D3BB', 400: '#6BBF97', 500: '#3DBB7A', 600: '#1E5A3E', 700: '#16442E', 800: '#0F3322', 900: '#0A2619' },
-					teal: { 50: '#F2F8F4', 100: '#E4F1EA', 200: '#C2E0D2', 300: '#9BCBB6', 400: '#66AF93', 500: '#3D8E70', 600: '#2A6B52', 700: '#1E5A3E', 800: '#16442E', 900: '#0A2619' },
-					// Neutral dibuat sejuk-netral (gray) sesuai Donezo.
+					emerald: { 50: '#FBF7F0', 100: '#F7EFE3', 200: '#EBDCC6', 300: '#DBC3A2', 400: '#C89B6A', 500: '#B0813F', 600: '#8B5E34', 700: '#6B4423', 800: '#513218', 900: '#3F2915' },
+					teal: { 50: '#FBF7F0', 100: '#F5EBDD', 200: '#E8D6BE', 300: '#D6B893', 400: '#C0955F', 500: '#A87A44', 600: '#8B5E34', 700: '#6B4423', 800: '#513218', 900: '#3F2915' },
+					// Neutral dibiarkan netral (gray) agar teks & border tetap kontras.
 					slate: { 50: '#F9FAFB', 100: '#F3F4F6', 200: '#E5E7EB', 300: '#D1D5DB', 400: '#9CA3AF', 500: '#6B7280', 600: '#4B5563', 700: '#374151', 800: '#1F2937', 900: '#111827' },
 				},
 				fontFamily: { sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'] },
@@ -50,7 +52,7 @@ $seg2 = $this->uri->segment(2);
 				boxShadow: {
 					card: '0 4px 12px rgba(0, 0, 0, 0.04)',
 					float: '0 12px 32px rgba(0, 0, 0, 0.08)',
-					glow: '0 8px 20px rgba(30, 90, 62, 0.25)',
+					glow: '0 8px 20px rgba(139, 94, 52, 0.25)',
 				},
 			},
 		},
@@ -89,12 +91,13 @@ $seg2 = $this->uri->segment(2);
 	$navData = array('seg2' => $seg2, 'user' => $user);
 	?>
 	<aside class="fixed bottom-4 left-4 top-4 z-40 hidden w-64 flex-col rounded-2xl border border-line bg-white p-4 shadow-float lg:flex">
-		<a href="<?= site_url('admin/dashboard') ?>" class="flex items-center gap-2.5 px-2 py-1">
-			<span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-black text-white">AU</span>
-			<span>
-				<span class="block text-sm font-bold leading-tight text-ink">Al-Utsmani</span>
-				<span class="block text-[11px] font-medium text-muted">Panel Admin</span>
-			</span>
+		<a href="<?= site_url('admin/dashboard') ?>" class="block px-2 py-1">
+			<?php if ($logo): ?>
+				<img src="<?= html_escape($logo) ?>" alt="LBQ Al-Utsmani" class="h-9 w-auto">
+			<?php else: ?>
+				<span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-black text-white">AU</span>
+			<?php endif; ?>
+			<span class="mt-1 block text-[11px] font-medium text-muted">Panel Admin</span>
 		</a>
 		<nav class="mt-6 flex-1 space-y-1 overflow-y-auto">
 			<?php $this->load->view('layouts/_nav_admin', $navData); ?>
@@ -119,8 +122,12 @@ $seg2 = $this->uri->segment(2);
 		<aside class="absolute bottom-0 left-0 top-0 w-72 max-w-[85%] overflow-y-auto rounded-r-2xl bg-white p-4 shadow-float">
 			<div class="flex items-center justify-between">
 				<a href="<?= site_url('admin/dashboard') ?>" class="flex items-center gap-2.5">
-					<span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-black text-white">AU</span>
-					<span class="text-sm font-bold text-ink">Al-Utsmani</span>
+					<?php if ($logo): ?>
+						<img src="<?= html_escape($logo) ?>" alt="LBQ Al-Utsmani" class="h-9 w-auto">
+					<?php else: ?>
+						<span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-black text-white">AU</span>
+						<span class="text-sm font-bold text-ink">LBQ Al-Utsmani</span>
+					<?php endif; ?>
 				</a>
 				<button type="button" data-drawer-close class="btn-icon" aria-label="Tutup">
 					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -148,7 +155,13 @@ $seg2 = $this->uri->segment(2);
 				<button type="button" id="drawerOpen" class="btn-icon lg:hidden" aria-label="Buka menu">
 					<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
 				</button>
-				<a href="<?= site_url('admin/dashboard') ?>" class="font-bold text-primary lg:hidden">Al-Utsmani</a>
+				<a href="<?= site_url('admin/dashboard') ?>" class="lg:hidden">
+					<?php if ($logo): ?>
+						<img src="<?= html_escape($logo) ?>" alt="LBQ Al-Utsmani" class="h-8 w-auto">
+					<?php else: ?>
+						<span class="font-bold text-primary">LBQ Al-Utsmani</span>
+					<?php endif; ?>
+				</a>
 				<form action="<?= site_url('admin/peserta') ?>" method="get" class="hidden md:block">
 					<div class="relative">
 						<span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
@@ -171,8 +184,12 @@ $seg2 = $this->uri->segment(2);
 	<header class="sticky top-0 z-30 px-3 pt-3 sm:px-4">
 		<div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 rounded-full border border-line bg-white/80 px-4 py-2 shadow-card backdrop-blur">
 			<a href="<?= site_url('') ?>" class="flex items-center gap-2 font-bold text-primary">
-				<span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-black text-white">AU</span>
-				<span class="text-sm sm:text-base">Al-Utsmani LMS</span>
+				<?php if ($logo): ?>
+					<img src="<?= html_escape($logo) ?>" alt="LBQ Al-Utsmani" class="h-8 w-auto sm:h-9">
+				<?php else: ?>
+					<span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-black text-white">AU</span>
+					<span class="text-sm sm:text-base">LBQ Al-Utsmani</span>
+				<?php endif; ?>
 			</a>
 
 			<nav class="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm">
