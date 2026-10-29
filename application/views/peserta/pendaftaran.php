@@ -22,7 +22,7 @@
 						<p class="text-sm text-muted"><?= html_escape(label_kelas((array) $pd)) ?></p>
 						<p class="text-sm text-muted">
 							Guru: <?= html_escape($pd->guru_nama) ?> &middot;
-							Jadwal: <?= html_escape($pd->jadwal) ?> (<?= html_escape($pd->zona_waktu) ?>)
+							Jadwal: <?= html_escape(jadwal_tampil($pd)) ?>
 						</p>
 						<p class="text-xs text-slate-400">Didaftarkan <?= html_escape(tanggal_indo($pd->created_at)) ?></p>
 					</div>

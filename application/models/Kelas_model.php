@@ -96,14 +96,14 @@ class Kelas_model extends CI_Model {
 	 * @return array [program_id => [
 	 *   'jumlah' => int,
 	 *   'cabang' => [cabang_id => ['nama'=>..,'wilayah'=>..], ...],
-	 *   'kelas'  => [ ['kelas_id','cabang_id','cabang','wilayah','level','urutan','jadwal','zona','mode'], ... ],
+	 *   'kelas'  => [ ['kelas_id','cabang_id','cabang','wilayah','level','urutan','jadwal','zona','mode','hari'], ... ],
 	 * ]]
 	 * 'kelas' dipakai kartu program untuk menampilkan level · jadwal · cabang.
 	 */
 	public function rekapProgram()
 	{
 		$rows = $this->db
-			->select('k.id AS kelas_id, k.program_id, k.jadwal, k.zona_waktu, k.mode,
+			->select('k.id AS kelas_id, k.program_id, k.jadwal, k.zona_waktu, k.mode, k.hari,
 				c.id AS cabang_id, c.nama AS cabang_nama, c.wilayah AS cabang_wilayah,
 				l.nama AS level_nama, l.urutan AS level_urutan', FALSE)
 			->from('kelas k')
@@ -137,6 +137,7 @@ class Kelas_model extends CI_Model {
 				'jadwal' => $row->jadwal,
 				'zona' => $row->zona_waktu,
 				'mode' => $row->mode,
+				'hari' => isset($row->hari) ? $row->hari : NULL,
 			);
 		}
 		return $out;

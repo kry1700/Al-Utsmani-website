@@ -146,10 +146,19 @@ $kelasJson = json_encode(
 	function teksBaris(k) {
 		var bagian = [];
 		if (k.level) { bagian.push(k.level); }
-		var jadwal = k.jadwal ? String(k.jadwal) : '';
 		var zona = k.zona ? String(k.zona) : '';
-		if (jadwal && zona && jadwal.toLowerCase().indexOf(zona.toLowerCase()) === -1) { jadwal += ' ' + zona; }
-		if (jadwal) { bagian.push(jadwal); }
+		var hari = k.hari ? String(k.hari).replace(/,/g, ', ') : '';
+		var jadwalJam = k.jadwal ? String(k.jadwal) : '';
+		var tampil = '';
+		if (hari && jadwalJam) {
+			tampil = hari + ' | ' + jadwalJam;
+		} else if (hari) {
+			tampil = hari;
+		} else if (jadwalJam) {
+			tampil = jadwalJam;
+		}
+		if (tampil && zona && tampil.toLowerCase().indexOf(zona.toLowerCase()) === -1) { tampil += ' (' + zona + ')'; } else if (!tampil && zona) { tampil = zona; }
+		if (tampil) { bagian.push(tampil); }
 		if (k.cabang) { bagian.push(k.cabang); }
 		return bagian.join(' \u00b7 ');
 	}

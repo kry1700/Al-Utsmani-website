@@ -155,12 +155,33 @@ class Kelas extends Admin_Controller {
 		$link = trim((string) $this->input->post('link_meeting'));
 		$namaInstansi = trim((string) $this->input->post('nama_instansi'));
 
+		$hari = NULL;
+		$hariArr = $this->input->post('hari');
+		if (is_array($hariArr)) {
+			$allowed = array('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu');
+			$bersih = array();
+			foreach ($hariArr as $h) {
+				$h = trim((string) $h);
+				if ($h === '') {
+					continue;
+				}
+				if (in_array($h, $allowed, TRUE)) {
+					$bersih[] = $h;
+				}
+			}
+			$bersih = array_values(array_unique($bersih));
+			if (! empty($bersih)) {
+				$hari = implode(',', $bersih);
+			}
+		}
+
 		return array(
 			'program_id' => (int) $this->input->post('program_id'),
 			'level_id' => (int) $this->input->post('level_id'),
 			'cabang_id' => (int) $this->input->post('cabang_id'),
 			'guru_id' => (int) $this->input->post('guru_id'),
 			'mode' => $mode,
+			'hari' => $hari,
 			'jadwal' => trim((string) $this->input->post('jadwal')),
 			'zona_waktu' => (string) $this->input->post('zona_waktu'),
 			'link_meeting' => $mode === 'online' && $link !== '' ? $link : NULL,

@@ -19,7 +19,7 @@
 					<div class="flex gap-3 py-2.5"><dt class="w-40 shrink-0 text-muted">Mode</dt>
 						<dd><?= $kelas->mode === 'online' ? 'Online' : 'Offline' ?></dd></div>
 					<div class="flex gap-3 py-2.5"><dt class="w-40 shrink-0 text-muted">Jadwal</dt>
-						<dd><?= html_escape($kelas->jadwal) ?> (<?= html_escape($kelas->zona_waktu) ?>)</dd></div>
+						<dd><?= html_escape(jadwal_tampil($kelas)) ?></dd></div>
 					<?php if ($kelas->mode === 'online'): ?>
 						<div class="flex gap-3 py-2.5"><dt class="w-40 shrink-0 text-muted">Link Meeting</dt>
 							<dd class="break-all">

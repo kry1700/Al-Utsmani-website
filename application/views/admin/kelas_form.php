@@ -81,10 +81,35 @@ $aksi = $edit === NULL ? 'admin/kelas/simpan' : 'admin/kelas/update/'.$edit->id;
 				</div>
 
 				<div class="sm:col-span-2">
-					<label class="label" for="jadwal">Jadwal <span class="text-rose-600">*</span></label>
+					<label class="label">Hari Pertemuan (opsional)</label>
+					<div class="flex flex-wrap gap-2">
+						<?php
+						$daftarHari = array('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu');
+						$hariTerpilih = array();
+						if (isset($edit->hari) && $edit->hari !== NULL && trim((string) $edit->hari) !== '') {
+							$hariTerpilih = array_map('trim', explode(',', (string) $edit->hari));
+						}
+						$hariPost = set_value('hari');
+						if (is_array($hariPost)) {
+							$hariTerpilih = array_map('trim', $hariPost);
+						}
+						foreach ($daftarHari as $h):
+							$checked = in_array($h, $hariTerpilih, TRUE) ? 'checked' : '';
+						?>
+							<label class="inline-flex items-center gap-2 rounded-xl border border-line px-3 py-1.5 text-sm">
+								<input type="checkbox" name="hari[]" value="<?= html_escape($h) ?>" <?= $checked ?>>
+								<?= html_escape($h) ?>
+							</label>
+						<?php endforeach; ?>
+					</div>
+					<p class="mt-1 text-xs text-muted">Centang hari pertemuan kelas ini. Bisa lebih dari satu.</p>
+				</div>
+
+				<div class="sm:col-span-2">
+					<label class="label" for="jadwal">Jadwal/Jam <span class="text-rose-600">*</span></label>
 					<input type="text" id="jadwal" name="jadwal" value="<?= html_escape($val('jadwal')) ?>" required
-						placeholder="mis. Sabtu 08.00-09.30" class="input">
-					<p class="mt-1 text-xs text-muted">Tulis jadwal dengan zona waktu di kolom Zona Waktu.</p>
+						placeholder="mis. 08.00 - 09.30" class="input">
+					<p class="mt-1 text-xs text-muted">Isi jam pertemuan. Zona waktu diatur pada kolom Zona Waktu.</p>
 					<?= form_error('jadwal') ?>
 				</div>
 

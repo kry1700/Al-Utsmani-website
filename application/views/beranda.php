@@ -8,48 +8,277 @@
  */
 $hero = hero_gambar();
 $wadah = 'mx-auto max-w-6xl px-4 sm:px-6';
+
+// Program yang sedang berjalan: 1 baris per program (bukan per level), diambil
+// dari agregat `Kelas_model::rekapProgram()` (jumlah kelas + daftar cabang).
+$programBerjalan = array();
+if (isset($rekap) && is_array($rekap) && isset($programs) && is_array($programs)) {
+	foreach ($programs as $p) {
+		$pid = (int) $p->id;
+		if (empty($rekap[$pid]['kelas'])) {
+			continue;
+		}
+		$cabangProgram = array();
+		if (! empty($rekap[$pid]['cabang'])) {
+			foreach ($rekap[$pid]['cabang'] as $c) {
+				$cabangProgram[] = $c['nama'];
+			}
+		}
+		$programBerjalan[] = array(
+			'kode' => $p->kode,
+			'nama' => $p->nama,
+			'jumlah' => (int) $rekap[$pid]['jumlah'],
+			'cabang' => $cabangProgram,
+		);
+	}
+	$programBerjalan = array_slice($programBerjalan, 0, 3);
+}
 ?>
-<!-- HERO (full-bleed) -->
-<section class="relative overflow-hidden border-b border-line bg-gradient-to-br from-primary-soft via-canvas to-primary-soft/70">
-	<div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl"></div>
-	<div class="pointer-events-none absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl"></div>
-
-	<div class="<?= $wadah ?> relative grid items-center gap-10 py-12 md:min-h-[60vh] lg:min-h-[70vh] lg:grid-cols-2 lg:gap-14 lg:py-16">
-		<div>
-			<span class="mb-4 inline-block rounded-full border border-primary/25 bg-white/70 px-3 py-1 text-xs font-semibold text-primary">LBQ Al-Utsmani</span>
-			<h1 class="mb-4 text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
-				Yuk, Ngaji Bareng <span class="text-primary">Al-Utsmani</span>!
-			</h1>
-			<p class="max-w-xl text-lg font-medium leading-relaxed text-muted sm:text-xl">
-				Belajar Quran, Mudah dan Menyenangkan
-			</p>
-			<div class="mt-7 flex flex-wrap gap-3">
-				<a href="<?= site_url('katalog') ?>" class="btn-primary">Temukan Program</a>
-				<a href="#metode" class="btn-outline">Pelajari Metode Kami</a>
-			</div>
-			<?php if (empty($user)): ?>
-				<p class="mt-4 text-sm text-muted">
-					Sudah punya akun?
-					<a href="<?= site_url('auth/login') ?>" class="font-semibold text-primary underline underline-offset-4 hover:text-primary-dark">Login</a>
-				</p>
-			<?php endif; ?>
-		</div>
-
-		<div class="relative">
-			<?php if ($hero): ?>
-				<img src="<?= html_escape($hero) ?>" alt="Suasana belajar Al-Qur'an di LBQ Al-Utsmani"
-					class="aspect-[4/3] w-full rounded-3xl object-cover shadow-float ring-1 ring-line">
-			<?php else: ?>
-				<div class="flex aspect-[4/3] w-full items-center justify-center rounded-3xl bg-gradient-to-br from-primary to-primary-deep shadow-float">
-					<span class="text-6xl font-black tracking-wider text-white/90">AU</span>
+<!-- HERO (full-screen background slider) -->
+<?php
+$slideList = (isset($gambarHeroSlider) && is_array($gambarHeroSlider)) ? $gambarHeroSlider : array();
+if (empty($slideList) && $hero) {
+	$slideList[] = array('img' => $hero, 'kode' => 'HERO', 'nama' => 'Kelas Al-Utsmani', 'status' => 'berjalan', 'angkatan' => '', 'periode' => '');
+}
+?>
+<section class="relative isolate border-b border-line bg-primary-deep">
+	<!-- Lapisan gambar: ditarik ke atas agar menimpa area navbar (tanpa celah) -->
+	<div id="hero-slider" class="absolute inset-x-0 -top-40 bottom-0" data-interval="5000">
+		<?php if (!empty($slideList)): ?>
+			<?php foreach ($slideList as $i => $sl): ?>
+				<div class="hero-slide absolute inset-0 transition-opacity duration-1000 <?= $i === 0 ? 'opacity-100' : 'pointer-events-none opacity-0' ?>" data-slide="<?= (int) $i ?>">
+					<img src="<?= html_escape($sl['img']) ?>" alt="Kelas <?= html_escape($sl['nama']) ?> di LBQ Al-Utsmani"
+						class="h-full w-full object-cover">
 				</div>
-			<?php endif; ?>
+			<?php endforeach; ?>
+		<?php else: ?>
+			<div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-deep"></div>
+		<?php endif; ?>
+
+		<!-- Overlay agar teks terbaca -->
+		<div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/15"></div>
+		<div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/70 to-transparent"></div>
+	</div>
+
+	<div class="<?= $wadah ?> relative flex min-h-[85vh] flex-col justify-center py-16 lg:min-h-[calc(100vh-72px)] lg:py-20">
+		<div class="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
+			<div class="max-w-2xl text-white">
+				<span class="mb-4 inline-block rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">LBQ Al-Utsmani</span>
+				<h1 class="mb-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
+					Yuk, Ngaji <span class="text-primary-light">Bareng Al-Utsmani</span>
+				</h1>
+				<p class="max-w-xl text-lg font-medium leading-relaxed text-white/85 sm:text-xl">
+					Belajar Al-Qur'an dengan metode terstruktur, bertahap, dan menyenangkan untuk semua kalangan.
+				</p>
+				<div class="mt-8 flex flex-wrap gap-3">
+					<a href="<?= site_url('katalog') ?>" class="btn-primary px-6 py-2.5">Temukan Program</a>
+					<a href="<?= site_url('daftar') ?>" class="rounded-full border border-white/50 bg-white/10 px-6 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20">Daftar Sekarang</a>
+				</div>
+				<?php if (empty($user)): ?>
+					<p class="mt-4 text-sm text-white/70">
+						Sudah punya akun?
+						<a href="<?= site_url('auth/login') ?>" class="font-semibold text-white underline underline-offset-4 hover:text-primary-light">Login</a>
+					</p>
+				<?php endif; ?>
+			</div>
+
+			<!-- Card info: glass, hanya desktop (di mobile tampil di bawah hero) -->
+			<div class="hidden space-y-3 lg:block">
+				<div class="rounded-2xl border border-white/20 bg-white/10 p-4 text-white backdrop-blur-md">
+					<div class="mb-2 flex items-center justify-between">
+						<h2 class="text-sm font-semibold">Program yang Berjalan</h2>
+						<a href="<?= site_url('katalog') ?>" class="text-xs font-semibold text-primary-light hover:underline">Lihat semua</a>
+					</div>
+					<div class="space-y-2 text-sm">
+						<?php if (!empty($programBerjalan)): ?>
+							<?php foreach ($programBerjalan as $pb): ?>
+								<div class="rounded-xl bg-black/25 px-3 py-2">
+									<div class="flex items-baseline justify-between gap-2">
+										<span class="font-semibold"><?= html_escape($pb['kode']) ?></span>
+										<span class="whitespace-nowrap text-xs text-white/60"><?= (int) $pb['jumlah'] ?> kelas</span>
+									</div>
+									<div class="text-xs text-white/80"><?= html_escape($pb['nama']) ?></div>
+									<?php if (!empty($pb['cabang'])): ?>
+										<div class="text-xs text-white/60"><?= html_escape(implode(' · ', $pb['cabang'])) ?></div>
+									<?php endif; ?>
+								</div>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<p class="text-xs text-white/70">Belum ada program berjalan.</p>
+						<?php endif; ?>
+					</div>
+				</div>
+
+				<div class="rounded-2xl border border-primary-light/40 bg-white/10 p-4 text-white backdrop-blur-md">
+					<div class="mb-2 flex items-center justify-between">
+						<h2 class="text-sm font-semibold">Coming Soon</h2>
+						<a href="<?= site_url('gelombang') ?>" class="text-xs font-semibold text-primary-light hover:underline">Lihat semua</a>
+					</div>
+					<div class="space-y-2 text-sm">
+						<?php if (!empty($gelombang)): ?>
+							<?php foreach ($gelombang as $g): ?>
+								<div class="rounded-xl border border-white/15 bg-black/25 px-3 py-2">
+									<div class="flex items-start justify-between gap-2">
+										<div>
+											<div class="font-medium"><?= html_escape($g->program_kode) ?> · <?= html_escape($g->angkatan) ?></div>
+											<div class="text-xs text-white/70"><?= tanggal_indo($g->tgl_buka) ?> s/d <?= tanggal_indo($g->tgl_tutup) ?></div>
+										</div>
+										<span class="whitespace-nowrap rounded-full bg-primary-light/25 px-2 py-0.5 text-xs text-white">Segera</span>
+									</div>
+									<?php if ($this->session->userdata('logged_in')): ?>
+										<a href="<?= site_url('gelombang/daftar/'.$g->id) ?>" class="mt-2 inline-block text-xs font-semibold text-primary-light hover:underline">Daftar Minat</a>
+									<?php else: ?>
+										<a href="<?= site_url('auth/login') ?>" class="mt-2 inline-block text-xs font-semibold text-primary-light hover:underline">Login untuk daftar minat</a>
+									<?php endif; ?>
+								</div>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<p class="text-xs text-white/70">Tidak ada gelombang yang sedang dibuka.</p>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
 		</div>
+
+		<?php if (!empty($slideList)): ?>
+			<!-- Label slide (di dalam gambar) + dot indikator -->
+			<div class="mt-10 flex flex-wrap items-end justify-between gap-4">
+				<div class="relative min-h-[3.5rem] flex-1">
+					<?php foreach ($slideList as $i => $sl): ?>
+						<?php $berjalan = (isset($sl['status']) && $sl['status'] === 'berjalan'); ?>
+						<div class="hero-label <?= $i === 0 ? '' : 'hidden' ?>" data-label="<?= (int) $i ?>">
+							<span class="mb-1.5 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide <?= $berjalan ? 'bg-primary text-white' : 'bg-primary-light text-primary-deep' ?>">
+								<?= $berjalan ? 'Kelas Berjalan' : 'Segera Hadir' ?>
+							</span>
+							<div class="text-sm font-bold text-white sm:text-base"><?= html_escape($sl['kode']) ?> — <?= html_escape($sl['nama']) ?></div>
+							<div class="text-xs text-white/70">
+								<?php if ($berjalan): ?>
+									Kelas sedang berlangsung
+								<?php else: ?>
+									<?= html_escape($sl['angkatan']) ?><?= !empty($sl['periode']) ? ' • '.$sl['periode'] : '' ?>
+								<?php endif; ?>
+							</div>
+						</div>
+					<?php endforeach; ?>
+				</div>
+
+				<?php if (count($slideList) > 1): ?>
+					<div class="flex items-center gap-2 pb-1">
+						<?php foreach ($slideList as $i => $sl): ?>
+							<span class="hero-dot h-2 rounded-full bg-white transition-all duration-300 <?= $i === 0 ? 'w-6 opacity-100' : 'w-2 opacity-40' ?>" data-dot="<?= (int) $i ?>"></span>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+
+			<?php if (count($slideList) > 1): ?>
+				<script>
+				(function () {
+					var root = document.getElementById('hero-slider');
+					if (! root) { return; }
+					var slides = root.querySelectorAll('.hero-slide');
+					var labels = document.querySelectorAll('.hero-label');
+					var dots = document.querySelectorAll('.hero-dot');
+					if (slides.length < 2) { return; }
+					var interval = parseInt(root.getAttribute('data-interval'), 10) || 5000;
+					var aktif = 0;
+
+					function tampil(idx) {
+						var i;
+						for (i = 0; i < slides.length; i++) {
+							if (i === idx) {
+								slides[i].classList.remove('opacity-0', 'pointer-events-none');
+								slides[i].classList.add('opacity-100');
+							} else {
+								slides[i].classList.add('opacity-0', 'pointer-events-none');
+								slides[i].classList.remove('opacity-100');
+							}
+						}
+						for (i = 0; i < labels.length; i++) {
+							labels[i].classList.toggle('hidden', i !== idx);
+						}
+						for (i = 0; i < dots.length; i++) {
+							dots[i].classList.toggle('w-6', i === idx);
+							dots[i].classList.toggle('w-2', i !== idx);
+							dots[i].classList.toggle('opacity-100', i === idx);
+							dots[i].classList.toggle('opacity-40', i !== idx);
+						}
+						aktif = idx;
+					}
+
+					setInterval(function () {
+						tampil((aktif + 1) % slides.length);
+					}, interval);
+				})();
+				</script>
+			<?php endif; ?>
+		<?php endif; ?>
 	</div>
 </section>
 
+<?php
+// Card info versi mobile (di luar hero, gaya normal) — memakai $programBerjalan
+// yang sudah dihitung di atas (1 baris per program, bukan per level).
+?>
+<div class="<?= $wadah ?> mt-8 grid gap-3 lg:hidden">
+	<div class="card p-4">
+		<div class="mb-2 flex items-center justify-between">
+			<h2 class="text-sm font-semibold text-ink">Program yang Berjalan</h2>
+			<a href="<?= site_url('katalog') ?>" class="text-xs font-semibold text-primary hover:underline">Lihat semua</a>
+		</div>
+		<div class="space-y-2 text-sm">
+			<?php if (!empty($programBerjalan)): ?>
+				<?php foreach ($programBerjalan as $pb): ?>
+					<div class="flex items-start justify-between gap-2 rounded-xl bg-primary-soft/60 px-3 py-2">
+						<div>
+							<div class="font-medium text-ink">
+								<?= html_escape($pb['kode']) ?> <span class="font-normal text-muted">— <?= html_escape($pb['nama']) ?></span>
+							</div>
+							<?php if (!empty($pb['cabang'])): ?>
+								<div class="text-xs text-muted"><?= html_escape(implode(' · ', $pb['cabang'])) ?></div>
+							<?php endif; ?>
+						</div>
+						<span class="whitespace-nowrap rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700"><?= (int) $pb['jumlah'] ?> kelas</span>
+					</div>
+				<?php endforeach; ?>
+			<?php else: ?>
+				<p class="text-xs text-muted">Belum ada program berjalan.</p>
+			<?php endif; ?>
+		</div>
+	</div>
+
+	<div class="card p-4">
+		<div class="mb-2 flex items-center justify-between">
+			<h2 class="text-sm font-semibold text-ink">Coming Soon / Gelombang</h2>
+			<a href="<?= site_url('gelombang') ?>" class="text-xs font-semibold text-primary hover:underline">Lihat semua</a>
+		</div>
+		<div class="space-y-2 text-sm">
+			<?php if (!empty($gelombang)): ?>
+				<?php foreach ($gelombang as $g): ?>
+					<div class="rounded-xl border border-primary/20 bg-primary-soft/40 px-3 py-2">
+						<div class="flex items-start justify-between gap-2">
+							<div>
+								<div class="font-medium text-ink"><?= html_escape($g->program_kode) ?> · <?= html_escape($g->angkatan) ?></div>
+								<div class="text-xs text-muted"><?= tanggal_indo($g->tgl_buka) ?> s/d <?= tanggal_indo($g->tgl_tutup) ?></div>
+							</div>
+							<span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">Segera</span>
+						</div>
+						<?php if ($this->session->userdata('logged_in')): ?>
+							<a href="<?= site_url('gelombang/daftar/'.$g->id) ?>" class="mt-2 inline-block text-xs font-semibold text-primary hover:underline">Daftar Minat</a>
+						<?php else: ?>
+							<a href="<?= site_url('auth/login') ?>" class="mt-2 inline-block text-xs font-semibold text-primary hover:underline">Login untuk daftar minat</a>
+						<?php endif; ?>
+					</div>
+				<?php endforeach; ?>
+			<?php else: ?>
+				<p class="text-xs text-muted">Tidak ada gelombang yang sedang dibuka.</p>
+			<?php endif; ?>
+		</div>
+	</div>
+</div>
+
 <!-- PINTASAN CEPAT -->
-<div class="relative z-10 mx-auto -mt-8 max-w-4xl px-4 sm:-mt-10 sm:px-6">
+<div class="relative z-10 mx-auto mt-8 max-w-4xl px-4 sm:px-6">
 	<div class="grid grid-cols-2 gap-2 rounded-2xl border border-line bg-white p-3 shadow-float sm:grid-cols-4 sm:gap-3 sm:p-5">
 		<a href="<?= site_url('katalog') ?>" class="group flex flex-col items-center gap-2 rounded-xl px-2 py-3 text-center transition-colors hover:bg-primary-soft">
 			<span class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary transition-colors group-hover:bg-primary group-hover:text-white">

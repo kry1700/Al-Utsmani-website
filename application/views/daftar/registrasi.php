@@ -152,7 +152,7 @@ $adaBiaya = (int) $kd->biaya_pendaftaran > 0;
 				<div class="flex gap-3 py-2.5"><dt class="w-28 shrink-0 text-muted">Cabang</dt><dd class="text-ink"><?= html_escape($kd->cabang_nama) ?> (<?= html_escape($kd->cabang_wilayah) ?>)</dd></div>
 				<div class="flex gap-3 py-2.5"><dt class="w-28 shrink-0 text-muted">Mode</dt><dd class="text-ink"><?= ucfirst($kd->mode) ?></dd></div>
 				<div class="flex gap-3 py-2.5"><dt class="w-28 shrink-0 text-muted">Guru</dt><dd class="text-ink"><?= html_escape($kd->guru_nama) ?></dd></div>
-				<div class="flex gap-3 py-2.5"><dt class="w-28 shrink-0 text-muted">Jadwal</dt><dd class="text-ink"><?= html_escape($kd->jadwal) ?> <span class="text-slate-400">(<?= html_escape($kd->zona_waktu) ?>)</span></dd></div>
+				<div class="flex gap-3 py-2.5"><dt class="w-28 shrink-0 text-muted">Jadwal</dt><dd class="text-ink"><?= html_escape(jadwal_tampil($kd)) ?></dd></div>
 				<?php if ($isBilal): ?>
 					<div class="flex gap-3 py-2.5"><dt class="w-28 shrink-0 text-muted">Tipe Peserta</dt><dd class="text-ink"><?= html_escape(ucfirst($kd->tipe_peserta)) ?><?= $kd->nama_instansi ? ' — '.html_escape($kd->nama_instansi) : '' ?></dd></div>
 				<?php endif; ?>

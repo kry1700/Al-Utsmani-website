@@ -146,5 +146,5 @@ $autoload['model'] = array(
 	'Pembayaran_model',
 	'Pertemuan_model',
 	'Absensi_model',
-	'Dashboard_model',
+	'Dashboard_model','Gelombang_model','Pendaftaran_gelombang_model',
 );

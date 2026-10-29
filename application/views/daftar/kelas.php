@@ -71,7 +71,7 @@ if ($mode !== '') { $judul[] = ucfirst($mode); }
 				</div>
 				<p class="mb-1 text-sm text-muted"><strong class="text-ink"><?= html_escape($row->cabang_nama) ?></strong> <span class="text-slate-400">(<?= html_escape($row->cabang_wilayah) ?>)</span></p>
 				<p class="mb-1 text-sm text-muted">Guru: <?= html_escape($row->guru_nama) ?></p>
-				<p class="mb-3 text-sm text-muted">Jadwal: <?= html_escape($row->jadwal) ?> (<?= html_escape($row->zona_waktu) ?>)</p>
+				<p class="mb-3 text-sm text-muted">Jadwal: <?= html_escape(function_exists('jadwal_tampil') ? jadwal_tampil($row) : $row->jadwal.' ('.$row->zona_waktu.')') ?></p>
 				<div class="mb-4 space-y-0.5 text-sm text-muted">
 					<p>Biaya pendaftaran: <strong class="text-ink"><?= rupiah($row->biaya_pendaftaran) ?></strong></p>
 					<p>Biaya SPP/bulan: <strong class="text-ink"><?= rupiah($row->biaya_spp) ?></strong></p>

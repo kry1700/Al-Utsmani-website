@@ -15,7 +15,7 @@
 					<div class="flex gap-2"><dt class="w-28 shrink-0 text-muted">Program</dt>
 						<dd><?= html_escape($k->program_nama) ?></dd></div>
 					<div class="flex gap-2"><dt class="w-28 shrink-0 text-muted">Jadwal</dt>
-						<dd><?= html_escape($k->jadwal) ?> (<?= html_escape($k->zona_waktu) ?>)</dd></div>
+						<dd><?= html_escape(jadwal_tampil($k)) ?></dd></div>
 					<div class="flex gap-2"><dt class="w-28 shrink-0 text-muted">Peserta Aktif</dt>
 						<dd><?= (int) $k->jumlah_peserta ?></dd></div>
 				</dl>

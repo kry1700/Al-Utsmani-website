@@ -71,7 +71,7 @@
 								<?php endif; ?>
 							</td>
 							<td class="td text-muted"><?= html_escape($k->guru_nama) ?></td>
-							<td class="td text-muted"><?= html_escape($k->jadwal) ?> <span class="text-slate-400">(<?= html_escape($k->zona_waktu) ?>)</span></td>
+							<td class="td text-muted"><?= html_escape(jadwal_tampil($k)) ?></td>
 							<td class="td whitespace-nowrap"><?= rupiah($k->biaya_pendaftaran) ?></td>
 							<td class="td whitespace-nowrap"><?= rupiah($k->biaya_spp) ?></td>
 							<td class="td"><?= badge('status', $k->status) ?></td>

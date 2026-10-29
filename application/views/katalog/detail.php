@@ -23,7 +23,7 @@ $isBilal = ($kd->program_kode === 'BILAL');
 				<div class="flex gap-3 py-2.5"><dt class="w-40 shrink-0 text-muted">Guru Pengampu</dt>
 					<dd class="text-ink"><?= html_escape($kd->guru_nama) ?></dd></div>
 				<div class="flex gap-3 py-2.5"><dt class="w-40 shrink-0 text-muted">Jadwal</dt>
-					<dd class="text-ink"><?= html_escape($kd->jadwal) ?> <span class="text-muted">(<?= html_escape($kd->zona_waktu) ?>)</span></dd></div>
+					<dd class="text-ink"><?= html_escape(jadwal_tampil($kd)) ?></dd></div>
 				<?php if ($isBilal): ?>
 					<div class="flex gap-3 py-2.5"><dt class="w-40 shrink-0 text-muted">Tipe Peserta</dt>
 						<dd class="text-ink"><?= html_escape(ucfirst($kd->tipe_peserta)) ?>

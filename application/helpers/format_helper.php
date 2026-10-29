@@ -153,6 +153,46 @@ if (! function_exists('program_gambar'))
 	}
 }
 
+if (! function_exists('program_gambar_list'))
+{
+	/**
+	 * Daftar gambar program (satu gambar per program) untuk slider hero beranda.
+	 * Hanya mengembalikan berkas yang benar-benar ada; fallback ke hero.jpg.
+	 *
+	 * @return array [ ['img' => url, 'kode' => 'BIHAR', 'nama' => 'BIHAR'], ... ]
+	 */
+	function program_gambar_list()
+	{
+		$daftar = array(
+			array('file' => 'program-bihar.jpg', 'kode' => 'BIHAR'),
+			array('file' => 'program-badal.jpg', 'kode' => 'BADAL'),
+			array('file' => 'program-bilal.jpg', 'kode' => 'BILAL'),
+			array('file' => 'program-pdhq.jpg', 'kode' => 'PDHQ'),
+		);
+
+		$out = array();
+		foreach ($daftar as $d) {
+			if (is_file(FCPATH.'assets/img/'.$d['file'])) {
+				$out[] = array(
+					'img' => base_url('assets/img/'.$d['file']),
+					'kode' => $d['kode'],
+					'nama' => $d['kode'],
+				);
+			}
+		}
+
+		if (empty($out) && is_file(FCPATH.'assets/img/hero.jpg')) {
+			$out[] = array(
+				'img' => base_url('assets/img/hero.jpg'),
+				'kode' => 'HERO',
+				'nama' => 'Kelas Al-Utsmani',
+			);
+		}
+
+		return $out;
+	}
+}
+
 if (! function_exists('hero_gambar'))
 {
 	/** @return string|null URL gambar hero beranda, NULL bila belum ada. */
@@ -367,5 +407,45 @@ if (! function_exists('badge'))
 		}
 
 		return '<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium '.$kelas.'">'.$teks.'</span>';
+	}
+}
+
+/**
+ * Gabungan tampilan hari + jadwal + zona waktu untuk kelas.
+ * Mengutamakan daftar hari dari checkbox (kolom hari) bila ada.
+ */
+if (! function_exists('jadwal_tampil')) {
+	function jadwal_tampil($kelas)
+	{
+		if (! $kelas) {
+			return '';
+		}
+		$bagian = array();
+		if (isset($kelas->hari) && trim((string) $kelas->hari) !== '') {
+			$hari = str_replace(',', ', ', trim((string) $kelas->hari));
+			$bagian[] = $hari;
+		}
+		if (isset($kelas->jadwal) && trim((string) $kelas->jadwal) !== '') {
+			$bagian[] = trim((string) $kelas->jadwal);
+		}
+		$out = implode(' | ', $bagian);
+		if ($out === '' && isset($kelas->zona_waktu) && trim((string) $kelas->zona_waktu) !== '') {
+			return trim((string) $kelas->zona_waktu);
+		}
+		if ($out !== '' && isset($kelas->zona_waktu) && trim((string) $kelas->zona_waktu) !== '') {
+			$low = strtolower($out);
+			$zonaLow = strtolower(trim((string) $kelas->zona_waktu));
+			if (strpos($low, $zonaLow) === FALSE) {
+				$out .= ' ('.trim((string) $kelas->zona_waktu).')';
+			}
+			return $out;
+		}
+		if ($out !== '') {
+			return $out;
+		}
+		if (isset($kelas->zona_waktu) && trim((string) $kelas->zona_waktu) !== '') {
+			return trim((string) $kelas->zona_waktu);
+		}
+		return '';
 	}
 }

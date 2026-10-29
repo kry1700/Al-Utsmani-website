@@ -42,7 +42,7 @@
 					<?php foreach ($kelas as $k): ?>
 						<tr class="hover:bg-canvas">
 							<td class="td"><?= html_escape(label_kelas((array) $k)) ?></td>
-							<td class="td text-muted"><?= html_escape($k->jadwal) ?> <span class="text-slate-400">(<?= html_escape($k->zona_waktu) ?>)</span></td>
+							<td class="td text-muted"><?= html_escape(jadwal_tampil($k)) ?></td>
 							<td class="td"><?= (int) $k->jumlah_peserta ?></td>
 							<td class="td"><?= badge('status', $k->status) ?></td>
 							<td class="td text-right">

@@ -77,7 +77,7 @@
 								<div class="text-xs text-muted">Guru: <?= html_escape($pd->guru_nama) ?></div>
 							</td>
 							<td class="td text-muted">
-								<?= html_escape($pd->jadwal) ?> <span class="text-slate-400">(<?= html_escape($pd->zona_waktu) ?>)</span>
+								<?= html_escape(jadwal_tampil($pd)) ?>
 							</td>
 							<td class="td"><?= badge('pendaftaran', $pd->status) ?></td>
 							<td class="td">

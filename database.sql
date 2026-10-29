@@ -152,7 +152,8 @@ CREATE TABLE kelas (
 	cabang_id INT UNSIGNED NOT NULL,
 	guru_id INT UNSIGNED NOT NULL,
 	mode ENUM('online','offline') NOT NULL,
-	jadwal VARCHAR(255) NOT NULL, -- teks bebas, sertakan zona waktu (mis. "Sabtu 08.00-09.30")
+	hari VARCHAR(100) NULL, -- daftar hari pertemuan, dipisah koma, contoh: Senin,Rabu,Jumat
+	jadwal VARCHAR(255) NOT NULL, -- teks bebas, jam pertemuan (mis. "08.00-09.30")
 	zona_waktu ENUM('WIB','WITA','WIT') NOT NULL DEFAULT 'WIB',
 	link_meeting VARCHAR(255) NULL, -- hanya untuk kelas online; tampil utk peserta terdaftar + guru
 	biaya_pendaftaran INT UNSIGNED NOT NULL DEFAULT 0,
@@ -304,7 +305,8 @@ INSERT INTO level (nama, urutan) VALUES
 ('Level 4', 5),
 ('Level 5', 6),
 ('Talaqi', 7),
-('Tahfidz', 8);
+('Tahfidz', 8),
+('Level Gabungan', 9);
 
 INSERT INTO cabang (wilayah, nama, status) VALUES
 ('Jakarta Timur', 'Condet', 'aktif'),
