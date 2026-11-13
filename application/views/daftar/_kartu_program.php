@@ -14,36 +14,30 @@ $kelas = isset($info['kelas']) ? $info['kelas'] : array();
 $maks = isset($maksBaris) ? (int) $maksBaris : 3;
 $gambar = program_gambar($p->kode);
 ?>
-<label class="cursor-pointer group" data-opsi-item data-program="<?= $pid ?>">
-	<input type="radio" name="program" value="<?= $pid ?>" class="peer sr-only">
-	<div class="flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white
-		peer-checked:border-emerald-600 peer-checked:ring-2 peer-checked:ring-emerald-200
-		peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400 group-hover:border-emerald-400">
-		<div class="h-36 relative">
-			<?php if ($gambar): ?>
-				<img src="<?= html_escape($gambar) ?>" alt="Program <?= html_escape($p->nama) ?>" loading="lazy" class="w-full h-full object-cover">
-			<?php else: ?>
-				<div class="w-full h-full bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center">
-					<span class="text-3xl font-black text-white/90 tracking-wider"><?= html_escape($p->kode) ?></span>
-				</div>
-			<?php endif; ?>
-			<span class="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-bold text-emerald-800"><?= html_escape($p->kode) ?></span>
-			<span class="absolute bottom-2 right-2 rounded-full bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white"><?= (int) $info['jumlah'] ?> kelas</span>
-		</div>
-		<div class="flex flex-1 flex-col p-4">
-			<div class="text-base font-semibold text-ink"><?= html_escape($p->nama) ?></div>
-			<ul data-kelas-list data-maks="<?= $maks ?>" class="mt-2 space-y-1">
-				<?php if ($kelas): ?>
-					<?php $i = 0; foreach ($kelas as $k): if ($i++ >= $maks) { break; } ?>
-						<?= baris_kelas_html($k) ?>
-					<?php endforeach; ?>
-					<?php if (count($kelas) > $maks): ?>
-						<li class="text-xs text-slate-400">+<?= count($kelas) - $maks ?> kelas lainnya</li>
-					<?php endif; ?>
-				<?php else: ?>
-					<li class="text-xs text-slate-400">Belum ada kelas aktif.</li>
+<label class="au-program-card" data-opsi-item data-program="<?= $pid ?>">
+	<input type="radio" name="program" value="<?= $pid ?>" class="sr-only">
+	<span class="au-program-card__media" aria-hidden="true">
+		<?php if ($gambar): ?>
+			<img src="<?= html_escape($gambar) ?>" alt="" loading="lazy">
+		<?php else: ?>
+			<span class="au-program-card__fallback"><?= html_escape($p->kode) ?></span>
+		<?php endif; ?>
+		<span class="au-program-card__kode"><?= html_escape($p->kode) ?></span>
+		<span class="au-program-card__jumlah"><?= (int) $info['jumlah'] ?> kelas</span>
+	</span>
+	<span class="au-program-card__body">
+		<span class="au-program-card__title"><?= html_escape($p->nama) ?></span>
+		<ul data-kelas-list data-maks="<?= $maks ?>" class="au-program-card__list">
+			<?php if ($kelas): ?>
+				<?php $i = 0; foreach ($kelas as $k): if ($i++ >= $maks) { break; } ?>
+					<?= baris_kelas_html($k) ?>
+				<?php endforeach; ?>
+				<?php if (count($kelas) > $maks): ?>
+					<li class="au-home-caption">+<?= count($kelas) - $maks ?> kelas lainnya</li>
 				<?php endif; ?>
-			</ul>
-		</div>
-	</div>
+			<?php else: ?>
+				<li class="au-home-caption">Belum ada kelas aktif.</li>
+			<?php endif; ?>
+		</ul>
+	</span>
 </label>

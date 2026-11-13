@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 /**
- * Carousel katalog program. Dipakai beranda & halaman katalog.
+ * Carousel katalog program. Dipakai halaman katalog.
  * Variabel: $programs, $rekap (dari Kelas_model::rekapProgram()).
  */
 $adaProgram = FALSE;
@@ -11,62 +11,64 @@ foreach ($programs as $p) {
 	}
 }
 ?>
-<div class="relative" data-carousel>
-	<div class="mb-3 flex items-center justify-between gap-2">
-		<p class="text-sm text-muted">Geser untuk melihat program lainnya.</p>
+<div class="au-carousel" data-carousel>
+	<div class="au-carousel__bar">
+		<p class="au-home-caption">Geser untuk melihat program lainnya.</p>
 		<div class="flex gap-2">
-			<button type="button" data-prev aria-label="Program sebelumnya"
-				class="h-10 w-10 rounded-full border border-line bg-white text-muted transition-colors hover:bg-canvas disabled:opacity-40">&#8592;</button>
-			<button type="button" data-next aria-label="Program berikutnya"
-				class="h-10 w-10 rounded-full border border-line bg-white text-muted transition-colors hover:bg-canvas disabled:opacity-40">&#8594;</button>
+			<button type="button" data-prev aria-label="Program sebelumnya" class="au-carousel__nav">
+				<svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+			</button>
+			<button type="button" data-next aria-label="Program berikutnya" class="au-carousel__nav">
+				<svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+			</button>
 		</div>
 	</div>
 
-	<div data-track class="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2">
+	<div data-track class="au-carousel__track">
 		<?php foreach ($programs as $p): $pid = (int) $p->id; $info = isset($rekap[$pid]) ? $rekap[$pid] : array('jumlah' => 0, 'cabang' => array()); ?>
 			<?php $gambar = program_gambar($p->kode); ?>
-			<article class="card flex w-[86%] shrink-0 snap-start flex-col overflow-hidden sm:w-[47%] lg:w-[31.5%]">
-				<div class="relative h-52">
+			<article class="au-home-card au-carousel__slide flex flex-col">
+				<div class="au-carousel__media">
 					<?php if ($gambar): ?>
-						<img src="<?= html_escape($gambar) ?>" alt="Program <?= html_escape($p->nama) ?>" loading="lazy" class="h-full w-full object-cover">
+						<img src="<?= html_escape($gambar) ?>" alt="Program <?= html_escape($p->nama) ?>" loading="lazy">
 					<?php else: ?>
-						<div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary to-primary-deep">
-							<span class="text-5xl font-black tracking-wider text-white/90"><?= html_escape($p->kode) ?></span>
+						<div class="au-program-card__fallback">
+							<span><?= html_escape($p->kode) ?></span>
 						</div>
 					<?php endif; ?>
-					<span class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-primary"><?= html_escape($p->kode) ?></span>
+					<span class="au-program-card__kode"><?= html_escape($p->kode) ?></span>
 				</div>
-				<div class="flex flex-1 flex-col p-6">
-					<h3 class="text-lg font-bold text-ink"><?= html_escape($p->nama) ?></h3>
-					<p class="mt-1 flex-1 text-sm leading-relaxed text-muted"><?= html_escape($p->deskripsi) ?></p>
+				<div class="au-panel__body flex flex-1 flex-col">
+					<h3 class="au-home-heading au-home-heading--h3"><?= html_escape($p->nama) ?></h3>
+					<p class="au-home-body mt-1 flex-1"><?= html_escape($p->deskripsi) ?></p>
 
 					<?php $kelasInfo = isset($info['kelas']) ? $info['kelas'] : array(); ?>
-					<div class="mt-3 text-xs text-muted">
-						<div><span class="font-semibold text-ink"><?= (int) $info['jumlah'] ?></span> kelas aktif</div>
+					<div class="mt-3">
+						<p class="au-home-caption"><strong class="text-ink"><?= (int) $info['jumlah'] ?></strong> kelas aktif</p>
 						<?php if ($kelasInfo): ?>
-							<ul class="mt-2 space-y-1">
+							<ul class="au-program-card__list mt-2">
 								<?php $i = 0; foreach ($kelasInfo as $k): if ($i++ >= 3) { break; } ?>
 									<?= baris_kelas_html($k) ?>
 								<?php endforeach; ?>
 								<?php if (count($kelasInfo) > 3): ?>
-									<li class="text-xs text-slate-400">+<?= count($kelasInfo) - 3 ?> kelas lainnya</li>
+									<li class="au-home-caption">+<?= count($kelasInfo) - 3 ?> kelas lainnya</li>
 								<?php endif; ?>
 							</ul>
 						<?php endif; ?>
 					</div>
 
-					<div class="mt-4 flex gap-2">
-						<a href="<?= site_url('daftar/kelas?program='.$pid) ?>" class="btn-primary btn-sm flex-1">Daftar</a>
-						<a href="<?= site_url('katalog/program/'.$pid) ?>" class="btn-outline btn-sm">Detail</a>
+					<div class="au-kelas-card__actions mt-4">
+						<a href="<?= site_url('daftar/kelas?program='.$pid) ?>" class="au-home-button au-home-button-primary au-home-button--sm">Daftar</a>
+						<a href="<?= site_url('katalog/program/'.$pid) ?>" class="au-home-button au-home-button-secondary au-home-button--sm">Detail</a>
 					</div>
 				</div>
 			</article>
 		<?php endforeach; ?>
 	</div>
 
-	<div data-dots class="mt-3 flex justify-center gap-2"></div>
+	<div data-dots class="au-carousel__dots"></div>
 	<?php if (! $adaProgram): ?>
-		<p class="mt-2 text-center text-sm text-muted">Belum ada kelas aktif. Silakan cek kembali nanti.</p>
+		<p class="au-home-caption mt-2 text-center">Belum ada kelas aktif. Silakan cek kembali nanti.</p>
 	<?php endif; ?>
 </div>
 
@@ -80,8 +82,12 @@ foreach ($programs as $p) {
 		var dots = root.querySelector('[data-dots]');
 		if (! track || ! slides.length) { return; }
 
+		function jarak() {
+			var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 16;
+			return gap;
+		}
 		function lebar() {
-			return slides[0].getBoundingClientRect().width + 16;
+			return slides[0].getBoundingClientRect().width + jarak();
 		}
 		function index() {
 			return Math.round(track.scrollLeft / lebar());
@@ -94,7 +100,7 @@ foreach ($programs as $p) {
 		function perbarui() {
 			var i = index();
 			Array.prototype.forEach.call(dots.children, function (d, j) {
-				d.className = 'h-2 w-2 rounded-full ' + (j === i ? 'bg-primary' : 'bg-slate-300');
+				d.className = 'au-carousel__dot' + (j === i ? ' au-carousel__dot--active' : '');
 			});
 			if (prev) { prev.disabled = i <= 0; }
 			if (next) { next.disabled = i >= slides.length - 1; }

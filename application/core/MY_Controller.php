@@ -178,3 +178,10 @@ class Peserta_Controller extends MY_Controller {
 		return $row;
 	}
 }
+
+/*
+ * CI3 hanya me-require otomatis file core/MY_Controller.php. Base controller
+ * lain (MY_Api_Controller) harus di-include manual agar class-nya tersedia
+ * saat controller API di-instansiasi.
+ */
+require_once __DIR__.'/MY_Api_Controller.php';

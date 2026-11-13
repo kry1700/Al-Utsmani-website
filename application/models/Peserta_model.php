@@ -75,6 +75,12 @@ class Peserta_model extends CI_Model {
 		return (int) $this->db->where('level_id IS NULL', NULL, FALSE)->count_all_results('peserta');
 	}
 
+	/** @return int Jumlah seluruh profil peserta terdaftar (dipakai info hero beranda). */
+	public function countSemua()
+	{
+		return (int) $this->db->count_all_results('peserta');
+	}
+
 	/**
 	 * Buat akun users + profil peserta dalam satu transaksi (dipakai registrasi
 	 * dan pembuatan peserta oleh admin).

@@ -12,7 +12,9 @@ class MY_Api_Controller extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		
+
+		// Dibutuhkan validateToken(); controller turunan tidak selalu me-load model ini.
+		$this->load->model('Users_model');
 		// Set CORS headers untuk mobile app
 		header('Access-Control-Allow-Origin: *');
 		header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');

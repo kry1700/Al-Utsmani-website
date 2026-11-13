@@ -1,0 +1,6674 @@
+/* ==========================================================================
+   LBQ AL-UTSMANI — HOMEPAGE DESIGN SYSTEM
+   File    : assets/css/alutsmani-home.css
+   Cakupan : fondasi visual halaman publik/beranda (namespace `au-home-`).
+   Dimuat  : application/views/layouts/header.php, setelah Tailwind Play CDN.
+
+   ATURAN PAKAI
+   - Token CSS berawalan `--au-`, class berawalan `au-home-`.
+   - Jangan menimpa `body` atau tag global lain: halaman admin, guru, peserta,
+     dan halaman publik lama harus tetap tampil seperti sebelumnya.
+   - File ini CSS murni (tanpa `@apply` / direktif Tailwind) karena Play CDN
+     hanya memproses direktif di dalam <style type="text/tailwindcss">.
+   - Pasangan font (Plus Jakarta Sans untuk heading, Inter untuk body)
+     diterapkan lewat class, bukan lewat selector global.
+   - Class ini tidak memakai `!important`; utility Tailwind tetap boleh
+     menimpanya bila diperlukan saat komponen homepage dibangun.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS
+   -------------------------------------------------------------------------- */
+
+:root {
+	/* Warna brand ---------------------------------------------------------- */
+	--au-brown: #75452D;
+	--au-brown-dark: #482719;
+	--au-caramel: #B77B48;
+	--au-gold: #D9AE70;
+	--au-cream: #F5E9DC;
+	--au-white: #FFFCF8;
+	--au-text: #211713;
+	--au-text-muted: #75665C;
+
+	/* Turunan warna (rgb dipakai untuk transparansi & shadow) -------------- */
+	--au-brown-rgb: 117, 69, 45;
+	--au-brown-dark-rgb: 72, 39, 25;
+	--au-gold-rgb: 217, 174, 112;
+	--au-line: rgba(var(--au-brown-rgb), 0.14);
+	--au-line-strong: rgba(var(--au-brown-rgb), 0.26);
+	--au-cream-deep: #EFDDC9;
+
+	/* Tipografi ------------------------------------------------------------ */
+	--au-font-heading: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+	--au-font-body: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+	--au-text-display: clamp(2.75rem, 6vw, 5.25rem);
+	--au-text-h1: clamp(2.125rem, 4vw, 3.5rem);
+	--au-text-h2: clamp(1.625rem, 2.8vw, 2.5rem);
+	--au-text-h3: clamp(1.25rem, 1.8vw, 1.625rem);
+	--au-text-lg: 1.125rem;
+	--au-text-base: 1rem;
+	--au-text-sm: 0.875rem;
+	--au-text-caption: 0.8125rem;
+	--au-text-button: 0.9375rem;
+
+	--au-leading-tight: 1.06;
+	--au-leading-snug: 1.16;
+	--au-leading-normal: 1.65;
+	--au-tracking-tight: -0.025em;
+	--au-tracking-wide: 0.16em;
+
+	/* Spacing scale (basis 4px) -------------------------------------------- */
+	--au-space-1: 0.25rem;   /*   4px */
+	--au-space-2: 0.5rem;    /*   8px */
+	--au-space-3: 0.75rem;   /*  12px */
+	--au-space-4: 1rem;      /*  16px */
+	--au-space-5: 1.25rem;   /*  20px */
+	--au-space-6: 1.5rem;    /*  24px */
+	--au-space-8: 2rem;      /*  32px */
+	--au-space-10: 2.5rem;   /*  40px */
+	--au-space-12: 3rem;     /*  48px */
+	--au-space-16: 4rem;     /*  64px */
+	--au-space-20: 5rem;     /*  80px */
+	--au-space-24: 6rem;     /*  96px */
+	--au-space-32: 8rem;     /* 128px */
+
+	/* Layout --------------------------------------------------------------- */
+	--au-container: 1440px;
+	--au-padding: 16px;                       /* mobile  */
+	--au-section-y: clamp(3.5rem, 7vw, 7rem);
+	--au-gutter: clamp(1rem, 3vw, 2rem);
+
+	/* Radius --------------------------------------------------------------- */
+	--au-radius-lg: 40px;
+	--au-radius-md: 28px;
+	--au-radius-sm: 18px;
+	--au-radius-xs: 12px;
+	--au-radius-pill: 999px;
+
+	/* Shadow --------------------------------------------------------------- */
+	--au-shadow-soft: 0 18px 48px -24px rgba(var(--au-brown-dark-rgb), 0.28);
+	--au-shadow-card: 0 24px 64px -32px rgba(var(--au-brown-dark-rgb), 0.32);
+	--au-shadow-glow: 0 16px 36px -18px rgba(var(--au-brown-rgb), 0.55);
+
+	/* Motion --------------------------------------------------------------- */
+	--au-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+	--au-duration: 180ms;
+	--au-duration-slow: 320ms;
+	--au-transition:
+		color var(--au-duration) var(--au-ease),
+		background-color var(--au-duration) var(--au-ease),
+		border-color var(--au-duration) var(--au-ease),
+		box-shadow var(--au-duration) var(--au-ease),
+		transform var(--au-duration) var(--au-ease);
+
+	/* Button --------------------------------------------------------------- */
+	--au-btn-height: 52px;
+	--au-btn-height-sm: 42px;
+	--au-btn-padding-x: 28px;
+	--au-btn-padding-x-sm: 20px;
+	--au-btn-gap: 0.625rem;
+
+	/* Icon container ------------------------------------------------------- */
+	--au-icon-size: 52px;
+	--au-icon-size-sm: 40px;
+	--au-icon-size-lg: 64px;
+}
+
+/* Padding horizontal responsif (container memakai nilai ini) */
+@media (min-width: 768px) {
+	:root {
+		--au-padding: 28px;
+	}
+}
+
+@media (min-width: 1024px) {
+	:root {
+		--au-padding: 40px;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   2. LAYOUT — CONTAINER & SECTION
+   -------------------------------------------------------------------------- */
+
+.au-home-container {
+	width: 100%;
+	max-width: var(--au-container);
+	margin-inline: auto;
+	padding-inline: var(--au-padding);
+}
+
+.au-home-section {
+	position: relative;
+	padding-block: var(--au-section-y);
+}
+
+/* Section yang menempel ke atas/bawah (mis. menyambung hero). */
+.au-home-section--top-flush {
+	padding-top: 0;
+}
+
+.au-home-section--bottom-flush {
+	padding-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. TYPOGRAPHY
+   -------------------------------------------------------------------------- */
+
+.au-home-heading {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: var(--au-text-h2);
+	font-weight: 700;
+	line-height: var(--au-leading-snug);
+	letter-spacing: var(--au-tracking-tight);
+	color: var(--au-text);
+	text-wrap: balance;
+}
+
+.au-home-heading--display {
+	font-size: var(--au-text-display);
+	font-weight: 800;
+	line-height: var(--au-leading-tight);
+	letter-spacing: -0.03em;
+}
+
+.au-home-heading--h1 {
+	font-size: var(--au-text-h1);
+	font-weight: 800;
+	line-height: 1.08;
+}
+
+.au-home-heading--h2 {
+	font-size: var(--au-text-h2);
+	font-weight: 700;
+}
+
+.au-home-heading--h3 {
+	font-size: var(--au-text-h3);
+	font-weight: 700;
+	line-height: 1.3;
+	letter-spacing: -0.012em;
+}
+
+.au-home-heading--light {
+	color: var(--au-white);
+}
+
+/* Body copy — Inter, nyaman dibaca. */
+.au-home-body {
+	margin: 0;
+	font-family: var(--au-font-body);
+	font-size: var(--au-text-base);
+	line-height: var(--au-leading-normal);
+	color: var(--au-text-muted);
+	text-wrap: pretty;
+}
+
+.au-home-body--lg {
+	font-size: var(--au-text-lg);
+}
+
+.au-home-body--light {
+	color: rgba(255, 252, 248, 0.78);
+}
+
+.au-home-caption {
+	margin: 0;
+	font-family: var(--au-font-body);
+	font-size: var(--au-text-caption);
+	line-height: 1.5;
+	letter-spacing: 0.01em;
+	color: var(--au-text-muted);
+}
+
+.au-home-caption--light {
+	color: rgba(255, 252, 248, 0.66);
+}
+
+/* Eyebrow label — penanda kecil di atas judul section. */
+.au-home-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--au-space-2);
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: var(--au-tracking-wide);
+	text-transform: uppercase;
+	color: var(--au-brown);
+}
+
+.au-home-eyebrow::before {
+	content: "";
+	display: block;
+	width: 28px;
+	height: 2px;
+	border-radius: var(--au-radius-pill);
+	background-color: var(--au-gold);
+}
+
+.au-home-eyebrow--light {
+	color: var(--au-gold);
+}
+
+.au-home-eyebrow--light::before {
+	background-color: var(--au-gold);
+}
+
+/* --------------------------------------------------------------------------
+   4. BUTTON
+   -------------------------------------------------------------------------- */
+
+.au-home-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--au-btn-gap);
+	min-height: var(--au-btn-height);
+	padding: 0.75rem var(--au-btn-padding-x);
+	border: 1px solid transparent;
+	border-radius: var(--au-radius-pill);
+	font-family: var(--au-font-heading);
+	font-size: var(--au-text-button);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.005em;
+	text-align: center;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-home-button:focus-visible {
+	outline: 3px solid rgba(var(--au-gold-rgb), 0.85);
+	outline-offset: 3px;
+}
+
+.au-home-button:disabled,
+.au-home-button[aria-disabled="true"] {
+	opacity: 0.55;
+	cursor: not-allowed;
+	transform: none;
+	pointer-events: none;
+}
+
+.au-home-button svg {
+	width: 1.125em;
+	height: 1.125em;
+	flex: 0 0 auto;
+}
+
+/* Varian utama — coklat solid. */
+.au-home-button-primary {
+	background-color: var(--au-brown);
+	color: var(--au-white);
+	box-shadow: var(--au-shadow-glow);
+}
+
+.au-home-button-primary:hover {
+	background-color: var(--au-brown-dark);
+	transform: translateY(-2px);
+	box-shadow: 0 20px 40px -18px rgba(var(--au-brown-dark-rgb), 0.6);
+}
+
+.au-home-button-primary:active {
+	transform: translateY(0);
+}
+
+/* Varian sekunder — outline lembut. */
+.au-home-button-secondary {
+	background-color: transparent;
+	border-color: var(--au-line-strong);
+	color: var(--au-brown);
+}
+
+.au-home-button-secondary:hover {
+	background-color: var(--au-cream);
+	border-color: var(--au-caramel);
+	color: var(--au-brown-dark);
+	transform: translateY(-2px);
+}
+
+.au-home-button-secondary:active {
+	transform: translateY(0);
+}
+
+/* Ukuran & lebar. */
+.au-home-button--sm {
+	min-height: var(--au-btn-height-sm);
+	padding-inline: var(--au-btn-padding-x-sm);
+	font-size: var(--au-text-sm);
+}
+
+.au-home-button--block {
+	width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   5. CARD
+   -------------------------------------------------------------------------- */
+
+.au-home-card {
+	position: relative;
+	background-color: var(--au-white);
+	border: 1px solid var(--au-line);
+	border-radius: var(--au-radius-md);
+	box-shadow: var(--au-shadow-soft);
+	overflow: hidden;
+}
+
+.au-home-card__body {
+	padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.au-home-card__media {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--au-cream);
+}
+
+.au-home-card__media > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Varian kartu. */
+.au-home-card--flat {
+	box-shadow: none;
+}
+
+.au-home-card--cream {
+	background-color: var(--au-cream);
+	border-color: transparent;
+	box-shadow: none;
+}
+
+.au-home-card--dark {
+	background-color: var(--au-brown-dark);
+	border-color: transparent;
+	color: var(--au-white);
+	box-shadow: var(--au-shadow-card);
+}
+
+/* --------------------------------------------------------------------------
+   6. IMAGE CONTAINER
+   Pakai sebagai pembungkus: <div class="au-home-image">...<img ...></div>
+   -------------------------------------------------------------------------- */
+
+.au-home-image {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	border-radius: var(--au-radius-md);
+	background-color: var(--au-cream);
+	isolation: isolate;
+}
+
+.au-home-image > img,
+.au-home-image > svg,
+.au-home-image > picture > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+
+/* Rasio. */
+.au-home-image--square {
+	aspect-ratio: 1 / 1;
+}
+
+.au-home-image--portrait {
+	aspect-ratio: 4 / 5;
+}
+
+.au-home-image--wide {
+	aspect-ratio: 16 / 9;
+}
+
+/* Radius alternatif. */
+.au-home-image--round-lg {
+	border-radius: var(--au-radius-lg);
+}
+
+.au-home-image--round-sm {
+	border-radius: var(--au-radius-sm);
+}
+
+.au-home-image--circle {
+	border-radius: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   7. ICON CONTAINER
+   -------------------------------------------------------------------------- */
+
+.au-home-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--au-icon-size);
+	height: var(--au-icon-size);
+	flex: 0 0 auto;
+	border-radius: var(--au-radius-sm);
+	background-color: var(--au-cream);
+	color: var(--au-brown);
+}
+
+.au-home-icon svg {
+	width: 24px;
+	height: 24px;
+	flex: 0 0 auto;
+}
+
+.au-home-icon--sm {
+	width: var(--au-icon-size-sm);
+	height: var(--au-icon-size-sm);
+	border-radius: var(--au-radius-xs);
+}
+
+.au-home-icon--sm svg {
+	width: 20px;
+	height: 20px;
+}
+
+.au-home-icon--lg {
+	width: var(--au-icon-size-lg);
+	height: var(--au-icon-size-lg);
+	border-radius: var(--au-radius-md);
+}
+
+.au-home-icon--lg svg {
+	width: 30px;
+	height: 30px;
+}
+
+.au-home-icon--gold {
+	background-color: rgba(var(--au-gold-rgb), 0.22);
+	color: var(--au-brown-dark);
+}
+
+.au-home-icon--dark {
+	background-color: var(--au-brown);
+	color: var(--au-white);
+}
+
+.au-home-icon--outline {
+	background-color: transparent;
+	border: 1px solid var(--au-line-strong);
+	color: var(--au-brown);
+}
+
+/* --------------------------------------------------------------------------
+   8. DECORATIVE — ORGANIC BLOB
+   Pemakaian: <span class="au-home-blob" aria-hidden="true"
+                    style="--au-blob-size: 360px; top: -80px; right: -60px"></span>
+   Posisi diatur inline/CSS halaman; class ini hanya bentuk, warna, dan ukuran.
+   -------------------------------------------------------------------------- */
+
+.au-home-blob {
+	position: absolute;
+	z-index: 0;
+	width: var(--au-blob-size, 360px);
+	height: var(--au-blob-size, 360px);
+	border-radius: 46% 54% 62% 38% / 42% 38% 62% 58%;
+	background: radial-gradient(circle at 32% 28%, var(--au-cream), rgba(245, 233, 220, 0) 72%);
+	opacity: 0.85;
+	pointer-events: none;
+}
+
+.au-home-blob--gold {
+	background: radial-gradient(circle at 32% 28%, rgba(var(--au-gold-rgb), 0.55), rgba(var(--au-gold-rgb), 0) 72%);
+	opacity: 0.7;
+}
+
+.au-home-blob--brown {
+	background: radial-gradient(circle at 32% 28%, rgba(var(--au-brown-rgb), 0.18), rgba(var(--au-brown-rgb), 0) 72%);
+	opacity: 0.6;
+}
+
+.au-home-blob--alt {
+	border-radius: 58% 42% 38% 62% / 56% 46% 54% 44%;
+}
+
+/* --------------------------------------------------------------------------
+   9. DECORATIVE — SOFT WAVE
+   Bentuk dibuat lewat mask agar warnanya bisa diganti token:
+   <div class="au-home-wave" aria-hidden="true"></div>
+   -------------------------------------------------------------------------- */
+
+.au-home-wave {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: clamp(64px, 9vw, 140px);
+	background-color: var(--au-cream);
+	pointer-events: none;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20120'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0%2072C180%20108%20360%2040%20540%2032C720%2024%20900%2072%201080%2084C1260%2096%201350%2060%201440%2048V120H0Z'%20fill='%23ffffff'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20120'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0%2072C180%20108%20360%2040%20540%2032C720%2024%20900%2072%201080%2084C1260%2096%201350%2060%201440%2048V120H0Z'%20fill='%23ffffff'/%3E%3C/svg%3E");
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: bottom center;
+	mask-position: bottom center;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
+}
+
+/* Wave di sisi atas section (dibalik). */
+.au-home-wave--top {
+	top: 0;
+	bottom: auto;
+	transform: rotate(180deg);
+}
+
+.au-home-wave--gold {
+	background-color: var(--au-gold);
+}
+
+.au-home-wave--brown {
+	background-color: var(--au-brown);
+}
+
+.au-home-wave--white {
+	background-color: var(--au-white);
+}
+
+/* --------------------------------------------------------------------------
+   10. UTILITAS KECIL
+   -------------------------------------------------------------------------- */
+
+.au-home-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   11. AKSESIBILITAS — kurangi animasi bila pengguna memintanya.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.au-home-button,
+	.au-home-card {
+		transition: none;
+	}
+
+	.au-home-button-primary:hover,
+	.au-home-button-secondary:hover {
+		transform: none;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   12. NAVBAR HOMEPAGE
+   Dipakai oleh layouts/_nav_home.php (beranda + tamu saja).
+   03M: navbar transparan (overlay di atas hero) supaya hero bisa naik ke
+   belakangnya. Saat halaman di-scroll, class `--scrolled` (dipasang JS)
+   mengubahnya jadi glass agar teks nav tetap terbaca di atas panel caramel.
+   -------------------------------------------------------------------------- */
+
+.au-home-header {
+	position: sticky;
+	top: 0;
+	z-index: 60;
+	background-color: transparent;
+	border-bottom: 1px solid transparent;
+	/* Auto-hide saat scroll (JS di _nav_home.php): transform tidak mengubah
+	   tinggi layout, jadi ruang navbar tetap ada saat disembunyikan. */
+	transition:
+		transform 280ms var(--au-ease),
+		background-color 220ms var(--au-ease),
+		border-color 220ms var(--au-ease),
+		box-shadow 220ms var(--au-ease);
+	will-change: transform;
+}
+
+.au-home-header.au-home-header--hidden {
+	transform: translateY(-100%);
+	box-shadow: none;
+}
+
+/* Setelah scroll: glass tipis (blur + warm white) supaya navigasi tetap
+   kontras saat melintas di atas panel caramel / foto. */
+.au-home-header.au-home-header--scrolled {
+	background-color: rgba(255, 249, 242, 0.88);
+	border-bottom-color: var(--au-line);
+	box-shadow: 0 18px 40px -30px rgba(var(--au-brown-dark-rgb), 0.55);
+	-webkit-backdrop-filter: blur(14px) saturate(1.15);
+	backdrop-filter: blur(14px) saturate(1.15);
+}
+
+/* Browser tanpa backdrop-filter: naikkan opasitas agar tetap terbaca. */
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+	.au-home-header.au-home-header--scrolled {
+		background-color: rgba(255, 249, 242, 0.97);
+	}
+}
+
+/* Lompatan anchor (#metode, #cara-mendaftar) tidak tertutup navbar overlay.
+   `:has()` opsional — browser lama cukup mengabaikan aturan ini. */
+html:has(.au-home-header) {
+	scroll-padding-top: 78px;
+}
+
+.au-home-header__inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--au-space-4);
+	min-height: 58px;
+	padding-block: 8px;
+}
+
+/* Logo ------------------------------------------------------------------- */
+
+.au-home-logo {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--au-space-2);
+	flex: 0 0 auto;
+	text-decoration: none;
+	color: var(--au-brown-dark);
+	border-radius: var(--au-radius-xs);
+}
+
+/* 03M: aset logo belum punya alpha (latar hampir putih ikut ter-encode), jadi
+   `mix-blend-mode: multiply` dipakai untuk menyatukannya dengan latar. Header
+   yang sticky selalu membentuk stacking context, sehingga blend hanya melihat
+   isi header (transparan) dan kotak putih logo tetap terlihat di atas hero.
+   Solusinya: glow warm-white lembut tepat di belakang logo (di dalam header,
+   hanya saat transparan) agar multiply bertemu warna yang sama dengan hero. */
+.au-home-header .au-home-logo {
+	position: relative;
+}
+
+.au-home-header:not(.au-home-header--scrolled) .au-home-logo::before {
+	content: "";
+	position: absolute;
+	inset: -18px -24px;
+	z-index: -1;
+	pointer-events: none;
+	background: radial-gradient(closest-side, #FFF9F2 62%, rgba(255, 249, 242, 0) 100%);
+}
+
+.au-home-logo__img {
+	display: block;
+	width: auto;
+	height: 36px;
+	/* PNG belum punya alpha & berlatar hampir putih → campur dengan latar. */
+	mix-blend-mode: multiply;
+}
+
+.au-home-logo__fallback {
+	font-family: var(--au-font-heading);
+	font-size: 1rem;
+	font-weight: 500;
+	line-height: 1.1;
+	letter-spacing: var(--au-tracking-tight);
+	color: var(--au-brown);
+}
+
+.au-home-logo__fallback strong {
+	font-weight: 800;
+	color: var(--au-brown-dark);
+}
+
+/* Menu desktop --------------------------------------------------------- */
+
+.au-home-nav {
+	display: none;
+	align-items: center;
+	gap: var(--au-space-1);
+}
+
+.au-home-nav__link {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 0.875rem;
+	border-radius: var(--au-radius-pill);
+	font-family: var(--au-font-heading);
+	font-size: var(--au-text-button);
+	font-weight: 600;
+	line-height: 1.2;
+	white-space: nowrap;
+	text-decoration: none;
+	color: var(--au-text-muted);
+	transition: var(--au-transition);
+}
+
+.au-home-nav__link:hover {
+	color: var(--au-brown);
+	background-color: var(--au-cream);
+}
+
+.au-home-nav__link--active {
+	color: var(--au-brown-dark);
+}
+
+/* Titik emas penanda halaman aktif (pengganti underline yang ramai). */
+.au-home-nav__link--active::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 3px;
+	width: 5px;
+	height: 5px;
+	margin-left: -2.5px;
+	border-radius: 50%;
+	background-color: var(--au-gold);
+}
+
+/* Aksi kanan ----------------------------------------------------------- */
+
+.au-home-header__actions {
+	display: flex;
+	align-items: center;
+	gap: var(--au-space-2);
+	margin-left: auto;
+}
+
+.au-home-header__login {
+	display: none;
+	align-items: center;
+	padding: 0.5rem 0.75rem;
+	border-radius: var(--au-radius-pill);
+	font-family: var(--au-font-heading);
+	font-size: var(--au-text-button);
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	color: var(--au-brown);
+	transition: var(--au-transition);
+}
+
+.au-home-header__login:hover {
+	color: var(--au-brown-dark);
+	background-color: var(--au-cream);
+}
+
+/* CTA memakai .au-home-button.au-home-button-primary — di sini hanya densitas. */
+.au-home-header__cta {
+	min-height: 40px;
+	padding-inline: 1.25rem;
+	font-size: var(--au-text-button);
+}
+
+/* Tombol hamburger ------------------------------------------------------ */
+
+.au-home-burger {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid var(--au-line-strong);
+	border-radius: var(--au-radius-xs);
+	background-color: transparent;
+	color: var(--au-brown-dark);
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-home-burger:hover {
+	background-color: var(--au-cream);
+}
+
+.au-home-burger__bar {
+	display: block;
+	width: 20px;
+	height: 2px;
+	border-radius: var(--au-radius-pill);
+	background-color: currentColor;
+	transition: transform var(--au-duration) var(--au-ease), opacity var(--au-duration) var(--au-ease);
+}
+
+.au-home-burger[aria-expanded="true"] .au-home-burger__bar:nth-child(1) {
+	transform: translateY(7px) rotate(45deg);
+}
+
+.au-home-burger[aria-expanded="true"] .au-home-burger__bar:nth-child(2) {
+	opacity: 0;
+}
+
+.au-home-burger[aria-expanded="true"] .au-home-burger__bar:nth-child(3) {
+	transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Drawer mobile --------------------------------------------------------- */
+
+.au-home-drawer {
+	position: fixed;
+	inset: 0;
+	z-index: 80;
+	display: flex;
+	justify-content: flex-end;
+}
+
+/* Class di atas mengalahkan `[hidden]` bawaan browser → ditegaskan manual. */
+.au-home-drawer[hidden] {
+	display: none;
+}
+
+.au-home-drawer__backdrop {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	background-color: rgba(33, 23, 19, 0.46);
+	cursor: pointer;
+	animation: au-home-fade-in 180ms var(--au-ease) both;
+}
+
+.au-home-drawer__panel {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	gap: var(--au-space-6);
+	width: min(360px, 88vw);
+	height: 100%;
+	padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+	background-color: var(--au-white);
+	border-radius: var(--au-radius-md) 0 0 var(--au-radius-md);
+	box-shadow: -24px 0 64px -32px rgba(var(--au-brown-dark-rgb), 0.45);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	animation: au-home-slide-in 260ms var(--au-ease) both;
+}
+
+.au-home-drawer__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--au-space-3);
+}
+
+.au-home-logo--drawer .au-home-logo__img {
+	height: 38px;
+}
+
+.au-home-drawer__close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	flex: 0 0 auto;
+	padding: 0;
+	border: 1px solid var(--au-line-strong);
+	border-radius: var(--au-radius-xs);
+	background-color: transparent;
+	color: var(--au-brown-dark);
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-home-drawer__close:hover {
+	background-color: var(--au-cream);
+}
+
+.au-home-drawer__close svg {
+	width: 20px;
+	height: 20px;
+}
+
+.au-home-drawer__nav {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.au-home-drawer__nav .au-home-eyebrow {
+	margin-bottom: var(--au-space-2);
+}
+
+.au-home-drawer__link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--au-space-3);
+	padding: 0.875rem 1rem;
+	border-radius: var(--au-radius-sm);
+	font-family: var(--au-font-heading);
+	font-size: 1rem;
+	font-weight: 600;
+	text-decoration: none;
+	color: var(--au-brown-dark);
+	transition: var(--au-transition);
+}
+
+.au-home-drawer__link:hover {
+	background-color: var(--au-cream);
+}
+
+.au-home-drawer__link svg {
+	width: 18px;
+	height: 18px;
+	flex: 0 0 auto;
+	color: var(--au-caramel);
+}
+
+.au-home-drawer__foot {
+	margin-top: auto;
+	padding-top: var(--au-space-5);
+	border-top: 1px solid var(--au-line);
+	display: flex;
+	flex-direction: column;
+	gap: var(--au-space-4);
+}
+
+.au-home-drawer__auth {
+	display: flex;
+	align-items: center;
+	gap: var(--au-space-5);
+	font-family: var(--au-font-heading);
+	font-size: var(--au-text-button);
+	font-weight: 600;
+}
+
+.au-home-drawer__auth a {
+	color: var(--au-brown);
+	text-decoration: none;
+	transition: var(--au-transition);
+}
+
+.au-home-drawer__auth a:hover {
+	color: var(--au-brown-dark);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* Animasi drawer -------------------------------------------------------- */
+
+@keyframes au-home-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes au-home-slide-in {
+	from {
+		opacity: 0;
+		transform: translateX(32px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Fokus keyboard -------------------------------------------------------- */
+
+.au-home-logo:focus-visible,
+.au-home-nav__link:focus-visible,
+.au-home-header__login:focus-visible,
+.au-home-header__cta:focus-visible,
+.au-home-burger:focus-visible,
+.au-home-drawer__close:focus-visible,
+.au-home-drawer__link:focus-visible,
+.au-home-drawer__auth a:focus-visible,
+.au-home-drawer__panel .au-home-button:focus-visible {
+	outline: 3px solid rgba(var(--au-gold-rgb), 0.85);
+	outline-offset: 2px;
+}
+
+/* Breakpoint ------------------------------------------------------------ */
+
+/* Tablet: jarak lebih lega, menu tetap di drawer, login mulai tampil. */
+@media (min-width: 768px) {
+	.au-home-header__inner {
+		/* 63 + border 1px = 64px; isi (CTA 40 / burger 44 + padding 10) muat. */
+		min-height: 63px;
+		padding-block: 10px;
+	}
+
+	.au-home-logo__img {
+		height: 38px;
+	}
+
+	.au-home-header__login {
+		display: inline-flex;
+	}
+
+	.au-home-header__actions {
+		gap: var(--au-space-3);
+	}
+
+	.au-home-drawer__panel {
+		padding: 24px;
+	}
+}
+
+/* Desktop: satu baris — logo kiri, menu tengah, aksi kanan. */
+@media (min-width: 1024px) {
+	.au-home-header__inner {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		/* Tinggi navbar desktop 64px (63 + border 1px). */
+		min-height: 63px;
+		padding-block: 10px;
+	}
+
+	.au-home-logo {
+		justify-self: start;
+	}
+
+	.au-home-logo__img {
+		height: 38px;
+	}
+
+	.au-home-nav {
+		display: flex;
+		justify-self: center;
+	}
+
+	.au-home-header__actions {
+		justify-self: end;
+		margin-left: 0;
+	}
+
+	.au-home-burger {
+		display: none;
+	}
+}
+
+/* Mobile sempit: CTA tetap terlihat, cukup dipendekkan jadi "Daftar". */
+@media (max-width: 479px) {
+	.au-home-header__cta {
+		padding-inline: 1.125rem;
+	}
+
+	.au-home-header__cta-long {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.au-home-header {
+		transition: none;
+	}
+
+	.au-home-drawer__backdrop,
+	.au-home-drawer__panel {
+		animation: none;
+	}
+
+	.au-home-burger__bar {
+		transition: none;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   13. HERO HOMEPAGE — HEADLINE KIRI/KANAN, FOTO TENGAH, PANEL COKLAT
+   Struktur desktop (>=1240px):
+     - baris headline memakai grid 3 kolom yang sama dengan panel:
+       [ headline kiri | ruang foto | headline kanan ]
+     - foto absolut di tengah, top-align dengan headline, menimpa panel
+     - panel 3 kolom: kiri ±33% (metode + CTA), tengah ruang foto, kanan ±33%
+       (empat keunggulan + kartu Program Unggulan)
+   Foto memakai aset gabungan (foto + dekorasi) apa adanya: rasio asli,
+   tanpa crop, tanpa border-radius, tanpa overflow yang memotong gambar.
+   -------------------------------------------------------------------------- */
+
+/* 03L: palet hero yang lebih hangat. Token ini hanya hidup di dalam hero
+   (custom property di-scope ke .au-home-hero) sehingga section lain di
+   homepage tetap memakai token global lama. */
+.au-home-hero {
+	--au-hero-caramel: #945B38;
+	--au-hero-caramel-rgb: 148, 91, 56;
+	--au-hero-caramel-light: #9B6340;
+	--au-hero-caramel-deep: #75452D;
+	--au-hero-secondary: #B8794B;
+	--au-hero-gold: #D9A16E;
+	--au-hero-gold-rgb: 217, 161, 110;
+	--au-hero-cream: #F3DCC6;
+	--au-hero-cream-rgb: 243, 220, 198;
+	--au-hero-warm-white: #FFF9F2;
+	--au-hero-ink: #482719;
+
+	/* 03M: tinggi navbar overlay (diperbarui per breakpoint di bawah). Hero
+	   ditarik ke atas sebesar tinggi navbar supaya latar hero menembus ke
+	   belakang navbar transparan, lalu padding atas mengembalikan jarak aman
+	   + 8px napas ke headline. */
+	--au-nav-h: 61px;
+
+	position: relative;
+	isolation: isolate;
+	background-color: var(--au-hero-warm-white);
+	margin-top: calc(-1 * var(--au-nav-h));
+	padding-block: calc(var(--au-nav-h) + 8px) clamp(2.5rem, 4.5vw, 4rem);
+}
+
+/* 03M: tinggi navbar overlay aktual per breakpoint (hasil ukur browser).
+   Tablet 65px (min-height 63 + isi 44 + padding), desktop 64px. */
+@media (min-width: 768px) {
+	.au-home-hero {
+		--au-nav-h: 65px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.au-home-hero {
+		--au-nav-h: 64px;
+	}
+}
+
+/* Container mengikuti design system (1440px), dengan gutter 20–40px supaya
+   panel tidak menempel ke tepi browser. */
+.au-home-hero .au-home-container {
+	max-width: var(--au-container);
+	/* 03P: sisi kiri/kanan halaman dilebarkan sedikit (gutter 20–40 → 26–60)
+	   sehingga konten landing page tidak terlalu melebar di layar lebar.
+	   Batas 3.3vw dipilih agar di 1240px dua tombol CTA masih satu baris. */
+	padding-inline: clamp(26px, 3.3vw, 60px);
+}
+
+/* Pencahayaan lembut di belakang headline: cream + beige-peach + aksen gold
+   tipis, tetap minimalis (hanya radial gradient, tanpa gambar baru). */
+.au-home-hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(52% 58% at 84% 8%, rgba(var(--au-hero-gold-rgb), 0.22), rgba(var(--au-hero-gold-rgb), 0) 64%),
+		radial-gradient(46% 54% at 6% 96%, rgba(var(--au-hero-cream-rgb), 0.95), rgba(var(--au-hero-cream-rgb), 0) 72%),
+		radial-gradient(40% 44% at 18% 4%, rgba(255, 240, 224, 0.9), rgba(255, 240, 224, 0) 74%),
+		radial-gradient(38% 42% at 98% 82%, rgba(242, 214, 190, 0.6), rgba(242, 214, 190, 0) 72%);
+	pointer-events: none;
+}
+
+/* Variabel komposisi: lebar foto + jarak kolom dipakai bersama oleh baris
+   headline dan grid panel agar sumbu kiri/tengah/kanan konsisten. */
+.au-home-hero__panggung {
+	position: relative;
+	--au-hero-foto-w: min(80vw, 320px);
+	--au-hero-gap: var(--au-space-4);
+	--au-hero-radius: clamp(36px, 2.8vw, 44px);
+}
+
+/* --------------------------------------------------------------------------
+   Headline (di atas panel, bukan di dalam panel)
+   -------------------------------------------------------------------------- */
+
+.au-home-hero__headline {
+	position: relative;
+	z-index: 1;
+}
+
+.au-home-hero__judul {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--au-space-3);
+	margin: 0;
+}
+
+.au-home-hero__judul-kiri,
+.au-home-hero__judul-kanan {
+	display: block;
+	width: min(100%, 300px);
+	font-family: var(--au-font-heading);
+	font-size: clamp(1.75rem, 8vw, 2.5rem);
+	font-weight: 800;
+	line-height: 1.05;
+	letter-spacing: var(--au-tracking-tight);
+	color: var(--au-brown-dark);
+	text-align: center;
+}
+
+.au-home-hero__judul-kiri img,
+.au-home-hero__judul-kanan img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Foto utama — fokus visual, menimpa tepi atas panel
+   -------------------------------------------------------------------------- */
+
+.au-home-hero__foto {
+	position: relative;
+	z-index: 3;
+	width: var(--au-hero-foto-w);
+	margin: var(--au-space-5) auto calc(-1 * clamp(3.5rem, 9vw, 6rem));
+	pointer-events: none;
+}
+
+.au-home-hero__foto img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Panel coklat
+   -------------------------------------------------------------------------- */
+
+.au-home-hero__panel {
+	position: relative;
+	z-index: 2;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: clamp(1.75rem, 4vw, 2.5rem);
+	margin-top: 0;
+	padding: clamp(5.5rem, 14vw, 7.5rem) clamp(1.25rem, 5vw, 2.5rem) clamp(2rem, 4vw, 2.75rem);
+	border-radius: var(--au-hero-radius);
+	/* 03L: caramel brown hangat (bukan deep brown). Gradasi sangat lembut
+	   #9B6340 → #75452D, dengan highlight gold tipis di kanan atas dan
+	   pantulan cream di kiri bawah. */
+	background:
+		radial-gradient(78% 118% at 100% 0%, rgba(var(--au-hero-gold-rgb), 0.2), rgba(var(--au-hero-gold-rgb), 0) 62%),
+		radial-gradient(56% 70% at 0% 108%, rgba(var(--au-hero-cream-rgb), 0.07), rgba(var(--au-hero-cream-rgb), 0) 62%),
+		linear-gradient(150deg, var(--au-hero-caramel-light) 0%, #885534 46%, var(--au-hero-caramel-deep) 100%);
+	box-shadow: 0 40px 90px -44px rgba(var(--au-brown-dark-rgb), 0.5);
+	color: var(--au-hero-warm-white);
+	/* Tanpa overflow:hidden — background sudah terpotong border-radius, dan
+	   konten (CTA) tidak boleh berisiko terklip. */
+}
+
+/* 03L: label kecil di atas panel caramel — teks warm white, garis gold tetap
+   jadi aksen (kontras teks ±5:1 di atas #9B6340). */
+.au-home-hero__panel .au-home-eyebrow--light {
+	color: var(--au-hero-warm-white);
+	/* 03N: label dinaikkan sedikit tanpa mengubah tinggi panel/kolom
+	   (offset relatif, bukan margin) agar judul di bawahnya tidak bergeser. */
+	position: relative;
+	top: -15px;
+}
+
+.au-home-hero__panel .au-home-eyebrow--light::before {
+	background-color: var(--au-hero-gold);
+}
+
+.au-home-hero__panel-kiri,
+.au-home-hero__panel-kanan {
+	grid-column: 1;
+	min-width: 0;
+}
+
+/* Kolom kanan memakai flex agar kartu program menempel di dasar panel. */
+.au-home-hero__panel-kanan {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Kolom kiri ------------------------------------------------------------- */
+
+.au-home-hero__panel-title {
+	margin: var(--au-space-5) 0 0;
+	font-family: var(--au-font-heading);
+	font-size: clamp(1.75rem, 2.45vw, 2.75rem);
+	font-weight: 800;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	color: var(--au-hero-warm-white);
+	/* 03P: `balance` sengaja tidak dipakai. Di ≤1560px hasilnya sama (2 baris:
+	   "Belajar Qur'an dengan" / "Metode Utsmani"), tetapi di ≥±1570px kolom
+	   teks yang lebih sempit memaksa 3 baris dan `balance` menyisakan satu
+	   kata ("dengan") sendirian di baris tengah. Pembungkusan normal memberi
+	   3 baris yang wajar: "Belajar Qur'an" / "dengan Metode" / "Utsmani". */
+	text-wrap: wrap;
+}
+
+.au-home-hero__panel-desc {
+	margin: var(--au-space-4) 0 0;
+	font-family: var(--au-font-body);
+	font-size: clamp(1rem, 0.35vw + 0.92rem, 1.125rem);
+	line-height: 1.7;
+	color: rgba(255, 249, 242, 0.92);
+	text-wrap: pretty;
+}
+
+/* CTA: selalu di atas background panel, dengan jarak lega dari deskripsi. */
+.au-home-hero__actions {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: clamp(0.75rem, 1.2vw, 1rem);
+	margin-top: clamp(1.5rem, 2.4vw, 2rem);
+}
+
+/* Varian tombol di atas panel caramel. */
+.au-home-button--cream {
+	background-color: var(--au-hero-cream);
+	color: var(--au-hero-ink);
+	box-shadow: 0 18px 34px -20px rgba(0, 0, 0, 0.45);
+}
+
+.au-home-button--cream:hover {
+	background-color: var(--au-hero-gold);
+	color: var(--au-hero-ink);
+	transform: translateY(-2px);
+	box-shadow: 0 22px 40px -20px rgba(0, 0, 0, 0.42);
+}
+
+.au-home-button--cream:active {
+	transform: translateY(0);
+}
+
+/* Panah kecil pada tombol utama memakai aksen gold. */
+.au-home-hero__actions .au-home-button--cream svg {
+	color: var(--au-hero-gold);
+}
+
+.au-home-button--outline-light {
+	background-color: rgba(var(--au-hero-cream-rgb), 0.06);
+	border-color: rgba(var(--au-hero-cream-rgb), 0.6);
+	color: var(--au-hero-warm-white);
+}
+
+.au-home-button--outline-light:hover {
+	background-color: rgba(var(--au-hero-cream-rgb), 0.16);
+	border-color: rgba(var(--au-hero-cream-rgb), 0.85);
+	color: var(--au-hero-warm-white);
+	transform: translateY(-2px);
+}
+
+.au-home-button--outline-light:active {
+	transform: translateY(0);
+}
+
+.au-home-hero__login {
+	margin-top: var(--au-space-4);
+}
+
+.au-home-hero__login a {
+	color: var(--au-hero-cream);
+	font-weight: 600;
+	text-decoration: underline;
+	text-decoration-color: rgba(var(--au-hero-cream-rgb), 0.5);
+	text-underline-offset: 3px;
+	transition: var(--au-transition);
+}
+
+.au-home-hero__login a:hover {
+	color: var(--au-hero-warm-white);
+	text-decoration-color: currentColor;
+}
+
+/* Info peserta. */
+.au-home-hero__peserta {
+	display: flex;
+	align-items: center;
+	gap: var(--au-space-3);
+	margin-top: clamp(1.75rem, 2.8vw, 2.25rem);
+	padding-top: var(--au-space-5);
+	border-top: 1px solid rgba(var(--au-hero-cream-rgb), 0.22);
+}
+
+.au-home-hero__peserta-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background-color: rgba(var(--au-hero-cream-rgb), 0.2);
+	color: var(--au-hero-gold);
+}
+
+.au-home-hero__peserta-icon svg {
+	width: 22px;
+	height: 22px;
+}
+
+.au-home-hero__peserta-teks {
+	margin: 0;
+	font-family: var(--au-font-body);
+	font-size: var(--au-text-sm);
+	line-height: 1.55;
+	color: rgba(255, 249, 242, 0.9);
+}
+
+.au-home-hero__peserta-teks strong {
+	font-weight: 700;
+	color: var(--au-hero-warm-white);
+}
+
+/* Info program/gelombang — tetap tersedia di desktop. */
+.au-home-hero__meta {
+	display: none;
+	flex-wrap: wrap;
+	align-items: center;
+	/* 03P: baris "Program berjalan" di kolom kanan dirapatkan ke tengah
+	   (sejajar tengah dengan kartu Program Unggulan). */
+	justify-content: center;
+	gap: var(--au-space-2) var(--au-space-5);
+	margin-top: var(--au-space-5);
+}
+
+.au-home-hero__meta p {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--au-space-2);
+	margin: 0;
+	font-family: var(--au-font-body);
+	font-size: var(--au-text-caption);
+	line-height: 1.6;
+	color: rgba(255, 249, 242, 0.9);
+}
+
+.au-home-hero__meta strong {
+	font-weight: 600;
+	color: var(--au-hero-warm-white);
+}
+
+.au-home-hero__meta-dot {
+	width: 5px;
+	height: 5px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background-color: var(--au-hero-gold);
+}
+
+.au-home-hero__meta a {
+	font-weight: 600;
+	color: var(--au-hero-cream);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(var(--au-hero-cream-rgb), 0.45);
+	transition: var(--au-transition);
+}
+
+.au-home-hero__meta a:hover {
+	color: var(--au-hero-warm-white);
+	border-bottom-color: currentColor;
+}
+
+/* Kolom kanan ------------------------------------------------------------ */
+
+/* Empat keunggulan: menyatu dengan panel, tanpa kartu/background terpisah.
+   Hanya ikon + nama (tanpa deskripsi) — item dipusatkan dan disejajarkan. */
+.au-home-hero__keunggulan {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	align-items: start;
+	gap: clamp(1.25rem, 2.4vw, 1.75rem) var(--au-space-4);
+	margin: 0 0 clamp(1.5rem, 2.4vw, 2rem);
+	padding: 0;
+	list-style: none;
+	/* 03N: deretan ikon dinaikkan agar sejajar dengan label di kolom kiri
+	   (offset relatif — tinggi kolom tidak berubah). 03O: offset -6px
+	   karena kotak ikon tumbuh ke 30px agar tinta ikon tetap sebaris. */
+	position: relative;
+	top: -6px;
+}
+
+.au-home-hero__keunggulan li {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: 0;
+	text-align: center;
+}
+
+/* Ikon outline putih — kecil, seragam, tanpa chip/dekorasi. */
+.au-home-hero__ikon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	color: var(--au-hero-warm-white);
+}
+
+/* 03O: glyph ikon lebih besar lagi (30px) mengikuti kotaknya. */
+.au-home-hero__ikon svg {
+	width: 30px;
+	height: 30px;
+}
+
+.au-home-hero__keunggulan h3 {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: clamp(0.875rem, 0.3vw + 0.8rem, 0.9375rem);
+	font-weight: 700;
+	line-height: 1.3;
+	letter-spacing: -0.01em;
+	color: var(--au-hero-warm-white);
+	text-wrap: balance;
+}
+
+/* Kartu program unggulan — warm white, rounded besar. */
+.au-home-hero__program {
+	display: grid;
+	grid-template-columns: clamp(100px, 8.8vw, 144px) minmax(0, 1fr);
+	gap: var(--au-space-4);
+	align-items: center;
+	margin-top: auto;
+	padding: clamp(0.875rem, 1.1vw, 1.125rem);
+	border-radius: var(--au-radius-md);
+	border: 1px solid rgba(var(--au-hero-caramel-rgb), 0.12);
+	background-color: var(--au-hero-warm-white);
+	color: var(--au-hero-ink);
+	box-shadow: 0 24px 48px -28px rgba(72, 39, 25, 0.55);
+}
+
+.au-home-hero__program-media {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 0;
+}
+
+.au-home-hero__program-gambar {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--au-radius-sm);
+	background-color: var(--au-hero-cream);
+}
+
+.au-home-hero__program-gambar img {
+	display: block;
+	width: 100%;
+	height: auto;
+	/* Rasio dikunci supaya tinggi gambar sama untuk semua program (tidak
+	   membuat kartu "melompat" saat slide berganti di layar kecil). */
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+}
+
+.au-home-hero__program-gambar img[hidden] {
+	display: none;
+}
+
+/* Cadangan bila berkas gambar program tidak ada: gradient + kode program. */
+.au-home-hero__program-fallback {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	font-family: var(--au-font-heading);
+	font-size: 0.8125rem;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	color: var(--au-hero-warm-white);
+	background-image: linear-gradient(135deg, var(--au-hero-caramel), var(--au-hero-ink));
+}
+
+.au-home-hero__program-fallback[hidden] {
+	display: none;
+}
+
+/* Titik navigasi program: target sentuh 18px, tanda aktif 6px.
+   `hidden` di markup (progressive enhancement): tanpa JS hanya slide 1 tampil,
+   jadi titik navigasi tidak ditampilkan sampai rotator siap. */
+.au-home-hero__program-nav {
+	display: flex;
+	justify-content: center;
+}
+
+.au-home-hero__program-nav[hidden] {
+	display: none;
+}
+
+.au-home-hero__program-dot {
+	position: relative;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	-webkit-appearance: none;
+	appearance: none;
+	cursor: pointer;
+}
+
+.au-home-hero__program-dot::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 6px;
+	height: 6px;
+	transform: translate(-50%, -50%);
+	border-radius: var(--au-radius-pill);
+	background-color: rgba(var(--au-hero-caramel-rgb), 0.32);
+	transition: width 240ms ease, background-color 240ms ease;
+}
+
+.au-home-hero__program-dot:hover::before,
+.au-home-hero__program-dot:focus-visible::before {
+	background-color: var(--au-hero-ink);
+}
+
+.au-home-hero__program-dot.is-aktif::before {
+	width: 18px;
+	background-color: var(--au-hero-caramel);
+}
+
+.au-home-hero__program-dot:focus-visible {
+	outline: 2px solid var(--au-hero-ink);
+	outline-offset: -2px;
+}
+
+/* Slide teks ditumpuk di satu sel grid: tinggi kartu = slide tertinggi,
+   jadi panel hero tidak memanjang/memendek saat program berganti. */
+.au-home-hero__program-slides {
+	display: grid;
+	min-width: 0;
+}
+
+.au-home-hero__program-body {
+	grid-area: 1 / 1;
+	align-self: center;
+	min-width: 0;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(6px);
+	transition: opacity 380ms ease, transform 380ms ease, visibility 0s linear 380ms;
+}
+
+.au-home-hero__program-body.is-aktif {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition: opacity 380ms ease, transform 380ms ease, visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.au-home-hero__program-body,
+	.au-home-hero__program-body.is-aktif {
+		transition: none;
+		transform: none;
+	}
+
+	.au-home-hero__program-dot::before {
+		transition: none;
+	}
+}
+
+.au-home-hero__program-badge {
+	display: inline-block;
+	font-family: var(--au-font-heading);
+	font-size: 0.6875rem;
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--au-hero-caramel);
+}
+
+.au-home-hero__program h3 {
+	margin: var(--au-space-2) 0 0;
+	font-family: var(--au-font-heading);
+	font-size: clamp(1.125rem, 0.45vw + 1rem, 1.375rem);
+	font-weight: 800;
+	line-height: 1.2;
+	color: var(--au-hero-ink);
+}
+
+.au-home-hero__program p {
+	margin: var(--au-space-1) 0 0;
+	font-family: var(--au-font-body);
+	font-size: clamp(0.8125rem, 0.15vw + 0.78rem, 0.875rem);
+	line-height: 1.5;
+	color: #6F5A4C;
+}
+
+.au-home-hero__program-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-top: var(--au-space-3);
+	padding: 0.5rem 0.9rem;
+	border-radius: var(--au-radius-pill);
+	background-color: var(--au-hero-caramel);
+	color: var(--au-hero-warm-white);
+	font-family: var(--au-font-heading);
+	font-size: var(--au-text-caption);
+	font-weight: 700;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: var(--au-transition);
+}
+
+.au-home-hero__program-cta svg {
+	flex: 0 0 auto;
+	width: 14px;
+	height: 14px;
+}
+
+.au-home-hero__program-cta:hover {
+	background-color: var(--au-hero-ink);
+	color: var(--au-hero-warm-white);
+	transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Breakpoint
+   -------------------------------------------------------------------------- */
+
+/* Tablet: headline tetap kiri-kanan (flex), foto masuk flow dengan margin
+   negatif agar tetap menimpa tepi atas panel, panel 2 kolom. */
+@media (min-width: 768px) {
+	.au-home-hero__judul {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: clamp(1.5rem, 4vw, 3rem);
+		padding-inline: clamp(0.5rem, 2.5vw, 2rem);
+	}
+
+	.au-home-hero__judul-kiri,
+	.au-home-hero__judul-kanan {
+		width: auto;
+		flex: 0 1 clamp(200px, 29vw, 320px);
+		text-align: left;
+	}
+
+	.au-home-hero__judul-kanan {
+		text-align: right;
+	}
+
+	.au-home-hero__foto {
+		position: relative;
+		width: min(330px, 44vw);
+		margin-top: var(--au-space-5);
+		margin-bottom: calc(-1 * clamp(4rem, 9vw, 6.5rem));
+	}
+
+	.au-home-hero__panel {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		column-gap: clamp(1.5rem, 3vw, 2.5rem);
+		padding-top: clamp(7rem, 13vw, 9rem);
+	}
+
+	.au-home-hero__panel-kiri {
+		grid-column: 1;
+	}
+
+	.au-home-hero__panel-kanan {
+		grid-column: 2;
+	}
+}
+
+/* Desktop: komposisi penuh ±33% | foto | ±33%. Baris headline memakai grid
+   yang sama sehingga headline kiri/kanan benar-benar simetris terhadap foto.
+   Ambang 1240px dipilih agar kolom kiri tetap cukup lebar untuk dua CTA
+   dalam satu baris setelah foto diperbesar di 03F. */
+@media (min-width: 1240px) {
+	.au-home-hero__panggung {
+		/* Lebar kolom tengah grid (headline & panel) — tidak diubah supaya
+		   posisi headline kiri/kanan tetap sama seperti 03F. */
+		--au-hero-foto-w: clamp(300px, 25.6vw, 394px);
+		/* Lebar foto aktual: sedikit lebih lebar dari kolom tengah agar alas
+		   foto bisa rata dengan alas panel tanpa menggeser headline.
+		   03H: 400px → 426px di 1440 (+6.5%).
+		   03I: 426px → 415px (−2.6%).
+		   03K: 415px → 448px di 1440 (+8%) — lebar ini persis selebar
+		   "celah tengah" (kolom foto + 2 column-gap), sehingga kotak foto
+		   tidak pernah menimpa kolom teks kiri/kanan. */
+		/* 03P: foto utama dikecilkan ±8px (5–12px sesuai permintaan) dan
+		   dipotong bagian bawahnya yang transparan (lihat aturan foto di
+		   bawah) supaya kaki/tubuh rata dengan alas kotak coklat.
+		   03Q: foto diperpendek dengan cara dikecilkan ±8% (lebar ikut
+		   menyusut proporsional; rasio 434:704 di bawah menjaga alasnya
+		   tetap rata dengan alas panel). */
+		--au-hero-foto-lebar: clamp(318px, 28vw, 428px);
+		--au-hero-gap: clamp(1.5rem, 2.8vw, 2.5rem);
+	}
+
+	.au-home-hero__judul {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) var(--au-hero-foto-w) minmax(0, 1fr);
+		align-items: end;
+		/* Tanpa gap: kolom tengah persis selebar foto, sehingga headline
+		   terpusat di antara tepi container dan foto. */
+		gap: 0;
+		padding-inline: 0;
+	}
+
+	.au-home-hero__judul-kiri,
+	.au-home-hero__judul-kanan {
+		width: min(100%, clamp(240px, 25vw, 380px));
+		justify-self: center;
+	}
+
+	.au-home-hero__judul-kiri {
+		grid-column: 1;
+		text-align: left;
+	}
+
+	.au-home-hero__judul-kanan {
+		grid-column: 3;
+		text-align: right;
+	}
+
+	.au-home-hero__foto {
+		position: absolute;
+		/* Di-anchor ke alas panggung (= alas panel) sehingga batas bawah foto
+		   dan panel benar-benar sejajar; tinggi mengikuti rasio asli gambar. */
+		top: auto;
+		bottom: 0;
+		left: 50%;
+		width: var(--au-hero-foto-lebar);
+		margin: 0;
+		transform: translateX(-50%);
+		/* 03P: 22px terbawah gambar transparan (baris 704–725 dari 726),
+		   sehingga isi foto berhenti ±22px di atas alas panel. Rasio di bawah
+		   memotong bagian transparan itu → tubuh tokoh rata dengan alas
+		   kotak coklat. Tinggi foto tidak memengaruhi layout (absolut). */
+		aspect-ratio: 434 / 704;
+		overflow: hidden;
+	}
+
+	.au-home-hero__foto img {
+		height: 100%;
+		object-fit: cover;
+		object-position: top;
+	}
+
+	.au-home-hero__panel {
+		grid-template-columns: minmax(0, 1fr) var(--au-hero-foto-w) minmax(0, 1fr);
+		column-gap: var(--au-hero-gap);
+		row-gap: 0;
+		/* 03K: tinggi panel mengikuti tinggi viewport. Padding & jarak antar
+		   blok memakai dvh supaya di layar laptop pendek (768px) panel ikut
+		   ringkas, sedangkan di layar tinggi (900–1080px) tetap lega.
+		   Tanpa height/min-height tetap — tinggi tetap ditentukan konten. */
+		margin-top: clamp(0.25rem, 0.45vw, 0.5rem);
+		padding: clamp(2rem, 4.9dvh, 3.9rem) clamp(2rem, 2.6vw, 2.75rem) clamp(0.85rem, 1.9dvh, 1.75rem);
+	}
+
+	/* Ritme vertikal kolom kiri: semua jarak ikut menyusut di viewport pendek
+	   (±20px lebih tinggi dari 03I di 1366×768) tanpa mengubah ukuran font.
+	   Nilai dvh dipilih agar seluruh isi panel tetap utuh di layar 768px. */
+	.au-home-hero__panel-title {
+		margin-top: clamp(0.65rem, 1.45dvh, 1.15rem);
+		line-height: 1.08;
+	}
+
+	.au-home-hero__panel-desc {
+		margin-top: clamp(0.55rem, 1.2dvh, 0.95rem);
+		line-height: 1.55;
+	}
+
+	.au-home-hero__actions {
+		margin-top: clamp(0.8rem, 2dvh, 1.6rem);
+	}
+
+	.au-home-hero__login {
+		margin-top: clamp(0.5rem, 1.1dvh, 0.9rem);
+	}
+
+	.au-home-hero__peserta {
+		margin-top: clamp(0.8rem, 2.1dvh, 1.9rem);
+		padding-top: clamp(0.55rem, 1.25dvh, 1.05rem);
+	}
+
+	.au-home-hero__meta {
+		margin-top: clamp(0.45rem, 0.95dvh, 0.8rem);
+	}
+
+	.au-home-hero__panel-kiri {
+		grid-column: 1;
+	}
+
+	.au-home-hero__panel-kanan {
+		grid-column: 3;
+	}
+
+	/* Empat keunggulan sebaris sejak desktop. Tanpa deskripsi, tinggi judul
+	   tidak perlu diseragamkan lagi — cukup gap yang konsisten. */
+	.au-home-hero__keunggulan {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		column-gap: 0.75rem;
+		row-gap: 1rem;
+	}
+
+	.au-home-hero__keunggulan h3 {
+		font-size: 0.8125rem;
+	}
+
+	/* 03N: kartu Program Unggulan dinaikkan (foto lebih besar + dipotong
+	   tengah, sudut lebih melengkung) dan sedikit dipanjangkan ke bawah.
+	   Caranya: kolom kiri tumbuh 8px lewat jarak meta, lalu padding bawah
+	   panel dikurangi 8px — total tinggi panel dan posisi foto utama
+	   (yang di-anchor ke alas panel) tidak berubah. */
+	.au-home-hero__panel {
+		padding-bottom: calc(clamp(0.85rem, 1.9dvh, 1.75rem) - 8px);
+	}
+
+	/* 03O: "Program berjalan" pindah ke kolom kanan, menempel di dasar panel
+	   (di bawah kartu Program Unggulan) — jaraknya otomatis lewat auto. */
+	.au-home-hero__meta {
+		margin-top: auto;
+	}
+
+	/* 03O: kartu dinaikkan sampai berdekatan dengan baris ikon (bukan lagi
+	   menempel di dasar panel), lalu "Program berjalan" mengisi dasar kolom. */
+	.au-home-hero__keunggulan {
+		margin-bottom: 0;
+	}
+
+	.au-home-hero__program {
+		grid-template-columns: clamp(132px, 10.4vw, 164px) minmax(0, 1fr);
+		padding: 18px;
+		margin-top: clamp(1.25rem, 2vh, 1.75rem);
+	}
+
+	.au-home-hero__program-media {
+		/* Tinggi kolom media (gambar + titik navigasi) dijaga 196–200px — sama
+		   dengan tinggi gambar versi lama — supaya tinggi kartu tetap ±236px. */
+		height: clamp(196px, 14vw, 200px);
+	}
+
+	.au-home-hero__program-gambar {
+		flex: 1 1 auto;
+		min-height: 0;
+		border-radius: 16px;
+	}
+
+	.au-home-hero__program-gambar img,
+	.au-home-hero__program-fallback {
+		height: 100%;
+		aspect-ratio: auto;
+		object-fit: cover;
+		border-radius: 0;
+	}
+
+	/* 03O: judul & deskripsi hero dipersingkat dan baris "Program berjalan"
+	   pindah ke kolom kanan, sehingga kolom kiri menyusut ±100px dan panel
+	   ikut lebih pendek (alas panel naik). Ritme kolom kiri sengaja TIDAK
+	   ditambal: susunan rapat inilah yang dipilih user — kartu menempel di
+	   bawah baris ikon dan "Program berjalan" langsung di bawah kartu.
+	   Konsekuensi: foto utama (anchor bottom) ikut naik ±100px. */
+}
+
+/* Info program/gelombang hanya di desktop (di mobile sudah ada kartu sendiri). */
+@media (min-width: 1024px) {
+	.au-home-hero__meta {
+		display: flex;
+	}
+}
+
+@media (max-width: 479px) {
+	.au-home-hero__judul-kiri,
+	.au-home-hero__judul-kanan {
+		width: min(100%, 260px);
+	}
+
+	.au-home-hero__foto {
+		width: min(80vw, 300px);
+	}
+
+	.au-home-hero__panel {
+		border-radius: 36px;
+	}
+
+	.au-home-hero__keunggulan {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.au-home-hero__program {
+		grid-template-columns: 96px minmax(0, 1fr);
+		gap: var(--au-space-3);
+	}
+
+	/* Kolom teks kartu program sangat sempit di sini (±130px) — rapatkan
+	   padding CTA supaya label "Lihat program" tetap satu baris. */
+	.au-home-hero__program-cta {
+		padding: 0.5rem 0.6rem;
+	}
+
+	.au-home-hero__actions {
+		gap: var(--au-space-2);
+	}
+
+	.au-home-hero__actions .au-home-button {
+		width: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.au-home-button--cream:hover,
+	.au-home-button--outline-light:hover,
+	.au-home-hero__program-cta:hover {
+		transform: none;
+	}
+
+	.au-home-hero__meta a,
+	.au-home-hero__login a,
+	.au-home-hero__program-cta {
+		transition: none;
+	}
+}
+
+/* ==========================================================================
+   TASK 04 — SECTION PROGRAM (5 kartu, tepat di bawah hero)
+   Namespace `au-prog-` supaya tidak menimpa komponen homepage lain.
+   Foto memakai aset `assets/img/utsmani/Program *.png` (rasio sumber ±1.4)
+   dengan `object-fit: cover` pada tinggi media tetap per breakpoint.
+   ========================================================================== */
+
+.au-prog {
+	position: relative;
+	padding-top: clamp(32px, 2.6vw, 40px);
+	/* Jarak ke section Lokasi (dulu 64px, terlalu lebar setelah blok statistik
+	   & "Daftar Kelas" dihapus) — dipangkas agar irama antar-section seimbang. */
+	padding-bottom: clamp(36px, 3vw, 48px);
+}
+
+/* Gutter mengikuti hero (26–60px) agar tepi kiri/kanan section sejajar. */
+.au-prog .au-home-container {
+	max-width: var(--au-container);
+	padding-inline: clamp(26px, 3.3vw, 60px);
+}
+
+.au-prog__head {
+	text-align: center;
+}
+
+.au-prog__label {
+	display: inline-flex;
+	align-items: center;
+	padding: 7px 16px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream);
+	color: var(--au-brown);
+	font-family: var(--au-font-heading);
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	line-height: 1.2;
+	text-transform: uppercase;
+}
+
+.au-prog__title {
+	margin: 12px 0 0;
+	font-family: var(--au-font-heading);
+	font-size: clamp(1.625rem, 2.8vw, 2.5rem);
+	font-weight: 800;
+	line-height: 1.16;
+	letter-spacing: var(--au-tracking-tight);
+	color: var(--au-brown-dark);
+	text-wrap: balance;
+}
+
+.au-prog__desc {
+	margin: 8px 0 0;
+	font-family: var(--au-font-body);
+	font-size: clamp(0.875rem, 1.1vw, 1rem);
+	line-height: 1.6;
+	color: var(--au-text-muted);
+	text-wrap: pretty;
+}
+
+/* Flex (bukan grid) supaya baris terakhir yang berisi 1–2 kartu tetap
+   terpusat dengan lebar normal — tidak ada kartu yang melebar sendiri. */
+.au-prog__grid {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 12px;
+	margin-top: clamp(24px, 3vw, 36px);
+}
+
+/* Tautan ke katalog program lengkap, di bawah grid kartu. */
+.au-prog__more {
+	display: flex;
+	justify-content: center;
+	margin-top: clamp(20px, 2.6vw, 30px);
+}
+
+.au-prog__more-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.35rem;
+	border-radius: var(--au-radius-pill);
+	background-color: var(--au-brown);
+	color: var(--au-white);
+	font-family: var(--au-font-heading);
+	font-size: var(--au-text-button);
+	font-weight: 700;
+	line-height: 1.2;
+	text-decoration: none;
+	box-shadow: 0 14px 30px -20px rgba(var(--au-brown-dark-rgb), 0.6);
+	transition:
+		background-color var(--au-duration) var(--au-ease),
+		transform var(--au-duration) var(--au-ease),
+		box-shadow var(--au-duration) var(--au-ease);
+}
+
+.au-prog__more-btn svg {
+	flex: 0 0 auto;
+	width: 16px;
+	height: 16px;
+}
+
+.au-prog__more-btn:hover {
+	background-color: var(--au-brown-dark);
+	transform: translateY(-2px);
+	box-shadow: 0 20px 36px -20px rgba(var(--au-brown-dark-rgb), 0.65);
+}
+
+.au-prog__more-btn:focus-visible {
+	outline: 2px solid var(--au-caramel);
+	outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.au-prog__more-btn:hover {
+		transform: none;
+	}
+}
+
+.au-prog-card {
+	/* Mobile 360–767: 2 kolom, kartu 265px, foto 122px. */
+	--au-prog-media: 122px;
+	--au-prog-pad: 12px;
+	--au-prog-radius: 20px;
+	--au-prog-icon: 36px;
+	--au-prog-arrow: 28px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	/* -0.05px mencegah pembulatan subpiksel membuat kartu terakhir baris
+	   terlempar ke baris berikutnya. */
+	flex: 0 0 calc((100% - 12px) / 2 - 0.05px);
+	height: 265px;
+	/* Putih bersih: latar halaman kini warm white (#FFF9F2) seperti hero,
+	   jadi kartu butuh kontras agar siluetnya tetap terbaca. */
+	background: #FFFFFF;
+	border: 1px solid rgba(148, 91, 56, 0.10);
+	border-radius: var(--au-prog-radius);
+	box-shadow: 0 16px 36px -28px rgba(var(--au-brown-dark-rgb), 0.45);
+	color: inherit;
+	text-decoration: none;
+	transition:
+		transform var(--au-duration) var(--au-ease),
+		box-shadow var(--au-duration) var(--au-ease);
+}
+
+.au-prog-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 48px -28px rgba(var(--au-brown-dark-rgb), 0.5);
+}
+
+.au-prog-card:focus-visible {
+	outline: 2px solid var(--au-caramel);
+	outline-offset: 3px;
+}
+
+.au-prog-card__media {
+	flex: none;
+	height: var(--au-prog-media);
+	overflow: hidden;
+	border-radius: calc(var(--au-prog-radius) - 1px) calc(var(--au-prog-radius) - 1px) 0 0;
+	/* Latar hangat mengisi tepi transparan PNG program. */
+	background: linear-gradient(150deg, #F6E7D6 0%, #EBD5BD 100%);
+}
+
+.au-prog-card__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/* Subjek (wajah) umumnya di bagian atas-tengah; crop bawah lebih besar
+	   supaya wajah tidak terpotong. */
+	object-position: center 20%;
+}
+
+.au-prog-card__icon {
+	position: absolute;
+	top: calc(var(--au-prog-media) - var(--au-prog-icon) / 2);
+	left: var(--au-prog-pad);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--au-prog-icon);
+	height: var(--au-prog-icon);
+	border-radius: var(--au-radius-pill);
+	background: var(--au-caramel);
+	color: #FFFFFF;
+	box-shadow: 0 8px 18px -10px rgba(var(--au-brown-dark-rgb), 0.55);
+}
+
+.au-prog-card__icon svg {
+	width: 56%;
+	height: 56%;
+}
+
+.au-prog-card__body {
+	position: relative;
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+	/* Padding atas memberi ruang ikon yang menimpa area konten. */
+	padding: calc(var(--au-prog-icon) / 2 + 4px) var(--au-prog-pad) var(--au-prog-pad);
+}
+
+.au-prog-card__name {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: 17px;
+	font-weight: 800;
+	line-height: 1.2;
+	letter-spacing: -0.015em;
+	color: var(--au-brown-dark);
+}
+
+.au-prog-card__desc {
+	margin: 3px 0 0;
+	font-family: var(--au-font-body);
+	font-size: 12.5px;
+	line-height: 1.4;
+	color: var(--au-text-muted);
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.au-prog-card__arrow {
+	position: absolute;
+	right: var(--au-prog-pad);
+	bottom: var(--au-prog-pad);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--au-prog-arrow);
+	height: var(--au-prog-arrow);
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream);
+	color: var(--au-brown);
+	transition:
+		background-color var(--au-duration) var(--au-ease),
+		color var(--au-duration) var(--au-ease);
+}
+
+.au-prog-card__arrow svg {
+	width: 56%;
+	height: 56%;
+}
+
+.au-prog-card:hover .au-prog-card__arrow {
+	background: var(--au-brown);
+	color: #FFFFFF;
+}
+
+/* Tablet 768–1199: 3 kolom, kartu 300px, foto 146px. */
+@media (min-width: 768px) {
+	.au-prog__grid {
+		gap: 16px;
+	}
+
+	.au-prog-card {
+		--au-prog-media: 146px;
+		--au-prog-pad: 15px;
+		--au-prog-radius: 24px;
+		--au-prog-icon: 40px;
+		--au-prog-arrow: 32px;
+		flex-basis: calc((100% - 32px) / 3 - 0.05px);
+		height: 300px;
+	}
+
+	.au-prog-card__name {
+		font-size: 19px;
+	}
+
+	.au-prog-card__desc {
+		/* Ruang kanan untuk tombol panah supaya teks tidak bertabrakan
+		   (di mobile panah berada di bawah teks, jadi ruang ini tidak perlu). */
+		padding-right: calc(var(--au-prog-arrow) + 8px);
+		font-size: 13.5px;
+		line-height: 1.45;
+	}
+}
+
+/* Desktop ≥1200: 5 kolom, kartu 312px, foto 158px. */
+@media (min-width: 1200px) {
+	.au-prog-card {
+		--au-prog-media: 158px;
+		--au-prog-pad: 16px;
+		--au-prog-radius: 26px;
+		--au-prog-icon: 44px;
+		--au-prog-arrow: 34px;
+		flex-basis: calc((100% - 64px) / 5 - 0.05px);
+		height: 312px;
+	}
+
+	.au-prog-card__name {
+		font-size: 21px;
+	}
+
+	.au-prog-card__desc {
+		font-size: 14px;
+		line-height: 1.45;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.au-prog-card,
+	.au-prog-card__arrow {
+		transition: none;
+	}
+
+	.au-prog-card:hover {
+		transform: none;
+	}
+}
+
+/* ==========================================================================
+   TASK 05 — SECTION LOKASI / CABANG (carousel 5 kartu di desktop)
+   Namespace `au-lok-` supaya tidak menimpa komponen homepage lain.
+   Data: Cabang_model::aktif() (nama + wilayah + status). Tidak ada alamat /
+   koordinat di skema `cabang`, jadi kartu menampilkan WILAYAH, bukan alamat.
+   Foto: helper cabang_gambar($wilayah) → satu foto per wilayah (ilustrasi).
+   ========================================================================== */
+
+.au-lok {
+	/* Gutter mengikuti hero & section Program agar tepi kiri/kanan sejajar. */
+	--au-lok-gutter: clamp(26px, 3.3vw, 60px);
+	/* Padding tepi track: gutter container + sisa ruang di luar max-width,
+	   sehingga kartu pertama sejajar dengan heading dan kartu terakhir tidak
+	   terpotong saat carousel berada di posisi awal/akhir. */
+	--au-lok-edge: calc(max((100% - var(--au-container)) / 2, 0px) + var(--au-lok-gutter));
+	position: relative;
+	/* Jarak vertikal section: 32–48px (dulu 48–72px) supaya jarak Program →
+	   Lokasi → Testimoni seimbang setelah section Metode Kami dihapus. */
+	padding-block: clamp(32px, 3vw, 48px);
+	/* Latar transparan: mengikuti latar halaman (warm white + glow hero). */
+	background: transparent;
+}
+
+.au-lok .au-home-container {
+	max-width: var(--au-container);
+	padding-inline: var(--au-lok-gutter);
+}
+
+/* --- Heading ------------------------------------------------------------- */
+
+.au-lok__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 18px 24px;
+}
+
+.au-lok__intro {
+	min-width: 0;
+	max-width: 40rem;
+}
+
+/* Mobile: tombol geser naik sejajar label (kanan) supaya jarak deskripsi ke
+   carousel tetap rapat; judul & deskripsi memakai lebar penuh. */
+@media (max-width: 767px) {
+	.au-lok__head {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		/* `end` membuat dasar label sejajar dasar tombol → jarak label→judul
+		   tetap tepat 12px (tinggi tombol tidak menambah jarak). */
+		align-items: end;
+		row-gap: 0;
+		column-gap: 12px;
+	}
+
+	.au-lok__intro {
+		display: contents;
+	}
+
+	.au-lok__label {
+		grid-column: 1;
+		grid-row: 1;
+		justify-self: start;
+	}
+
+	.au-lok__nav {
+		grid-column: 2;
+		grid-row: 1;
+		margin-left: 0;
+	}
+
+	.au-lok__title {
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
+
+	.au-lok__desc {
+		grid-column: 1 / -1;
+		grid-row: 3;
+		max-width: none;
+	}
+}
+
+.au-lok__label {
+	display: inline-flex;
+	align-items: center;
+	padding: 7px 16px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream-deep);
+	color: var(--au-brown);
+	font-family: var(--au-font-heading);
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	line-height: 1.2;
+	text-transform: uppercase;
+}
+
+.au-lok__title {
+	margin: 12px 0 0;
+	font-family: var(--au-font-heading);
+	font-size: clamp(1.625rem, 2.8vw, 2.5rem);
+	font-weight: 800;
+	line-height: 1.16;
+	letter-spacing: var(--au-tracking-tight);
+	color: var(--au-brown-dark);
+	text-wrap: balance;
+}
+
+.au-lok__desc {
+	margin: 8px 0 0;
+	max-width: 34rem;
+	font-family: var(--au-font-body);
+	font-size: clamp(0.875rem, 1.1vw, 1rem);
+	line-height: 1.6;
+	color: var(--au-text-muted);
+	text-wrap: pretty;
+}
+
+/* Desktop ≥1200: judul & deskripsi rata tengah layar. Tombol geser tetap di
+   kanan dan diposisikan absolut supaya tidak menggeser titik tengah heading
+   (jarak label→judul 12px dan judul→deskripsi 8px tidak berubah). */
+@media (min-width: 1200px) {
+	.au-lok__head {
+		position: relative;
+		display: block;
+	}
+
+	.au-lok__intro {
+		max-width: 46rem;
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	.au-lok__desc {
+		margin-inline: auto;
+	}
+
+	.au-lok__nav {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		margin-left: 0;
+	}
+}
+
+/* --- Tombol navigasi ----------------------------------------------------- */
+
+.au-lok__nav {
+	display: flex;
+	gap: 10px;
+	margin-left: auto;
+	flex: none;
+}
+
+/* `hidden` di-set lewat JS saat semua kartu muat (mis. data ≤ 5 cabang). */
+.au-lok__nav[hidden] {
+	display: none;
+}
+
+.au-lok__nav-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	border: 1px solid rgba(var(--au-brown-rgb), 0.26);
+	border-radius: var(--au-radius-pill);
+	background: #FFFDF9;
+	color: var(--au-brown);
+	cursor: pointer;
+	transition:
+		background-color var(--au-duration) var(--au-ease),
+		border-color var(--au-duration) var(--au-ease),
+		color var(--au-duration) var(--au-ease);
+}
+
+.au-lok__nav-btn svg {
+	width: 17px;
+	height: 17px;
+}
+
+.au-lok__nav-btn:hover:not(:disabled) {
+	background: var(--au-caramel);
+	border-color: var(--au-caramel);
+	color: #FFFFFF;
+}
+
+.au-lok__nav-btn:focus-visible {
+	outline: 2px solid var(--au-caramel);
+	outline-offset: 2px;
+}
+
+/* Tombol nonaktif: warna muted, tidak bisa diklik. */
+.au-lok__nav-btn:disabled {
+	border-color: rgba(var(--au-brown-rgb), 0.10);
+	background: rgba(255, 253, 249, 0.6);
+	color: rgba(117, 102, 92, 0.45);
+	cursor: default;
+}
+
+/* --- Track / carousel ---------------------------------------------------- */
+
+.au-lok__viewport {
+	margin-top: clamp(24px, 2.4vw, 30px);
+}
+
+.au-lok__track {
+	display: flex;
+	gap: 12px;
+	padding-inline: var(--au-lok-edge);
+	/* padding-top 6px = angkat hover 4px + 2px kelonggaran, supaya tepi atas
+	   kartu tidak terpotong oleh `overflow-y: hidden` saat hover. */
+	padding-block: 6px 12px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	scroll-padding-inline: var(--au-lok-edge);
+	scrollbar-width: thin;
+	scrollbar-color: rgba(var(--au-brown-rgb), 0.24) transparent;
+	overscroll-behavior-x: contain;
+}
+
+.au-lok__track::-webkit-scrollbar {
+	height: 6px;
+}
+
+.au-lok__track::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.au-lok__track::-webkit-scrollbar-thumb {
+	border-radius: var(--au-radius-pill);
+	background: rgba(var(--au-brown-rgb), 0.22);
+}
+
+.au-lok__track:focus-visible {
+	outline: 2px solid var(--au-caramel);
+	outline-offset: -2px;
+}
+
+/* --- Kartu --------------------------------------------------------------- */
+
+.au-lok-card {
+	/* Mobile 360–767: satu kartu penuh + sedikit kartu berikutnya. */
+	display: flex;
+	flex: 0 0 268px;
+	flex-direction: column;
+	height: 335px;
+	overflow: hidden;
+	scroll-snap-align: start;
+	/* Putih bersih: latar halaman warm white (#FFF9F2) seperti hero. */
+	background: #FFFFFF;
+	border: 1px solid rgba(148, 91, 56, 0.10);
+	border-radius: 20px;
+	box-shadow: 0 18px 40px -30px rgba(var(--au-brown-dark-rgb), 0.45);
+	transition:
+		transform var(--au-duration) var(--au-ease),
+		box-shadow var(--au-duration) var(--au-ease);
+}
+
+/* Animasi hover disamakan dengan kartu Program (TASK 04): kartu terangkat 4px
+   + shadow menguat. `:focus-within` memberi umpan balik yang sama untuk
+   pengguna keyboard (kartu ini bukan link utuh, fokus jatuh ke tombol CTA). */
+.au-lok-card:hover,
+.au-lok-card:focus-within {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 48px -28px rgba(var(--au-brown-dark-rgb), 0.5);
+}
+
+.au-lok-card__media {
+	position: relative;
+	flex: none;
+	height: 140px;
+	background: linear-gradient(150deg, #F6E7D6 0%, #EBD5BD 100%);
+}
+
+.au-lok-card__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/* Titik fokus per wilayah di-set inline dari view (--au-lok-pos). */
+	object-position: var(--au-lok-pos, center 45%);
+	/* Cegah drag-and-drop gambar bawaan browser agar drag carousel (mouse)
+	   tidak terhenti saat pointer dimulai di atas foto. */
+	-webkit-user-drag: none;
+	user-select: none;
+}
+
+.au-lok-card__fallback {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: var(--au-font-heading);
+	font-size: 1.75rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	color: rgba(var(--au-brown-rgb), 0.45);
+}
+
+.au-lok-card__badge {
+	position: absolute;
+	left: 12px;
+	top: 12px;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 10px;
+	border-radius: var(--au-radius-pill);
+	background: rgba(255, 252, 248, 0.92);
+	color: var(--au-brown);
+	font-family: var(--au-font-body);
+	font-size: 11.5px;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: 0.01em;
+	box-shadow: 0 6px 14px -10px rgba(var(--au-brown-dark-rgb), 0.6);
+}
+
+.au-lok-card__badge::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-caramel);
+}
+
+.au-lok-card__body {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+	padding: 14px;
+}
+
+.au-lok-card__name {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: 17.5px;
+	font-weight: 800;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	color: var(--au-brown-dark);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.au-lok-card__wilayah {
+	display: flex;
+	align-items: flex-start;
+	gap: 6px;
+	margin: 5px 0 0;
+	font-family: var(--au-font-body);
+	font-size: 12.5px;
+	line-height: 1.35;
+	color: var(--au-text-muted);
+}
+
+.au-lok-card__wilayah svg {
+	flex: none;
+	width: 14px;
+	height: 14px;
+	margin-top: 1px;
+	color: var(--au-caramel);
+}
+
+.au-lok-card__program {
+	margin-top: 12px;
+	padding-top: 11px;
+	border-top: 1px solid rgba(148, 91, 56, 0.10);
+}
+
+.au-lok-card__program-label {
+	display: block;
+	font-family: var(--au-font-body);
+	font-size: 10.5px;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: rgba(var(--au-brown-rgb), 0.55);
+}
+
+.au-lok-card__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin-top: 7px;
+}
+
+.au-lok-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 8px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream);
+	color: var(--au-brown);
+	font-family: var(--au-font-body);
+	font-size: 11.5px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.au-lok-card__kosong {
+	display: block;
+	margin-top: 7px;
+	font-family: var(--au-font-body);
+	font-size: 12px;
+	line-height: 1.35;
+	color: var(--au-text-muted);
+}
+
+.au-lok-card__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	height: 36px;
+	margin-top: auto;
+	padding: 0 12px 0 14px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream);
+	color: var(--au-brown);
+	font-family: var(--au-font-heading);
+	font-size: 12.5px;
+	font-weight: 700;
+	line-height: 1;
+	text-decoration: none;
+	transition:
+		background-color var(--au-duration) var(--au-ease),
+		color var(--au-duration) var(--au-ease);
+}
+
+.au-lok-card__cta svg {
+	flex: none;
+	width: 14px;
+	height: 14px;
+	transition: transform var(--au-duration) var(--au-ease);
+}
+
+.au-lok-card__cta:hover {
+	background: var(--au-brown);
+	color: #FFFFFF;
+}
+
+.au-lok-card__cta:hover svg {
+	transform: translateX(2px);
+}
+
+/* CTA ikut bereaksi saat kursor/fokus ada di mana pun dalam kartu
+   (paralel dengan panah bulat pada kartu Program). */
+.au-lok-card:hover .au-lok-card__cta,
+.au-lok-card:focus-within .au-lok-card__cta {
+	background: var(--au-brown);
+	color: #FFFFFF;
+}
+
+.au-lok-card:hover .au-lok-card__cta svg,
+.au-lok-card:focus-within .au-lok-card__cta svg {
+	transform: translateX(2px);
+}
+
+.au-lok-card__cta:focus-visible {
+	outline: 2px solid var(--au-caramel);
+	outline-offset: 2px;
+}
+
+.au-lok__note {
+	margin: 14px 0 0;
+	font-family: var(--au-font-body);
+	font-size: 11.5px;
+	line-height: 1.4;
+	color: rgba(117, 102, 92, 0.85);
+}
+
+/* CTA di bawah carousel: rata tengah, memakai varian tombol utama
+   (coklat solid) dari design system + ikon map-pin di kiri label. */
+.au-lok__semua {
+	display: flex;
+	justify-content: center;
+	margin-top: clamp(18px, 2.2vw, 26px);
+}
+
+.au-lok__semua-btn {
+	gap: 10px;
+	/* Label panjang: biarkan turun baris di layar sempit alih-alih meluber
+	   (base `.au-home-button` memakai `white-space: nowrap`). */
+	white-space: normal;
+	line-height: 1.25;
+}
+
+.au-lok__semua-btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+/* --- Tablet 768–1199: 3 kartu (tablet kecil: 2 kartu + peek) ------------- */
+
+@media (min-width: 768px) {
+	.au-lok__track {
+		gap: 14px;
+	}
+
+	.au-lok-card {
+		flex-basis: clamp(250px, calc((100% - 28px) / 3 - 0.05px), 280px);
+		height: 345px;
+		border-radius: 22px;
+	}
+
+	.au-lok-card__media {
+		height: 146px;
+	}
+
+	.au-lok-card__name {
+		font-size: 18px;
+	}
+
+	.au-lok-card__wilayah {
+		font-size: 13px;
+	}
+
+	.au-lok__nav-btn {
+		width: 40px;
+		height: 40px;
+	}
+}
+
+/* Tablet kecil (768–899): 2 kartu penuh + sebagian kartu berikutnya. */
+@media (min-width: 768px) and (max-width: 899px) {
+	.au-lok-card {
+		flex-basis: clamp(250px, calc((100% - 14px) / 2 - 0.05px), 280px);
+	}
+}
+
+/* --- Desktop ≥1200: tepat 5 kartu --------------------------------------- */
+
+@media (min-width: 1200px) {
+	/* Desktop: tepat 5 kartu. Carousel dibatasi ke container 1440px sehingga
+	   sisa kartu ke-6 terpotong bersih di tepi konten (tidak ada sliver kartu
+	   berikutnya di gutter). Tablet & mobile tetap full-bleed + peek. */
+	.au-lok__viewport {
+		max-width: var(--au-container);
+		margin-inline: auto;
+		padding-inline: var(--au-lok-gutter);
+	}
+
+	.au-lok__track {
+		gap: 16px;
+		padding-inline: 0;
+		scroll-padding-inline: 0;
+		/* Navigasi memakai tombol panah; scrollbar disembunyikan di desktop. */
+		scrollbar-width: none;
+	}
+
+	.au-lok__track::-webkit-scrollbar {
+		display: none;
+	}
+
+	.au-lok-card {
+		flex-basis: calc((100% - 64px) / 5 - 0.05px);
+		height: 352px;
+		border-radius: 24px;
+	}
+
+	.au-lok-card__media {
+		height: 150px;
+	}
+
+	.au-lok-card__body {
+		padding: 15px;
+	}
+
+	.au-lok-card__name {
+		font-size: 19px;
+	}
+
+	.au-lok-card__wilayah {
+		font-size: 13.5px;
+	}
+
+	.au-lok-card__cta {
+		font-size: 13px;
+	}
+
+	.au-lok__nav-btn {
+		width: 44px;
+		height: 44px;
+	}
+
+	.au-lok__nav-btn svg {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.au-lok-card,
+	.au-lok-card__cta,
+	.au-lok-card__cta svg,
+	.au-lok__nav-btn {
+		transition: none;
+	}
+
+	.au-lok__track {
+		scroll-behavior: auto;
+	}
+
+	.au-lok-card:hover,
+	.au-lok-card:focus-within {
+		transform: none;
+	}
+
+	.au-lok-card__cta:hover svg,
+	.au-lok-card:hover .au-lok-card__cta svg,
+	.au-lok-card:focus-within .au-lok-card__cta svg {
+		transform: none;
+	}
+}
+
+/* ==========================================================================
+   TASK 06 — SECTION TESTIMONI (namespace `au-tes-`)
+   Data: belum ada tabel/CRUD testimoni di proyek → view merender empty state
+   dan siap menerima `$testimonis` dari controller (nama, isi, foto, rating,
+   kategori, program, tanggal). Tidak ada testimoni/nama/rating karangan.
+   ========================================================================== */
+
+.au-tes {
+	--au-tes-gutter: clamp(26px, 3.3vw, 60px);
+	--au-tes-edge: calc(max((100% - var(--au-container)) / 2, 0px) + var(--au-tes-gutter));
+	position: relative;
+	/* Jarak vertikal sama dengan section Lokasi (32–48px); padding bawah sedikit
+	   lebih besar karena section ini terakhir sebelum footer. */
+	padding-top: clamp(32px, 3vw, 48px);
+	padding-bottom: clamp(52px, 4.6vw, 72px);
+	background: transparent;
+	/* Aksen dekoratif sangat lembut: kolam cream di belakang kartu supaya
+	   kartu #FFF9F2 tetap terbaca di atas latar halaman #FFF9F2. Tepinya
+	   melebur ke latar (tanpa garis batas section). */
+	background-image: radial-gradient(58% 52% at 50% 68%, rgba(245, 233, 220, 0.75), rgba(245, 233, 220, 0) 72%);
+}
+
+.au-tes .au-home-container {
+	max-width: var(--au-container);
+	padding-inline: var(--au-tes-gutter);
+}
+
+/* --- Heading ------------------------------------------------------------- */
+
+.au-tes__head {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 18px;
+}
+
+.au-tes__intro {
+	min-width: 0;
+	max-width: 46rem;
+	margin-inline: auto;
+	text-align: center;
+}
+
+.au-tes__label {
+	display: inline-flex;
+	align-items: center;
+	padding: 7px 16px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream);
+	color: #945B38;
+	font-family: var(--au-font-heading);
+	font-size: 0.71875rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	line-height: 1.2;
+	text-transform: uppercase;
+}
+
+.au-tes__title {
+	margin: 12px 0 0;
+	font-family: var(--au-font-heading);
+	font-size: clamp(1.5625rem, 6.4vw, 1.8125rem);
+	font-weight: 800;
+	line-height: 1.16;
+	letter-spacing: var(--au-tracking-tight);
+	color: var(--au-brown-dark);
+	text-wrap: balance;
+}
+
+.au-tes__desc {
+	margin: 8px 0 0;
+	font-family: var(--au-font-body);
+	font-size: clamp(0.8125rem, 3.4vw, 0.875rem);
+	line-height: 1.6;
+	color: var(--au-text-muted);
+	text-wrap: pretty;
+}
+
+/* Navigasi carousel: default di bawah heading (mobile), kanan (tablet),
+   absolut kanan-bawah (desktop) supaya titik tengah heading tidak bergeser. */
+.au-tes__nav {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.au-tes__nav[hidden] {
+	display: none;
+}
+
+.au-tes__nav-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 1px solid rgba(148, 91, 56, 0.16);
+	border-radius: var(--au-radius-pill);
+	background: #FFFDF9;
+	color: var(--au-brown);
+	cursor: pointer;
+	transition:
+		background-color var(--au-duration) var(--au-ease),
+		border-color var(--au-duration) var(--au-ease),
+		color var(--au-duration) var(--au-ease);
+}
+
+.au-tes__nav-btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+.au-tes__nav-btn:hover:not(:disabled) {
+	background: var(--au-caramel);
+	border-color: var(--au-caramel);
+	color: #FFFFFF;
+}
+
+.au-tes__nav-btn:focus-visible {
+	outline: 2px solid var(--au-caramel);
+	outline-offset: 3px;
+}
+
+.au-tes__nav-btn:disabled {
+	background: rgba(255, 253, 249, 0.6);
+	color: rgba(117, 69, 45, 0.35);
+	cursor: default;
+}
+
+/* --- Jarak heading → kartu (20 / 24 / 32) -------------------------------- */
+
+.au-tes__stage {
+	margin-top: 20px;
+}
+
+/* --- Carousel ------------------------------------------------------------ */
+
+.au-tes__track {
+	display: flex;
+	align-items: stretch;
+	gap: 12px;
+	padding-inline: var(--au-tes-edge);
+	/* padding-top 6px = angkat hover 4px + 2px kelonggaran. */
+	padding-block: 6px 12px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	scroll-padding-inline: var(--au-tes-edge);
+	scrollbar-width: thin;
+	scrollbar-color: rgba(var(--au-brown-rgb), 0.24) transparent;
+	overscroll-behavior-x: contain;
+}
+
+/* --- Kartu (mobile 360–767) --------------------------------------------- */
+
+.au-tes-card {
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 280px;
+	min-height: 300px;
+	padding: 18px;
+	scroll-snap-align: start;
+	background: #FFF9F2;
+	border: 1px solid rgba(148, 91, 56, 0.10);
+	border-radius: 20px;
+	box-shadow: 0 18px 40px -30px rgba(var(--au-brown-dark-rgb), 0.45);
+	transition:
+		transform var(--au-duration) var(--au-ease),
+		box-shadow var(--au-duration) var(--au-ease);
+}
+
+/* Umpan balik hover/fokus sama dengan kartu Program & Lokasi. */
+.au-tes-card:hover,
+.au-tes-card:focus-within {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 48px -28px rgba(var(--au-brown-dark-rgb), 0.5);
+}
+
+.au-tes-card__atas {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.au-tes-card__quote {
+	width: 30px;
+	height: 30px;
+	flex: none;
+	color: #B8794B;
+}
+
+.au-tes-card__rating {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding-top: 2px;
+}
+
+.au-tes-card__star {
+	width: 13px;
+	height: 13px;
+	flex: none;
+	color: #D9A16E;
+}
+
+.au-tes-card__star--kosong {
+	color: rgba(217, 161, 110, 0.42);
+}
+
+.au-tes-card__isi {
+	/* 5 baris di mobile; tombol "Baca Selengkapnya" muncul bila terpotong. */
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 5;
+	overflow: hidden;
+	margin: 14px 0 0;
+	font-family: var(--au-font-body);
+	font-size: 13.5px;
+	line-height: 1.6;
+	color: var(--au-brown-dark);
+	text-wrap: pretty;
+}
+
+.au-tes-card__isi--buka {
+	display: block;
+	-webkit-line-clamp: unset;
+	overflow: visible;
+}
+
+.au-tes-card__baca {
+	align-self: flex-start;
+	margin-top: 4px;
+	padding: 0;
+	border: 0;
+	background: none;
+	font-family: var(--au-font-heading);
+	font-size: 12.5px;
+	font-weight: 700;
+	color: var(--au-caramel);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}
+
+.au-tes-card__baca[hidden] {
+	display: none;
+}
+
+.au-tes-card__baca:hover {
+	color: var(--au-brown-dark);
+}
+
+.au-tes-card__baca:focus-visible {
+	outline: 2px solid var(--au-caramel);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+.au-tes-card__bawah {
+	margin-top: auto;
+	padding-top: 14px;
+	border-top: 1px solid rgba(148, 91, 56, 0.16);
+}
+
+.au-tes-card__orang {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+.au-tes-card__avatar {
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	flex: none;
+	overflow: hidden;
+	border-radius: var(--au-radius-pill);
+	background: #F3E5D7;
+	color: var(--au-brown);
+	font-family: var(--au-font-heading);
+	font-size: 12.5px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	object-fit: cover;
+}
+
+.au-tes-card__avatar--inisial svg {
+	width: 18px;
+	height: 18px;
+}
+
+.au-tes-card__identitas {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.au-tes-card__nama {
+	font-family: var(--au-font-heading);
+	font-size: 13.5px;
+	font-weight: 700;
+	line-height: 1.3;
+	color: var(--au-brown-dark);
+	overflow-wrap: anywhere;
+}
+
+.au-tes-card__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 8px;
+	font-family: var(--au-font-body);
+	font-size: 11.5px;
+	line-height: 1.4;
+	color: var(--au-text-muted);
+}
+
+.au-tes-card__program {
+	padding: 1px 8px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream);
+	color: var(--au-brown);
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.au-tes-card__tanggal {
+	white-space: nowrap;
+}
+
+/* --- Empty state --------------------------------------------------------- */
+
+.au-tes__empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	max-width: 40rem;
+	margin-inline: auto;
+	padding: clamp(30px, 4.4vw, 46px) clamp(22px, 4vw, 40px);
+	text-align: center;
+	background: #FFF9F2;
+	border: 1px solid rgba(148, 91, 56, 0.10);
+	border-radius: 24px;
+	box-shadow: 0 18px 40px -32px rgba(var(--au-brown-dark-rgb), 0.4);
+}
+
+.au-tes__empty-ikon {
+	display: grid;
+	place-items: center;
+	width: 56px;
+	height: 56px;
+	border-radius: var(--au-radius-pill);
+	background: var(--au-cream);
+	color: var(--au-caramel);
+}
+
+.au-tes__empty-ikon svg {
+	width: 26px;
+	height: 26px;
+}
+
+.au-tes__empty-teks {
+	margin: 0;
+	max-width: 26rem;
+	font-family: var(--au-font-body);
+	font-size: clamp(0.9375rem, 1.1vw, 1rem);
+	line-height: 1.6;
+	color: var(--au-text-muted);
+	text-wrap: pretty;
+}
+
+/* --- Tablet 768–1199: 2 kartu ------------------------------------------- */
+
+@media (min-width: 768px) {
+	.au-tes__stage {
+		margin-top: 24px;
+	}
+
+	.au-tes__title {
+		font-size: clamp(1.875rem, 2.6vw, 2.125rem);
+	}
+
+	.au-tes__desc {
+		font-size: clamp(0.9375rem, 1.2vw, 1rem);
+	}
+
+	.au-tes__nav {
+		align-self: flex-end;
+	}
+
+	.au-tes__nav-btn {
+		width: 40px;
+		height: 40px;
+	}
+
+	.au-tes__track {
+		gap: 16px;
+	}
+
+	.au-tes-card {
+		flex-basis: calc((100% - 16px) / 2 - 0.05px);
+		min-height: 310px;
+		padding: 20px;
+		border-radius: 22px;
+	}
+
+	.au-tes-card__quote {
+		width: 34px;
+		height: 34px;
+	}
+
+	.au-tes-card__isi {
+		font-size: 14.5px;
+	}
+
+	.au-tes-card__avatar {
+		width: 44px;
+		height: 44px;
+	}
+
+	.au-tes-card__nama {
+		font-size: 14px;
+	}
+
+	.au-tes-card__meta {
+		font-size: 12px;
+	}
+}
+
+/* --- Desktop ≥1200: tepat 3 kartu --------------------------------------- */
+
+@media (min-width: 1200px) {
+	.au-tes__head {
+		position: relative;
+		display: block;
+	}
+
+	.au-tes__nav {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+	}
+
+	.au-tes__nav-btn {
+		width: 44px;
+		height: 44px;
+	}
+
+	.au-tes__title {
+		font-size: clamp(2.125rem, 2.8vw, 2.5rem);
+	}
+
+	.au-tes__stage {
+		margin-top: 32px;
+	}
+
+	/* Carousel dibatasi ke container 1440px supaya tepat 3 kartu dan sisa
+	   kartu ke-4 terpotong bersih di tepi konten. */
+	.au-tes__viewport {
+		max-width: var(--au-container);
+		margin-inline: auto;
+		padding-inline: var(--au-tes-gutter);
+	}
+
+	.au-tes__track {
+		gap: 20px;
+		padding-inline: 0;
+		scroll-padding-inline: 0;
+		scrollbar-width: none;
+	}
+
+	.au-tes__track::-webkit-scrollbar {
+		display: none;
+	}
+
+	.au-tes-card {
+		flex-basis: calc((100% - 40px) / 3 - 0.05px);
+		min-height: 320px;
+		padding: 24px;
+		border-radius: 24px;
+	}
+
+	.au-tes-card__quote {
+		width: 36px;
+		height: 36px;
+	}
+
+	.au-tes-card__star {
+		width: 14px;
+		height: 14px;
+	}
+
+	.au-tes-card__isi {
+		-webkit-line-clamp: 6;
+		font-size: 15.5px;
+		line-height: 1.65;
+	}
+
+	.au-tes-card__avatar {
+		width: 46px;
+		height: 46px;
+	}
+
+	.au-tes-card__nama {
+		font-size: 14.5px;
+	}
+
+	.au-tes-card__meta {
+		font-size: 12.5px;
+	}
+}
+
+/* --- Hormati preferensi gerak ------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.au-tes-card,
+	.au-tes__nav-btn {
+		transition: none;
+	}
+
+	.au-tes-card:hover,
+	.au-tes-card:focus-within {
+		transform: none;
+	}
+
+	.au-tes__track {
+		scroll-behavior: auto;
+	}
+}
+
+/* ==========================================================================
+   TASK 08 — CARA MENDAFTAR (5 kartu editorial, tepat di bawah hero)
+   Namespace `au-reg-`. Header di tengah + lima kartu: kartu 01 gradient
+   caramel (highlight), kartu 02–05 cream hangat. Nomor besar di kiri atas,
+   ilustrasi inline SVG di kanan atas, judul + deskripsi di bawah, ornamen
+   geometris di sudut kanan bawah.
+
+   Latar section: warm cream + glow radial sangat halus + ornamen inline SVG
+   (kubah, pola bintang, lengkung) dengan opacity 0.08–0.16. Tepi atas latar
+   dibuat transparan agar bayangan panel hero tidak terpotong garis keras.
+   ========================================================================== */
+
+.au-reg {
+	/* Palet lokal (turunan design token, bukan palet baru). */
+	--au-reg-caramel: #945B38;
+	--au-reg-caramel-deep: #824A2D;
+	--au-reg-gold: #D9A16E;
+	--au-reg-warm: #FFF8EF;
+	--au-reg-line: rgba(148, 91, 56, 0.16);
+	--au-reg-gutter: clamp(26px, 3.3vw, 60px);
+	position: relative;
+	isolation: isolate;
+	/* Ornamen dekoratif & kartu tidak boleh menimbulkan scroll horizontal. */
+	overflow: hidden;
+	/* Jarak hero → section berasal dari padding bawah hero (40–64px). Margin
+	   negatif kecil (4–8px) menyerap sebagiannya agar jarak ke konten pertama
+	   jatuh di rentang 32–64px tanpa menyentuh CSS hero. */
+	margin: clamp(-8px, -0.42vw, -4px) 0 0;
+	padding-block: 0;
+	background:
+		radial-gradient(58% 62% at 12% 16%, rgba(217, 161, 110, 0.16), rgba(217, 161, 110, 0) 68%),
+		radial-gradient(52% 58% at 88% 22%, rgba(148, 91, 56, 0.10), rgba(148, 91, 56, 0) 70%),
+		linear-gradient(180deg,
+			rgba(255, 249, 242, 0) 0,
+			#FFF9F2 110px,
+			#FFF9F2 calc(100% - 100px),
+			rgba(255, 249, 242, 0) 100%);
+}
+
+/* --- Ornamen latar (di belakang konten, ter-clip section) ----------------- */
+
+.au-reg__deco {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.au-reg__deco svg {
+	position: absolute;
+	display: block;
+	height: auto;
+	color: var(--au-reg-caramel);
+}
+
+.au-reg__deco-kubah {
+	left: -40px;
+	top: 3%;
+	width: clamp(170px, 22vw, 320px);
+	opacity: 0.10;
+}
+
+.au-reg__deco-pola {
+	right: -46px;
+	top: 5%;
+	width: clamp(180px, 26vw, 380px);
+	opacity: 0.12;
+}
+
+.au-reg__deco-lengkung {
+	left: 50%;
+	bottom: -30px;
+	width: clamp(420px, 70vw, 980px);
+	height: clamp(80px, 11vw, 170px);
+	transform: translateX(-50%);
+	color: var(--au-reg-gold);
+	opacity: 0.08;
+}
+
+@media (min-width: 1440px) {
+	.au-reg__deco-kubah {
+		left: -70px;
+	}
+
+	.au-reg__deco-pola {
+		right: -80px;
+	}
+}
+
+/* --- Kontainer & header (tengah) ----------------------------------------- */
+
+.au-reg .au-home-container {
+	position: relative;
+	z-index: 1;
+	max-width: var(--au-container);
+	padding-inline: var(--au-reg-gutter);
+}
+
+.au-reg__head {
+	max-width: 900px;
+	margin-inline: auto;
+	text-align: center;
+}
+
+.au-reg__label {
+	display: block;
+	font-family: var(--au-font-heading);
+	font-size: 0.75rem; /* 12px */
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	line-height: 1.2;
+	text-transform: uppercase;
+	color: #A66B43;
+}
+
+.au-reg__title {
+	margin: 12px 0 0;
+	font-family: var(--au-font-heading);
+	font-size: 1.625rem; /* 26px */
+	font-weight: 800;
+	line-height: 1.15;
+	letter-spacing: var(--au-tracking-tight);
+	color: var(--au-brown-dark);
+	text-wrap: balance;
+}
+
+.au-reg__desc {
+	max-width: 850px;
+	margin: 12px auto 0;
+	font-family: var(--au-font-body);
+	font-size: 0.96875rem; /* 15.5px */
+	line-height: 1.5;
+	color: var(--au-text-muted);
+	text-wrap: pretty;
+}
+
+/* --- Grid lima kartu ------------------------------------------------------ */
+
+.au-reg__cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	/* Semua baris sama tinggi supaya kelima kartu seragam juga di tablet
+	   (3+2) dan mobile (2+2+1). */
+	grid-auto-rows: 1fr;
+	gap: 13px;
+	margin: 28px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* --- Kartu --------------------------------------------------------------- */
+
+.au-reg-card {
+	/* Palet ilustrasi (dipakai class .ill-* di dalam SVG). */
+	--au-ill-strong: #945B38;
+	--au-ill-mid: #D9A16E;
+	--au-ill-soft: #FFFDFA;
+	--au-ill-ink: #75452D;
+	--au-ill-edge: rgba(117, 69, 45, 0.18);
+	--au-card-pad: 17px;
+	--au-card-num: 32px;
+	--au-card-ill: 46px;
+	--au-card-orn: 68px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 195px;
+	padding: var(--au-card-pad);
+	border: 1px solid var(--au-reg-line);
+	border-radius: 21px;
+	background: var(--au-reg-warm);
+	box-shadow: 0 12px 28px rgba(72, 39, 25, 0.07);
+	overflow: hidden;
+	transition:
+		transform 260ms ease,
+		box-shadow 260ms ease;
+}
+
+/* Kartu 01 — highlight caramel. */
+.au-reg-card--highlight {
+	--au-ill-strong: #F3DCC6;
+	--au-ill-mid: #E7BC85;
+	--au-ill-soft: #FFF9F2;
+	--au-ill-ink: #8A4E2F;
+	--au-ill-edge: rgba(255, 249, 242, 0.38);
+	border-color: rgba(255, 252, 248, 0.22);
+	background:
+		radial-gradient(74% 86% at 100% 0%, rgba(217, 161, 110, 0.28), rgba(217, 161, 110, 0) 62%),
+		linear-gradient(150deg, #A9663C 0%, #945B38 48%, #824A2D 100%);
+	box-shadow: 0 26px 46px -24px rgba(130, 74, 45, 0.55);
+}
+
+/* Nomor besar (tanpa kotak latar). */
+.au-reg-card__num {
+	position: absolute;
+	top: var(--au-card-pad);
+	left: var(--au-card-pad);
+	font-family: var(--au-font-heading);
+	font-size: var(--au-card-num);
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	color: #75452D;
+	font-variant-numeric: tabular-nums;
+}
+
+.au-reg-card--highlight .au-reg-card__num {
+	color: #FFF6EC;
+}
+
+/* Ilustrasi kanan atas. */
+.au-reg-card__ill {
+	position: absolute;
+	top: calc(var(--au-card-pad) - 3px);
+	right: var(--au-card-pad);
+	width: var(--au-card-ill);
+	height: var(--au-card-ill);
+}
+
+/* Ornamen geometris kanan bawah (boleh terpotong tepi kartu). */
+.au-reg-card__orn {
+	position: absolute;
+	right: -14px;
+	bottom: -14px;
+	width: var(--au-card-orn);
+	height: var(--au-card-orn);
+	color: var(--au-reg-gold);
+	opacity: 0.20;
+	pointer-events: none;
+}
+
+.au-reg-card--highlight .au-reg-card__orn {
+	color: #F3DCC6;
+	opacity: 0.18;
+}
+
+/* Judul + deskripsi menempel di bawah kartu. */
+.au-reg-card__body {
+	position: relative;
+	z-index: 1;
+	margin-top: auto;
+	padding-top: 52px;
+}
+
+.au-reg-card__title {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: 1rem; /* 16px */
+	font-weight: 800;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	color: var(--au-brown-dark);
+}
+
+.au-reg-card__desc {
+	margin: 8px 0 0;
+	font-family: var(--au-font-body);
+	font-size: 0.78125rem; /* 12.5px */
+	font-weight: 400;
+	line-height: 1.45;
+	color: var(--au-text-muted);
+	text-wrap: pretty;
+}
+
+.au-reg-card--highlight .au-reg-card__title {
+	color: #FFFCF8;
+}
+
+.au-reg-card--highlight .au-reg-card__desc {
+	color: rgba(255, 246, 236, 0.88);
+}
+
+/* --- Ilustrasi SVG (palet mengikuti kartu) -------------------------------- */
+
+.au-reg-card__ill .ill-strong {
+	fill: var(--au-ill-strong);
+}
+
+.au-reg-card__ill .ill-mid {
+	fill: var(--au-ill-mid);
+}
+
+.au-reg-card__ill .ill-soft {
+	fill: var(--au-ill-soft);
+	stroke: var(--au-ill-edge);
+	stroke-width: 1.5;
+}
+
+.au-reg-card__ill .ill-ink {
+	fill: var(--au-ill-ink);
+}
+
+.au-reg-card__ill .ill-check,
+.au-reg-card__ill .ill-spine,
+.au-reg-card__ill .ill-line {
+	fill: none;
+	stroke: var(--au-ill-ink);
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.au-reg-card__ill .ill-check {
+	stroke-width: 4.4;
+}
+
+.au-reg-card__ill .ill-spine {
+	stroke: var(--au-ill-mid);
+	stroke-width: 2.6;
+}
+
+.au-reg-card__ill .ill-line {
+	stroke: var(--au-ill-mid);
+	stroke-width: 2.2;
+}
+
+/* --- Hover (tanpa menggeser layout permanen) ------------------------------ */
+
+@media (hover: hover) {
+	.au-reg-card:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 22px 42px -18px rgba(72, 39, 25, 0.22);
+	}
+
+	.au-reg-card--highlight:hover {
+		box-shadow: 0 30px 52px -22px rgba(130, 74, 45, 0.62);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.au-reg-card {
+		transition: none;
+	}
+
+	.au-reg-card:hover {
+		transform: none;
+	}
+}
+
+/* --- Tablet 768–1199: 3 kartu + 2 kartu ---------------------------------- */
+
+@media (min-width: 768px) {
+	.au-reg {
+		padding-bottom: 8px;
+	}
+
+	.au-reg__label {
+		font-size: 0.78125rem; /* 12.5px */
+	}
+
+	.au-reg__title {
+		margin-top: 14px;
+		font-size: 2rem; /* 32px */
+	}
+
+	.au-reg__desc {
+		font-size: 1.0625rem; /* 17px */
+	}
+
+	.au-reg__cards {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 16px;
+		margin-top: 38px;
+	}
+
+	.au-reg-card {
+		--au-card-pad: 22px;
+		--au-card-num: 38px;
+		--au-card-ill: 56px;
+		--au-card-orn: 78px;
+		min-height: 265px;
+		border-radius: 26px;
+	}
+
+	.au-reg-card__body {
+		padding-top: 66px;
+	}
+
+	.au-reg-card__title {
+		font-size: 1.25rem; /* 20px */
+	}
+
+	.au-reg-card__desc {
+		margin-top: 9px;
+		font-size: 0.90625rem; /* 14.5px */
+		line-height: 1.5;
+	}
+}
+
+/* --- Laptop 1200–1439: lima kolom ---------------------------------------- */
+
+@media (min-width: 1200px) {
+	.au-reg {
+		padding-bottom: clamp(24px, 3vw, 40px);
+	}
+
+	.au-reg__label {
+		font-size: 0.8125rem; /* 13px */
+	}
+
+	.au-reg__title {
+		font-size: clamp(2.25rem, 2.9vw, 2.625rem); /* 36–42px */
+	}
+
+	.au-reg__desc {
+		font-size: clamp(1.0625rem, 1.4vw, 1.1875rem); /* 17–19px */
+	}
+
+	.au-reg__cards {
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 16px;
+		margin-top: 44px;
+	}
+
+	.au-reg-card {
+		--au-card-pad: 23px;
+		--au-card-num: 40px;
+		--au-card-ill: 58px;
+		--au-card-orn: 80px;
+		min-height: 290px;
+		border-radius: 28px;
+	}
+
+	.au-reg-card__body {
+		padding-top: 68px;
+	}
+
+	.au-reg-card__title {
+		font-size: 1.28125rem; /* 20.5px */
+	}
+
+	.au-reg-card__desc {
+		font-size: 0.90625rem; /* 14.5px */
+	}
+}
+
+/* --- Desktop besar ≥1440: proporsi penuh --------------------------------- */
+
+@media (min-width: 1440px) {
+	.au-reg__title {
+		font-size: 2.75rem; /* 44px */
+	}
+
+	.au-reg__desc {
+		font-size: 1.15625rem; /* 18.5px */
+	}
+
+	.au-reg__cards {
+		gap: 22px;
+		margin-top: 48px;
+	}
+
+	.au-reg-card {
+		--au-card-pad: 30px;
+		--au-card-num: 46px;
+		--au-card-ill: 70px;
+		--au-card-orn: 86px;
+		min-height: 304px;
+		border-radius: 29px;
+	}
+
+	.au-reg-card__body {
+		padding-top: 82px;
+	}
+
+	.au-reg-card__title {
+		font-size: 1.5625rem; /* 25px */
+	}
+
+	.au-reg-card__desc {
+		margin-top: 12px;
+		font-size: 1.09375rem; /* 17.5px */
+		line-height: 1.5;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   LATAR HALAMAN BERANDA = LATAR HERO
+   Seluruh halaman memakai warm white + glow radial yang sama dengan hero,
+   sehingga tidak ada garis batas warna antar-section.
+
+   - Di-scope dengan `:has(.au-home-hero)` (class hero hanya ada di beranda)
+     agar body halaman admin/guru/peserta & publik lain tidak tersentuh.
+   - Glow memakai `background-attachment: fixed` supaya posisinya mengikuti
+     viewport (tidak ikut melar mengikuti tinggi halaman yang panjang).
+   - Hero dibuat transparan + glow-nya dimatikan supaya tidak ada tumpukan
+     glow ganda / sambungan yang terlihat di tepi bawah hero.
+   -------------------------------------------------------------------------- */
+@supports selector(:has(*)) {
+	body:has(.au-home-hero) {
+		background-color: #FFF9F2;
+		background-image:
+			radial-gradient(52% 58% at 84% 8%, rgba(217, 161, 110, 0.22), rgba(217, 161, 110, 0) 64%),
+			radial-gradient(46% 54% at 6% 96%, rgba(243, 220, 198, 0.95), rgba(243, 220, 198, 0) 72%),
+			radial-gradient(40% 44% at 18% 4%, rgba(255, 240, 224, 0.9), rgba(255, 240, 224, 0) 74%),
+			radial-gradient(38% 42% at 98% 82%, rgba(242, 214, 190, 0.6), rgba(242, 214, 190, 0) 72%);
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+	}
+
+	body:has(.au-home-hero) .au-home-hero {
+		background-color: transparent;
+	}
+
+	body:has(.au-home-hero) .au-home-hero::before {
+		content: none;
+	}
+}
+
+/* ==========================================================================
+   TASK 09 — RESPONSIVE MOBILE & TABLET + FLOATING BOTTOM NAVIGATION
+   --------------------------------------------------------------------------
+   SEMUA aturan di bawah ini dibatasi ke <=1199px (kecuali komponen bottom
+   navigation yang memang hanya hidup di sana). Desktop >=1200px tidak
+   tersentuh: tidak ada selector global/desktop yang diubah.
+
+   Urutan blok:
+     1. Floating bottom navigation (mobile → tablet, sembunyi >=1200)
+     2. Ruang aman bawah halaman + footer mobile
+     3. Mobile <=767px  : navbar compact, hero vertikal, Cara Mendaftar
+     4. Tablet portrait 768–899px : hero vertikal dengan ukuran tablet
+     5. Tablet landscape 900–1199px : hero dua area (kiri headline+foto,
+        kanan panel coklat)
+     6. Tablet navbar + Cara Mendaftar 768–1199px
+     7. Prefers-reduced-motion
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. FLOATING BOTTOM NAVIGATION
+   Mobile (360–767): bar mengambang 12px dari tepi, tinggi 70px.
+   Tablet (768–1199): 24px dari tepi, max-width 900px, terpusat.
+   Desktop (>=1200): disembunyikan.
+   -------------------------------------------------------------------------- */
+
+.au-bottomnav {
+	position: fixed;
+	left: 12px;
+	right: 12px;
+	bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+	z-index: 70;
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	height: 70px;
+	padding: 8px;
+	border: 1px solid rgba(255, 252, 248, 0.16);
+	border-radius: 24px;
+	/* Deep brown dengan gradasi sangat halus ke caramel. */
+	background:
+		linear-gradient(180deg, rgba(88, 48, 30, 0.97) 0%, rgba(72, 39, 25, 0.97) 100%);
+	box-shadow: 0 8px 30px rgba(40, 20, 10, 0.22);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.au-bottomnav__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	/* Target sentuh minimal 44x44px. */
+	min-width: 44px;
+	min-height: 44px;
+	padding: 4px 2px;
+	border-radius: 16px;
+	font-family: var(--au-font-heading);
+	font-size: 10.5px;
+	font-weight: 600;
+	line-height: 1;
+	text-align: center;
+	text-decoration: none;
+	color: #FFF9F2;
+	opacity: 0.85;
+	transition:
+		color 200ms var(--au-ease),
+		opacity 200ms var(--au-ease),
+		background-color 200ms var(--au-ease);
+}
+
+.au-bottomnav__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.au-bottomnav__icon svg {
+	display: block;
+	width: 22px;
+	height: 22px;
+}
+
+.au-bottomnav__item[aria-current="page"] {
+	color: #F3C66B;
+	opacity: 1;
+}
+
+/* Glow lembut hanya pada ikon menu aktif. */
+.au-bottomnav__item[aria-current="page"] .au-bottomnav__icon {
+	filter: drop-shadow(0 0 6px rgba(243, 198, 107, 0.42));
+}
+
+.au-bottomnav__item:active {
+	background-color: rgba(255, 252, 248, 0.08);
+}
+
+.au-bottomnav__item:focus-visible {
+	outline: 2px solid #F3C66B;
+	outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+	.au-bottomnav {
+		left: 24px;
+		right: 24px;
+		bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+		max-width: 900px;
+		height: 76px;
+		padding: 11px;
+		border-radius: 28px;
+		margin-inline: auto;
+	}
+
+	.au-bottomnav__item {
+		gap: 4px;
+		font-size: 11.5px;
+	}
+
+	.au-bottomnav__icon svg {
+		width: 24px;
+		height: 24px;
+	}
+}
+
+@media (min-width: 1200px) {
+	.au-bottomnav {
+		display: none;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   2. RUANG AMAN BAWAH + FOOTER MOBILE
+   Bar fixed tidak boleh menutupi konten/footer/tombol terakhir.
+   -------------------------------------------------------------------------- */
+
+@supports selector(:has(*)) {
+	@media (max-width: 767px) {
+		body:has(.au-bottomnav) {
+			padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 1199px) {
+		body:has(.au-bottomnav) {
+			padding-bottom: calc(106px + env(safe-area-inset-bottom, 0px));
+		}
+	}
+}
+
+/* Scroll halus untuk anchor bottom navigation (dihormati reduced-motion). */
+@supports selector(:has(*)) {
+	@media (prefers-reduced-motion: no-preference) {
+		html:has(.au-bottomnav) {
+			scroll-behavior: smooth;
+		}
+	}
+}
+
+/* Footer homepage: tumpuk vertikal di mobile, teks lebih kecil, padding
+   horizontal dikurangi. Konten & tautan tidak berubah. */
+@media (max-width: 767px) {
+	.au-home-footer > div {
+		flex-direction: column;
+		align-items: flex-start;
+		flex-wrap: nowrap;
+		gap: 4px;
+		padding-inline: 16px;
+		padding-block: 20px;
+		font-size: 11.5px;
+		line-height: 1.5;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   3. MOBILE (360–767px)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+	/* --- Navbar compact --------------------------------------------------- */
+
+	.au-home-header {
+		/* Warm white translusen + garis tipis + shadow lembut (bukan coklat). */
+		background-color: rgba(255, 249, 242, 0.92);
+		border-bottom-color: var(--au-line);
+		box-shadow: 0 10px 30px -24px rgba(var(--au-brown-dark-rgb), 0.55);
+		-webkit-backdrop-filter: blur(12px) saturate(1.1);
+		backdrop-filter: blur(12px) saturate(1.1);
+	}
+
+	.au-home-header__inner {
+		/* 60 + border 1px = 61px (target 60–64px). */
+		min-height: 60px;
+		padding-block: 8px;
+		gap: 10px;
+	}
+
+	.au-home-logo__img {
+		height: 36px; /* lebar ±94px (target 90–105px) */
+	}
+
+	.au-home-header__cta {
+		min-height: 35px;
+		padding: 0 13px;
+		font-size: 11px;
+	}
+
+	.au-home-header__actions {
+		gap: 10px;
+	}
+
+	.au-home-burger {
+		width: 40px;
+		height: 40px;
+		gap: 5px;
+		border-radius: 10px;
+	}
+
+	.au-home-burger__bar {
+		width: 22px;
+	}
+
+	/* --- Hero: headline + foto satu komposisi, panel di bawah ------------- */
+
+	.au-home-hero {
+		--au-nav-h: 61px;
+		/* 20px jarak headline dari navbar (target 18–22px). */
+		padding-block: calc(var(--au-nav-h) + 20px) 34px;
+	}
+
+	.au-home-hero .au-home-container {
+		padding-inline: 14px;
+	}
+
+	/* Panggung = grid dua kolom: headline (kiri ±56%) dan foto (kanan ±44%)
+	   berdampingan di baris pertama, panel coklat selebar panggung di baris
+	   kedua. Revisi TASK 10: panel coklat DINAIKKAN menimpa kaki foto (30px)
+	   supaya komposisi menyatu — panel berada di atas foto (z-index 4). */
+	.au-home-hero__panggung {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+		grid-template-areas:
+			"kepala foto"
+			"panel panel";
+		align-items: start;
+		column-gap: 6px;
+		row-gap: 0;
+		padding-inline: 6px;
+		--au-hero-foto-w: min(88%, 340px);
+	}
+
+	.au-home-hero__headline {
+		grid-area: kepala;
+		align-self: start;
+		min-width: 0;
+		padding-top: 2px;
+	}
+
+	.au-home-hero__judul {
+		gap: 8px;
+	}
+
+	.au-home-hero__judul-kiri,
+	.au-home-hero__judul-kanan {
+		width: 100%;
+		max-width: none;
+		text-align: left;
+	}
+
+	/* Foto asli 434×726: tinggi mengikuti proporsi (tanpa crop). Lebar 48%
+	   panggung + max 240px → tinggi 250–310px di layar 360–430px.
+	   -30px: kaki foto (±23 baris terbawah transparan) masuk 30px ke panel →
+	   panel terlihat menimpa foto; wajah, tangan, dan Al-Qur'an tetap utuh
+	   karena tinta bagian bawah hanya alas/dekorasi (baris 700: x14–326). */
+	.au-home-hero__foto {
+		grid-area: foto;
+		justify-self: end;
+		width: 100%;
+		max-width: 240px;
+		margin: 0 0 -30px;
+	}
+
+	.au-home-hero__foto img {
+		object-fit: contain;
+	}
+
+	/* Panel coklat: viewport − 28px (14px tiap sisi). z-index 4 menaruhnya
+	   DI ATAS foto (foto z-index 3) sehingga tepi atas panel benar-benar
+	   menimpa kaki foto, bukan sekadar berimpit. */
+	.au-home-hero__panel {
+		grid-area: panel;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 16px;
+		margin: 0 -6px;
+		padding: 20px 18px;
+		border-radius: 24px;
+		z-index: 4;
+		background: linear-gradient(150deg, #945B38 0%, #7F4C31 52%, #75452D 100%);
+		box-shadow: 0 28px 56px -34px rgba(var(--au-brown-dark-rgb), 0.55);
+	}
+
+	.au-home-hero__panel .au-home-eyebrow--light {
+		top: 0;
+		font-size: 9.5px;
+		letter-spacing: 0.1em;
+	}
+
+	/* Kolom kanan menumpuk: keunggulan → kartu program → info program. */
+	.au-home-hero__panel-kanan {
+		gap: 12px;
+	}
+
+	.au-home-hero__panel .au-home-eyebrow--light::before {
+		width: 20px;
+	}
+
+	.au-home-hero__panel-title {
+		margin-top: 8px;
+		font-size: clamp(19px, 5.6vw, 21px);
+		line-height: 1.14;
+		letter-spacing: -0.02em;
+	}
+
+	.au-home-hero__panel-desc {
+		margin-top: 8px;
+		font-size: 11.5px;
+		line-height: 1.5;
+	}
+
+	.au-home-hero__actions {
+		gap: 8px;
+		margin-top: 14px;
+	}
+
+	.au-home-hero__actions .au-home-button {
+		flex: 1 1 auto;
+		width: auto;
+		min-height: 38px;
+		padding: 0 14px;
+		font-size: 10.5px;
+		border-radius: 999px;
+	}
+
+	.au-home-hero__actions .au-home-button svg {
+		width: 13px;
+		height: 13px;
+	}
+
+	.au-home-hero__login {
+		margin-top: 10px;
+		font-size: 10px;
+		line-height: 1.5;
+	}
+
+	.au-home-hero__peserta {
+		gap: 9px;
+		margin-top: 14px;
+		padding-top: 12px;
+	}
+
+	.au-home-hero__peserta-icon {
+		width: 32px;
+		height: 32px;
+	}
+
+	.au-home-hero__peserta-icon svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	.au-home-hero__peserta-teks {
+		font-size: 10px;
+		line-height: 1.5;
+	}
+
+	/* --- Empat keunggulan: SATU BARIS (4 kolom) --------------------------
+	   Revisi TASK 10: keempat keunggulan wajib sejajar dalam satu baris,
+	   jadi ikon & label diperkecil (ikon ±17px, label ±8–9px) agar
+	   "Bertahap dan Terstruktur" … "Guru Bersertifikat" tetap muat. */
+
+	.au-home-hero__keunggulan {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		top: 0;
+		gap: 8px 4px;
+		margin: 0;
+	}
+
+	.au-home-hero__keunggulan li {
+		gap: 3px;
+		padding-block: 0;
+		align-items: center;
+		text-align: center;
+	}
+
+	.au-home-hero__ikon,
+	.au-home-hero__ikon svg {
+		width: clamp(16px, 4.6vw, 19px);
+		height: clamp(16px, 4.6vw, 19px);
+	}
+
+	.au-home-hero__keunggulan h3 {
+		font-size: clamp(8.5px, 2.35vw, 9.5px);
+		line-height: 1.2;
+		letter-spacing: 0;
+		text-wrap: balance;
+	}
+
+	/* --- Kartu Program Unggulan: horizontal compact ---------------------- */
+
+	.au-home-hero__program {
+		grid-template-columns: 76px minmax(0, 1fr);
+		gap: 9px;
+		margin-top: 0;
+		padding: 10px;
+		border-radius: 15px;
+		background-color: #FFFCF8;
+	}
+
+	.au-home-hero__program-media {
+		height: auto;
+		gap: 4px;
+	}
+
+	.au-home-hero__program-gambar {
+		border-radius: 11px;
+	}
+
+	.au-home-hero__program-gambar img,
+	.au-home-hero__program-fallback {
+		aspect-ratio: 76 / 82;
+		border-radius: 11px;
+	}
+
+	.au-home-hero__program-dot {
+		width: 14px;
+		height: 14px;
+	}
+
+	.au-home-hero__program-badge {
+		font-size: 8.5px;
+		letter-spacing: 0.1em;
+	}
+
+	.au-home-hero__program h3 {
+		margin-top: 3px;
+		font-size: 13px;
+	}
+
+	.au-home-hero__program p {
+		margin-top: 2px;
+		font-size: 10px;
+		line-height: 1.35;
+	}
+
+	.au-home-hero__program-cta {
+		min-height: 28px;
+		margin-top: 7px;
+		padding: 0 11px;
+		font-size: 10px;
+	}
+
+	.au-home-hero__program-cta svg {
+		width: 11px;
+		height: 11px;
+	}
+
+	/* --- Info program berjalan (bila ada datanya) ------------------------ */
+
+	.au-home-hero__meta {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+		margin-top: 0;
+	}
+
+	.au-home-hero__meta p {
+		justify-content: flex-start;
+		font-size: 10px;
+		line-height: 1.45;
+	}
+
+	/* --- Cara Mendaftar: SATU BARIS 3 KARTU (5 kartu → 3 + 2) ------------ */
+	/* Revisi mobile: grid 3 kolom, jadi lima langkah menjadi dua baris
+	   (3 kartu + 2 kartu rata kiri). Tipografi & padding kartu dikecilkan
+	   supaya teks tetap muat di kolom ±101–125px (360–430px). */
+
+	.au-reg .au-home-container {
+		padding-inline: 16px;
+	}
+
+	.au-reg__label {
+		font-size: 10.5px;
+	}
+
+	.au-reg__title {
+		margin-top: 10px;
+		font-size: clamp(22px, 6.4vw, 26px);
+	}
+
+	.au-reg__desc {
+		margin-top: 10px;
+		font-size: 12.5px;
+	}
+
+	.au-reg__cards {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 10px;
+		margin-top: 22px;
+	}
+
+	.au-reg-card {
+		--au-card-pad: 10px;
+		--au-card-num: 21px;
+		--au-card-ill: 28px;
+		--au-card-orn: 46px;
+		min-height: 158px;
+		border-radius: 15px;
+	}
+
+	.au-reg-card__body {
+		padding-top: 30px;
+	}
+
+	.au-reg-card__title {
+		font-size: clamp(11.5px, 3.2vw, 13.5px);
+		line-height: 1.25;
+	}
+
+	.au-reg-card__desc {
+		margin-top: 5px;
+		font-size: clamp(9px, 2.55vw, 10.5px);
+		line-height: 1.4;
+	}
+
+	/* --- Program: SATU BARIS, 3 kartu per layar, sisanya digeser --------- */
+	/* Grid diubah jadi track horizontal (scroll-snap) supaya lima kartu
+	   program tidak turun ke bawah: 3 kartu terlihat penuh, 2 kartu berikutnya
+	   diakses dengan swipe/geser. Tanpa JS — scroll native + snap. */
+
+	.au-prog__grid {
+		flex-wrap: nowrap;
+		justify-content: flex-start;
+		gap: 10px;
+		padding-block: 6px 10px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		scroll-snap-type: x mandatory;
+		scroll-padding-inline: 0;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(var(--au-brown-rgb), 0.24) transparent;
+		overscroll-behavior-x: contain;
+	}
+
+	.au-prog__grid::-webkit-scrollbar {
+		height: 5px;
+	}
+
+	.au-prog__grid::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.au-prog__grid::-webkit-scrollbar-thumb {
+		border-radius: var(--au-radius-pill);
+		background: rgba(var(--au-brown-rgb), 0.22);
+	}
+
+	.au-prog-card {
+		--au-prog-media: 58px;
+		--au-prog-pad: 8px;
+		--au-prog-radius: 14px;
+		--au-prog-icon: 20px;
+		--au-prog-arrow: 18px;
+		/* 3 kartu = (100% − 2 × gap 10px) / 3. */
+		flex: 0 0 calc((100% - 20px) / 3 - 0.05px);
+		height: auto;
+		min-height: 150px;
+		scroll-snap-align: start;
+	}
+
+	/* Ruang bawah = tinggi panah bulat supaya teks tidak tertimpa. */
+	.au-prog-card__body {
+		padding: calc(var(--au-prog-icon) / 2 + 3px) var(--au-prog-pad) calc(var(--au-prog-arrow) + 8px);
+	}
+
+	.au-prog-card__name {
+		font-size: clamp(11px, 3.1vw, 13px);
+		line-height: 1.15;
+	}
+
+	/* Kolom kartu hanya ±96–118px, jadi deskripsi dibiarkan mengalir (clamp
+	   dilepas) supaya tidak ada teks yang terpotong; tinggi kartu `auto`
+	   membuat semua kartu di track menyamakan diri ke yang tertinggi. */
+	.au-prog-card__desc {
+		display: block;
+		overflow: visible;
+		-webkit-line-clamp: none;
+		margin-top: 2px;
+		font-size: clamp(9px, 2.5vw, 10.5px);
+		line-height: 1.35;
+	}
+
+	.au-prog-card__arrow {
+		right: 6px;
+		bottom: 6px;
+	}
+
+	/* --- Lokasi: SATU BARIS, 3 kartu per layar, sisanya digeser ---------- */
+	/* Track sudah carousel (scroll-snap + drag + tombol panah); di mobile
+	   lebarnya diubah dari 1 kartu + peek menjadi tepat 3 kartu, dengan isi
+	   kartu dipadatkan agar tetap terbaca di kolom ±95–118px. */
+
+	.au-lok-card {
+		flex: 0 0 calc((100% - 24px) / 3 - 0.05px);
+		height: auto;
+		min-height: 176px;
+		border-radius: 14px;
+	}
+
+	.au-lok-card__media {
+		height: 56px;
+	}
+
+	.au-lok-card__badge {
+		left: 6px;
+		top: 6px;
+		gap: 3px;
+		padding: 2px 6px;
+		font-size: 8px;
+	}
+
+	.au-lok-card__badge::before {
+		width: 4px;
+		height: 4px;
+	}
+
+	.au-lok-card__body {
+		padding: 8px;
+	}
+
+	.au-lok-card__name {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		font-size: clamp(11px, 3vw, 12.5px);
+		line-height: 1.2;
+		white-space: normal;
+	}
+
+	.au-lok-card__wilayah {
+		gap: 3px;
+		margin-top: 3px;
+		font-size: clamp(8.5px, 2.3vw, 10px);
+		line-height: 1.3;
+	}
+
+	.au-lok-card__wilayah svg {
+		width: 9px;
+		height: 9px;
+		margin-top: 1px;
+	}
+
+	.au-lok-card__program {
+		margin-top: 6px;
+		padding-top: 6px;
+	}
+
+	.au-lok-card__program-label {
+		font-size: 7.5px;
+		letter-spacing: 0.08em;
+	}
+
+	.au-lok-card__chips {
+		gap: 3px;
+		margin-top: 4px;
+	}
+
+	.au-lok-chip {
+		padding: 1px 4px;
+		font-size: 8px;
+	}
+
+	.au-lok-card__kosong {
+		margin-top: 4px;
+		font-size: 8.5px;
+	}
+
+	.au-lok-card__cta {
+		gap: 3px;
+		height: 26px;
+		padding: 0 7px;
+		font-size: clamp(8.5px, 2.4vw, 10px);
+	}
+
+	.au-lok-card__cta svg {
+		width: 9px;
+		height: 9px;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   4. TABLET PORTRAIT (768–899px)
+   Dua kolom: headline kiri, foto anak kanan (berdampingan, lebih lega dari
+   mobile), lalu panel coklat selebar container di bawahnya. Panel satu kolom
+   internal supaya empat keunggulan bisa sejajar.
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 768px) and (max-width: 899px) {
+	.au-home-hero {
+		--au-nav-h: 65px;
+		padding-block: calc(var(--au-nav-h) + 20px) 40px;
+	}
+
+	.au-home-hero .au-home-container {
+		padding-inline: 20px;
+	}
+
+	/* Panggung = grid dua kolom (headline 388–519px | foto 320px), panel
+	   selebar container di baris kedua. Container 728–859px = viewport − 40px
+	   sehingga tepi panel rata dengan tepi headline/foto.
+
+	   TASK 10B: baris atas dibuat rata atas (bukan center) supaya headline
+	   menempel ke navbar, lalu panel ditarik naik menimpa kaki foto.
+	   --au-hero-panel-naik dihitung dari tinggi foto yang deterministik:
+	   foto 320px → tinggi 320 × 726/434 = 535,4px. Panel naik 126px dari
+	   bawah foto → tepi atas panel = 620,4 − 126 = 494,4 (naik 99,4px dari
+	   posisi sebelum TASK 10B 593,8; 40px lebih tinggi dari 534,4).
+	   Batas aman: tinta gelap badan/figur berakhir di baris ±520 dari 726
+	   (y ≈ 470px); di atas 494px masih tersisa ±24px alas dekoratif yang
+	   terlihat, jadi wajah, tangan, dan Al-Qur'an tidak tersentuh. */
+	.au-home-hero__panggung {
+		--au-hero-panel-naik: 126px;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+		grid-template-areas:
+			"kepala foto"
+			"panel panel";
+		align-items: start;
+		column-gap: 20px;
+		row-gap: 0;
+		padding-inline: 0;
+	}
+
+	/* 20px di bawah padding hero (85px) → awal headline 105px = 40px dari
+	   bawah navbar (target 38–46px). Sebelumnya headline di-center terhadap
+	   foto 568,8px sehingga mulai di 195,5px (130,5px dari navbar). */
+	.au-home-hero__headline {
+		grid-area: kepala;
+		align-self: start;
+		min-width: 0;
+		padding-top: 20px;
+	}
+
+	/* Headline ditumpuk dua baris, dipusatkan di kolom kiri sehingga jarak ke
+	   tepi layar = jarak ke sisi kiri foto (tengah-tengah), visual ±47px. */
+	.au-home-hero__judul {
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		max-width: none;
+		margin-inline: 0;
+		padding-inline: 0;
+	}
+
+	.au-home-hero__judul-kiri,
+	.au-home-hero__judul-kanan {
+		width: min(100%, 320px);
+		flex: 0 0 auto;
+		text-align: left;
+	}
+
+	.au-home-hero__judul-kanan {
+		text-align: left;
+	}
+
+	/* Foto asli 434×726, lebar 320px (100% kolom foto), tanpa crop.
+	   320px dipilih (bukan 340) supaya saat panel naik 59px, bagian foto yang
+	   masuk ke belakang panel tetap hanya alas/dekorasi: foto 535,4px tinggi,
+	   panel menutup 86px (16%), tinta tertutup 68px (12,8%) — baris 609–702
+	   dari 726, yaitu alas melebar di bawah badan. Wajah, tangan, dan
+	   Al-Qur'an (baris ±0–450) tetap utuh. margin 0: overlap diatur dari sisi
+	   panel supaya tinggi baris atas tetap = tinggi foto. */
+	.au-home-hero__foto {
+		grid-area: foto;
+		justify-self: center;
+		width: 100%;
+		max-width: 320px;
+		margin: 0;
+	}
+
+	.au-home-hero__foto img {
+		object-fit: contain;
+	}
+
+	/* Panel selebar container (viewport − 40px), satu kolom internal.
+	   TASK 10B: panel dinaikkan 99px (margin-top negatif dari bawah foto).
+	   z-index 4 → panel DI ATAS foto (foto z-index 3) sehingga tepi atas
+	   panel menimpa kaki foto, bukan foto menutupi teks panel. (Bila foto
+	   ditaruh di atas panel, judul/deskripsi panel yang selebar 728–780px
+	   akan tertutup foto — sudah diuji dan ditolak.)
+	   Padding 21/26/22 dan gap 15 membuat isi panel lebih rapat. */
+	.au-home-hero__panel {
+		grid-area: panel;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 15px;
+		margin: calc(-1 * var(--au-hero-panel-naik)) 0 0;
+		padding: 21px 26px 22px;
+		border-radius: 28px;
+		z-index: 4;
+	}
+
+	.au-home-hero__panel-kiri,
+	.au-home-hero__panel-kanan {
+		grid-column: 1;
+	}
+
+	.au-home-hero__panel .au-home-eyebrow--light {
+		top: 0;
+		font-size: 10.5px;
+		line-height: 1;
+	}
+
+	/* Label → judul 6px (jarak kotak terukur 7,8px), judul 23px,
+	   judul → deskripsi 7px, deskripsi 12,5px. */
+	.au-home-hero__panel-title {
+		margin-top: 6px;
+		font-size: 23px;
+		line-height: 1.1;
+	}
+
+	.au-home-hero__panel-desc {
+		margin-top: 7px;
+		font-size: 12.5px;
+		line-height: 1.55;
+	}
+
+	/* Deskripsi → tombol 13px; tombol 38px (target 37–40), font 11,5px. */
+	.au-home-hero__actions {
+		gap: 10px;
+		margin-top: 13px;
+	}
+
+	.au-home-hero__actions .au-home-button {
+		min-height: 38px;
+		padding: 0 16px;
+		font-size: 11.5px;
+	}
+
+	/* Tombol → info akun 9px. */
+	.au-home-hero__login {
+		margin-top: 9px;
+		font-size: 11px;
+	}
+
+	/* Info akun → pemisah 13px, isi 12px (target 12–14). */
+	.au-home-hero__peserta {
+		margin-top: 13px;
+		padding-top: 12px;
+	}
+
+	.au-home-hero__peserta-icon {
+		width: 36px;
+		height: 36px;
+	}
+
+	.au-home-hero__peserta-teks {
+		font-size: 11px;
+	}
+
+	/* Panel satu kolom → empat keunggulan sejajar (680px / 4 = 170px).
+	   Ikon 23px (target 22–25), label 10,5px, jarak ikon–label 6px. */
+	.au-home-hero__keunggulan {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		top: 0;
+		gap: 14px 10px;
+		margin: 0;
+	}
+
+	/* Pemisah info akun → keunggulan 15px (target 14–18);
+	   keunggulan → kartu program 18px (target 16–20). */
+	.au-home-hero__panel-kanan {
+		gap: 18px;
+	}
+
+	.au-home-hero__keunggulan li {
+		gap: 6px;
+	}
+
+	.au-home-hero__ikon,
+	.au-home-hero__ikon svg {
+		width: 23px;
+		height: 23px;
+	}
+
+	.au-home-hero__keunggulan h3 {
+		font-size: 10.5px;
+		line-height: 1.2;
+	}
+
+	/* Kartu program: foto 92×92 (target 88–96), radius 17, padding 11,
+	   gap 12, margin-top 0 (jarak 18px sudah dari gap panel-kanan). */
+	.au-home-hero__program {
+		grid-template-columns: 92px minmax(0, 1fr);
+		gap: 12px;
+		margin-top: 0;
+		padding: 11px;
+		border-radius: 17px;
+	}
+
+	.au-home-hero__program-media {
+		height: auto;
+	}
+
+	.au-home-hero__program-gambar {
+		border-radius: 12px;
+	}
+
+	.au-home-hero__program-gambar img,
+	.au-home-hero__program-fallback {
+		aspect-ratio: 1 / 1;
+	}
+
+	.au-home-hero__program-badge {
+		font-size: 9px;
+	}
+
+	.au-home-hero__program h3 {
+		font-size: 14.5px;
+	}
+
+	.au-home-hero__program p {
+		font-size: 11.5px;
+	}
+
+	.au-home-hero__program-cta {
+		min-height: 31px;
+		padding: 0 13px;
+		font-size: 11px;
+	}
+
+	.au-home-hero__meta {
+		display: none;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   5. TABLET LANDSCAPE (900–1199px)
+   Dua area: kiri headline + foto, kanan panel coklat (metode, keunggulan,
+   Program Unggulan). Panel satu kolom internal.
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 900px) and (max-width: 1199px) {
+	.au-home-hero {
+		--au-nav-h: 65px;
+		padding-block: calc(var(--au-nav-h) + 20px) 44px;
+	}
+
+	.au-home-hero .au-home-container {
+		padding-inline: 20px;
+		max-width: 1120px;
+	}
+
+	.au-home-hero__panggung {
+		display: grid;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		grid-template-areas:
+			"kepala panel"
+			"foto panel";
+		grid-template-rows: auto auto;
+		column-gap: 22px;
+		row-gap: 16px;
+		align-items: center;
+		padding-inline: 0;
+	}
+
+	.au-home-hero__headline {
+		grid-area: kepala;
+		align-self: end;
+		min-width: 0;
+	}
+
+	.au-home-hero__foto {
+		grid-area: foto;
+		justify-self: center;
+		width: min(100%, 420px);
+		margin: 0;
+	}
+
+	.au-home-hero__foto img {
+		object-fit: contain;
+	}
+
+	.au-home-hero__panel {
+		grid-area: panel;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 16px;
+		margin: 0;
+		padding: 24px;
+		border-radius: 28px;
+	}
+
+	.au-home-hero__panel-kiri,
+	.au-home-hero__panel-kanan {
+		grid-column: 1;
+	}
+
+	/* Headline ditumpuk rata kiri di kolom kiri (visual ±38–46px). */
+	.au-home-hero__judul {
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+		gap: 6px;
+		max-width: none;
+		margin-inline: 0;
+		padding-inline: 0;
+	}
+
+	.au-home-hero__judul-kiri,
+	.au-home-hero__judul-kanan {
+		width: min(100%, 300px);
+		flex: none;
+		text-align: left;
+	}
+
+	.au-home-hero__panel .au-home-eyebrow--light {
+		top: 0;
+		font-size: 10px;
+	}
+
+	.au-home-hero__panel-title {
+		margin-top: 9px;
+		font-size: clamp(23px, 2.3vw, 26px);
+		line-height: 1.12;
+		letter-spacing: -0.02em;
+	}
+
+	.au-home-hero__panel-desc {
+		margin-top: 9px;
+		font-size: 13.5px;
+		line-height: 1.55;
+	}
+
+	.au-home-hero__actions {
+		gap: 10px;
+		margin-top: 16px;
+	}
+
+	.au-home-hero__actions .au-home-button {
+		min-height: 40px;
+		padding: 0 18px;
+		font-size: 12px;
+	}
+
+	.au-home-hero__login {
+		margin-top: 12px;
+		font-size: 11px;
+	}
+
+	.au-home-hero__peserta {
+		margin-top: 16px;
+		padding-top: 14px;
+	}
+
+	.au-home-hero__peserta-icon {
+		width: 38px;
+		height: 38px;
+	}
+
+	.au-home-hero__peserta-teks {
+		font-size: 11px;
+	}
+
+	.au-home-hero__keunggulan {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		top: 0;
+		gap: 12px 10px;
+		margin: 0;
+	}
+
+	.au-home-hero__panel-kanan {
+		gap: 12px;
+	}
+
+	.au-home-hero__ikon,
+	.au-home-hero__ikon svg {
+		width: 24px;
+		height: 24px;
+	}
+
+	.au-home-hero__keunggulan h3 {
+		font-size: 10.5px;
+		line-height: 1.2;
+	}
+
+	.au-home-hero__program {
+		grid-template-columns: 80px minmax(0, 1fr);
+		gap: 11px;
+		margin-top: 0;
+		padding: 11px;
+		border-radius: 17px;
+	}
+
+	.au-home-hero__program-media {
+		height: auto;
+	}
+
+	.au-home-hero__program-gambar img,
+	.au-home-hero__program-fallback {
+		aspect-ratio: 80 / 88;
+	}
+
+	.au-home-hero__program-badge {
+		font-size: 9px;
+	}
+
+	.au-home-hero__program h3 {
+		font-size: 14px;
+	}
+
+	.au-home-hero__program p {
+		font-size: 10.5px;
+	}
+
+	.au-home-hero__program-cta {
+		min-height: 30px;
+		padding: 0 12px;
+		font-size: 10.5px;
+	}
+
+	.au-home-hero__meta {
+		margin-top: 0;
+		justify-content: flex-start;
+	}
+
+	.au-home-hero__meta p {
+		font-size: 11px;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   6. TABLET NAVBAR + CARA MENDAFTAR (768–1199px)
+   -------------------------------------------------------------------------- */
+
+/* Tablet landscape sempit (900–1023): tiga tautan tamu + Login + CTA muat
+   satu baris (±650px dari 852px yang tersedia), jadi menu penuh ditampilkan
+   seperti desktop. Hamburger tetap dipakai di 768–899 dan mobile. */
+@media (min-width: 900px) and (max-width: 1023px) {
+	.au-home-header__inner {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+	}
+
+	.au-home-nav {
+		display: flex;
+		justify-self: center;
+	}
+
+	/* Logo tetap selebar gambarnya (bukan selebar kolom grid). */
+	.au-home-logo {
+		justify-self: start;
+	}
+
+	.au-home-header__actions {
+		justify-self: end;
+		margin-left: 0;
+	}
+
+	.au-home-burger {
+		display: none;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+	.au-home-header__inner {
+		/* 64 + border 1px = 65px (target 64–68px). */
+		min-height: 64px;
+		padding-block: 10px;
+		padding-inline: 24px;
+	}
+
+	.au-home-logo__img {
+		height: 43px; /* lebar ±112px (target tablet portrait 110–120px) */
+	}
+
+	.au-home-nav__link {
+		padding: 0.45rem 0.7rem;
+		font-size: 12.5px;
+	}
+
+	.au-home-header__login {
+		padding-inline: 10px;
+		font-size: 12.5px;
+	}
+
+	.au-home-header__cta {
+		min-height: 38px;
+		padding-inline: 16px;
+		font-size: 12.5px;
+	}
+
+	.au-home-header__actions {
+		gap: 10px;
+	}
+
+	.au-home-burger {
+		width: 42px;
+		height: 42px;
+	}
+}
+
+/* Cara Mendaftar tablet portrait: 3 kolom, kartu lebih ringkas. */
+@media (min-width: 768px) and (max-width: 899px) {
+	.au-reg__cards {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 14px;
+		margin-top: 32px;
+	}
+
+	.au-reg-card {
+		--au-card-pad: 18px;
+		--au-card-num: 34px;
+		--au-card-ill: 48px;
+		--au-card-orn: 72px;
+		/* Target tablet portrait 200–230px. */
+		min-height: 224px;
+		border-radius: 24px;
+	}
+
+	.au-reg-card__body {
+		padding-top: 56px;
+	}
+
+	.au-reg-card__title {
+		font-size: 18px;
+	}
+
+	.au-reg-card__desc {
+		margin-top: 8px;
+		font-size: 12.5px;
+		line-height: 1.45;
+	}
+
+	.au-reg__title {
+		font-size: 30px;
+	}
+
+	.au-reg__desc {
+		font-size: 15.5px;
+	}
+}
+
+/* Cara Mendaftar tablet landscape: lima kartu sejajar. */
+@media (min-width: 900px) and (max-width: 1199px) {
+	.au-reg__cards {
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 14px;
+		margin-top: 34px;
+	}
+
+	.au-reg-card {
+		--au-card-pad: 18px;
+		--au-card-num: 34px;
+		--au-card-ill: 48px;
+		--au-card-orn: 72px;
+		min-height: 240px;
+		border-radius: 24px;
+	}
+
+	.au-reg-card__body {
+		padding-top: 56px;
+	}
+
+	.au-reg-card__title {
+		font-size: 17px;
+	}
+
+	.au-reg-card__desc {
+		margin-top: 8px;
+		font-size: 12.5px;
+		line-height: 1.45;
+	}
+
+	.au-reg__title {
+		font-size: 30px;
+	}
+
+	.au-reg__desc {
+		font-size: 15.5px;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   7. PREFERS-REDUCED-MOTION
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.au-bottomnav__item {
+		transition: none;
+	}
+
+	.au-bottomnav__item[aria-current="page"] .au-bottomnav__icon {
+		filter: none;
+	}
+}
+
+
+/* --------------------------------------------------------------------------
+   14. HALAMAN PUBLIK — katalog, alur daftar, auth, gelombang
+   Satu bahasa desain dengan beranda (`au-home-*`): wadah 1440px, panel putih/
+   krem, judul editorial, kartu lembut. Semua nilai memakai token §1.
+   -------------------------------------------------------------------------- */
+
+/* Wadah <main> halaman publik. Navbar & footer mengatur ruangnya sendiri;
+   padding bawah menyisakan ruang untuk bottom navigation di < 1200px. */
+.au-publik {
+	padding-block: clamp(1.25rem, 2.6vw, 2.25rem) clamp(3rem, 6vw, 5rem);
+}
+
+/* Footer publik: wadah 1440px + garis atas. (Aturan mobile di §2 menumpuk
+   teksnya; di sini hanya kerangka desktop/tablet.) */
+.au-home-footer__inner {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 8px;
+	padding-block: 24px;
+	border-top: 1px solid var(--au-line);
+	font-size: 0.875rem;
+	color: var(--au-text-muted);
+}
+
+/* --- Drawer: aksi login & kartu pengguna ------------------------------- */
+
+.au-home-drawer__actions {
+	display: grid;
+	gap: var(--au-space-2);
+}
+
+.au-home-drawer__note {
+	margin: 0;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	color: var(--au-text-muted);
+}
+
+.au-home-drawer__user {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.au-home-drawer__avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background-color: var(--au-cream);
+	color: var(--au-brown-dark);
+	font-family: var(--au-font-heading);
+	font-size: 0.75rem;
+	font-weight: 800;
+}
+
+.au-home-drawer__userinfo {
+	display: grid;
+	min-width: 0;
+}
+
+.au-home-drawer__name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-family: var(--au-font-heading);
+	font-size: 0.875rem;
+	font-weight: 700;
+	color: var(--au-brown-dark);
+}
+
+.au-home-drawer__username {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.6875rem;
+	color: var(--au-text-muted);
+}
+
+/* Judul kelompok tautan di drawer (mis. "Menu saya"). */
+.au-home-drawer__group {
+	margin-top: 1.25rem;
+}
+
+/* --- Kepala halaman ---------------------------------------------------- */
+
+.au-page-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--au-space-5);
+	margin-bottom: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+.au-page-head__text {
+	max-width: 64ch;
+}
+
+.au-page-head__text .au-home-heading {
+	margin-top: var(--au-space-2);
+}
+
+.au-page-head__text .au-home-body {
+	margin-top: var(--au-space-3);
+}
+
+.au-page-head__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--au-space-3);
+}
+
+/* --- Panel ------------------------------------------------------------- */
+
+.au-panel {
+	background-color: var(--au-white);
+	border: 1px solid var(--au-line);
+	border-radius: var(--au-radius-md);
+	box-shadow: var(--au-shadow-soft);
+}
+
+.au-panel--flat {
+	box-shadow: none;
+}
+
+.au-panel--cream {
+	background-color: var(--au-cream);
+	border-color: transparent;
+	box-shadow: none;
+}
+
+.au-panel--dark {
+	background: linear-gradient(155deg, var(--au-brown) 0%, var(--au-brown-dark) 100%);
+	border-color: transparent;
+	color: var(--au-white);
+	box-shadow: var(--au-shadow-card);
+}
+
+.au-panel__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--au-space-3);
+	padding: clamp(1.25rem, 2.4vw, 1.75rem) clamp(1.25rem, 2.4vw, 1.75rem) 0;
+}
+
+.au-panel__title {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: 1.0625rem;
+	font-weight: 700;
+	color: var(--au-brown-dark);
+}
+
+.au-panel__body {
+	padding: clamp(1.25rem, 2.4vw, 1.75rem);
+}
+
+/* --- Form controls ----------------------------------------------------- */
+
+.au-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	min-width: 0;
+}
+
+.au-label {
+	font-family: var(--au-font-heading);
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--au-text-muted);
+}
+
+.au-input,
+.au-select,
+.au-textarea {
+	width: 100%;
+	min-height: 46px;
+	padding: 0.65rem 0.9rem;
+	border: 1px solid var(--au-line-strong);
+	border-radius: var(--au-radius-xs);
+	background-color: var(--au-white);
+	color: var(--au-text);
+	font-family: var(--au-font-body);
+	font-size: 0.9375rem;
+	line-height: 1.4;
+	transition: var(--au-transition);
+}
+
+.au-textarea {
+	min-height: 120px;
+	resize: vertical;
+}
+
+.au-input:focus,
+.au-select:focus,
+.au-textarea:focus {
+	outline: none;
+	border-color: var(--au-brown);
+	box-shadow: 0 0 0 3px rgba(var(--au-brown-rgb), 0.14);
+}
+
+.au-input::placeholder {
+	color: rgba(117, 102, 92, 0.65);
+}
+
+.au-hint {
+	margin: 0;
+	font-size: 0.75rem;
+	line-height: 1.55;
+	color: var(--au-text-muted);
+}
+
+.au-error {
+	display: block;
+	margin-top: 0.25rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: #B3261E;
+}
+
+.au-file {
+	display: block;
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px dashed var(--au-line-strong);
+	border-radius: var(--au-radius-xs);
+	background-color: var(--au-white);
+	font-size: 0.8125rem;
+	color: var(--au-text-muted);
+}
+
+.au-file::file-selector-button {
+	margin-right: 0.75rem;
+	padding: 0.45rem 0.9rem;
+	border: 0;
+	border-radius: var(--au-radius-pill);
+	background-color: var(--au-cream);
+	color: var(--au-brown-dark);
+	font-family: var(--au-font-heading);
+	font-size: 0.75rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+/* --- Bar filter -------------------------------------------------------- */
+
+.au-filter-bar {
+	display: grid;
+	gap: var(--au-space-4);
+	align-items: end;
+	padding: clamp(1.1rem, 2.2vw, 1.5rem);
+	margin-bottom: var(--au-space-6);
+	background-color: var(--au-white);
+	border: 1px solid var(--au-line);
+	border-radius: var(--au-radius-sm);
+	box-shadow: var(--au-shadow-soft);
+}
+
+.au-filter-bar__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--au-space-2);
+}
+
+@media (min-width: 640px) {
+	.au-filter-bar {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.au-filter-bar {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+/* --- Grid kartu & kartu kelas ----------------------------------------- */
+
+.au-card-grid {
+	display: grid;
+	gap: var(--au-space-5);
+	grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+	.au-card-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.au-card-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1440px) {
+	.au-card-grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+.au-kelas-card {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: clamp(1.15rem, 2.2vw, 1.5rem);
+	background-color: var(--au-white);
+	border: 1px solid var(--au-line);
+	border-radius: var(--au-radius-sm);
+	box-shadow: var(--au-shadow-soft);
+	transition: var(--au-transition);
+}
+
+.au-kelas-card:hover {
+	border-color: var(--au-line-strong);
+	transform: translateY(-3px);
+	box-shadow: var(--au-shadow-card);
+}
+
+.au-kelas-card__top {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.au-kelas-card__title {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: 1.0625rem;
+	font-weight: 700;
+	line-height: 1.25;
+	color: var(--au-brown-dark);
+}
+
+.au-kelas-card__meta {
+	display: grid;
+	gap: 0.3rem;
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: var(--au-text-muted);
+}
+
+.au-kelas-card__meta strong {
+	font-weight: 600;
+	color: var(--au-text);
+}
+
+.au-kelas-card__price {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem 1.25rem;
+	margin: 1rem 0 1.25rem;
+	padding-top: 0.9rem;
+	border-top: 1px dashed var(--au-line);
+	font-size: 0.75rem;
+	color: var(--au-text-muted);
+}
+
+.au-kelas-card__price strong {
+	display: block;
+	margin-top: 1px;
+	font-family: var(--au-font-heading);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	color: var(--au-brown-dark);
+}
+
+.au-kelas-card__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: auto;
+}
+
+.au-kelas-card__actions .au-home-button {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* --- Chip & baris kelas ------------------------------------------------ */
+
+.au-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.28rem 0.6rem;
+	border-radius: var(--au-radius-pill);
+	font-family: var(--au-font-heading);
+	font-size: 0.6875rem;
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+}
+
+.au-chip--brand {
+	background-color: var(--au-cream);
+	color: var(--au-brown-dark);
+}
+
+.au-chip--online {
+	background-color: #E8EFEA;
+	color: #2F5D45;
+}
+
+.au-chip--offline {
+	background-color: #F6EADB;
+	color: #7A4A21;
+}
+
+.au-kelas-baris {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.5rem;
+	font-size: 0.75rem;
+	line-height: 1.45;
+	color: var(--au-text-muted);
+}
+
+.au-kelas-baris > span:first-child {
+	min-width: 0;
+}
+
+/* --- Pemilih dua arah (kartu cabang & program) ------------------------ */
+
+.au-pilih-grid {
+	display: grid;
+	gap: var(--au-space-3);
+	grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) {
+	.au-pilih-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.au-pilih-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.au-cabang-card {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.6rem 0.75rem;
+	border: 1px solid var(--au-line);
+	border-radius: var(--au-radius-xs);
+	background-color: var(--au-white);
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-cabang-card:hover {
+	border-color: var(--au-line-strong);
+	background-color: var(--au-cream);
+}
+
+.au-cabang-card:has(input:checked) {
+	border-color: var(--au-brown);
+	background-color: var(--au-cream);
+	box-shadow: 0 0 0 3px rgba(var(--au-brown-rgb), 0.12);
+}
+
+.au-cabang-card:focus-within,
+.au-program-card:focus-within {
+	outline: 2px solid rgba(var(--au-gold-rgb), 0.9);
+	outline-offset: 2px;
+}
+
+.au-cabang-card__media {
+	width: 64px;
+	height: 48px;
+	flex: 0 0 auto;
+	overflow: hidden;
+	border-radius: 10px;
+	background-color: var(--au-cream-deep);
+}
+
+.au-cabang-card__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.au-cabang-card__fallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, var(--au-brown), var(--au-brown-dark));
+	color: var(--au-white);
+	font-family: var(--au-font-heading);
+	font-size: 0.6875rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+}
+
+.au-cabang-card__body {
+	display: grid;
+	gap: 2px;
+	min-width: 0;
+}
+
+.au-cabang-card__nama {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-family: var(--au-font-heading);
+	font-size: 0.875rem;
+	font-weight: 700;
+	color: var(--au-brown-dark);
+}
+
+.au-cabang-card__wilayah {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.75rem;
+	color: var(--au-text-muted);
+}
+
+.au-cabang-card__check {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	margin-left: auto;
+	flex: 0 0 auto;
+	border: 1.5px solid var(--au-line-strong);
+	border-radius: 50%;
+	color: transparent;
+	transition: var(--au-transition);
+}
+
+.au-cabang-card:has(input:checked) .au-cabang-card__check {
+	border-color: var(--au-brown);
+	background-color: var(--au-brown);
+	color: var(--au-white);
+}
+
+.au-cabang-card__check svg {
+	width: 12px;
+	height: 12px;
+}
+
+.au-program-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	border: 1px solid var(--au-line);
+	border-radius: var(--au-radius-sm);
+	background-color: var(--au-white);
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-program-card:hover {
+	border-color: var(--au-line-strong);
+	box-shadow: var(--au-shadow-card);
+}
+
+.au-program-card:has(input:checked) {
+	border-color: var(--au-brown);
+	box-shadow: 0 0 0 3px rgba(var(--au-brown-rgb), 0.14);
+}
+
+.au-program-card__media {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	background: linear-gradient(135deg, var(--au-brown), var(--au-brown-dark));
+}
+
+.au-program-card__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.au-program-card__fallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	color: var(--au-white);
+	font-family: var(--au-font-heading);
+	font-size: 1.5rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+}
+
+.au-program-card__kode {
+	position: absolute;
+	left: 0.65rem;
+	top: 0.65rem;
+	padding: 0.22rem 0.55rem;
+	border-radius: var(--au-radius-pill);
+	background-color: rgba(255, 252, 248, 0.92);
+	color: var(--au-brown-dark);
+	font-family: var(--au-font-heading);
+	font-size: 0.6875rem;
+	font-weight: 800;
+}
+
+.au-program-card__jumlah {
+	position: absolute;
+	right: 0.65rem;
+	bottom: 0.65rem;
+	padding: 0.22rem 0.55rem;
+	border-radius: var(--au-radius-pill);
+	background-color: rgba(33, 23, 19, 0.72);
+	color: var(--au-white);
+	font-size: 0.625rem;
+	font-weight: 600;
+}
+
+.au-program-card__body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 0.4rem;
+	padding: 0.9rem 1rem 1rem;
+}
+
+.au-program-card__title {
+	margin: 0;
+	font-family: var(--au-font-heading);
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--au-brown-dark);
+}
+
+.au-program-card__list {
+	display: grid;
+	gap: 0.3rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* --- Tab (pemilih dua arah) ------------------------------------------- */
+
+.au-tabs {
+	display: inline-flex;
+	gap: 4px;
+	padding: 4px;
+	border-radius: var(--au-radius-pill);
+	background-color: var(--au-cream);
+}
+
+.au-tab {
+	appearance: none;
+	border: 0;
+	border-radius: var(--au-radius-pill);
+	padding: 0.5rem 1rem;
+	background-color: transparent;
+	color: var(--au-text-muted);
+	font-family: var(--au-font-heading);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	line-height: 1.2;
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-tab:hover {
+	color: var(--au-brown-dark);
+}
+
+.au-tab--active,
+.au-tab--active:hover {
+	background-color: var(--au-brown);
+	color: var(--au-white);
+	box-shadow: var(--au-shadow-glow);
+}
+
+.au-tab:focus-visible {
+	outline: 2px solid var(--au-brown);
+	outline-offset: 2px;
+}
+
+/* --- Empty state ------------------------------------------------------- */
+
+.au-empty {
+	padding: clamp(2rem, 5vw, 3.5rem);
+	text-align: center;
+}
+
+.au-empty__title {
+	margin: 0 0 0.35rem;
+	font-family: var(--au-font-heading);
+	font-size: 1.125rem;
+	font-weight: 700;
+	color: var(--au-brown-dark);
+}
+
+.au-empty p {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.6;
+	color: var(--au-text-muted);
+}
+
+/* --- Detail kelas ------------------------------------------------------ */
+
+.au-detail-grid {
+	display: grid;
+	gap: var(--au-space-6);
+}
+
+@media (min-width: 1024px) {
+	.au-detail-grid {
+		grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+		align-items: start;
+	}
+
+	.au-detail-stack--sticky {
+		position: sticky;
+		top: 88px;
+	}
+}
+
+.au-detail-stack {
+	display: grid;
+	gap: var(--au-space-5);
+}
+
+.au-detail-list {
+	margin: 0;
+	display: grid;
+}
+
+.au-detail-list > div {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.25rem 1rem;
+	padding: 0.7rem 0;
+	border-bottom: 1px dashed var(--au-line);
+}
+
+.au-detail-list > div:last-child {
+	border-bottom: 0;
+}
+
+.au-detail-list dt {
+	margin: 0;
+	font-size: 0.8125rem;
+	color: var(--au-text-muted);
+}
+
+.au-detail-list dd {
+	margin: 0;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--au-text);
+	text-align: right;
+}
+
+.au-detail-badges {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+}
+
+/* --- Auth (login & registrasi) ---------------------------------------- */
+
+.au-auth {
+	display: grid;
+	gap: var(--au-space-6);
+	max-width: 1120px;
+	margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+	.au-auth {
+		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+		align-items: stretch;
+	}
+}
+
+.au-auth__aside {
+	position: relative;
+	display: none;
+	overflow: hidden;
+	isolation: isolate;
+	padding: clamp(2rem, 4vw, 3rem);
+	border-radius: var(--au-radius-md);
+	background: linear-gradient(160deg, var(--au-brown) 0%, var(--au-brown-dark) 100%);
+	color: var(--au-white);
+}
+
+@media (min-width: 1024px) {
+	.au-auth__aside {
+		display: flex;
+		flex-direction: column;
+		gap: var(--au-space-6);
+	}
+}
+
+.au-auth__aside::before,
+.au-auth__aside::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+.au-auth__aside::before {
+	width: 320px;
+	height: 320px;
+	right: -120px;
+	top: -120px;
+	background: radial-gradient(circle, rgba(var(--au-gold-rgb), 0.35), transparent 70%);
+}
+
+.au-auth__aside::after {
+	width: 260px;
+	height: 260px;
+	left: -100px;
+	bottom: -110px;
+	background: radial-gradient(circle, rgba(255, 252, 248, 0.16), transparent 70%);
+}
+
+.au-auth__aside .au-home-heading {
+	color: var(--au-white);
+}
+
+.au-auth__aside .au-home-body {
+	color: rgba(255, 252, 248, 0.82);
+}
+
+.au-auth__list {
+	display: grid;
+	gap: var(--au-space-4);
+	margin: auto 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.au-auth__list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.7rem;
+	font-size: 0.9375rem;
+	line-height: 1.55;
+	color: rgba(255, 252, 248, 0.86);
+}
+
+.au-auth__list svg {
+	width: 20px;
+	height: 20px;
+	flex: 0 0 auto;
+	margin-top: 2px;
+	color: var(--au-gold);
+}
+
+.au-auth__panel {
+	width: 100%;
+	max-width: 560px;
+	margin-inline: auto;
+}
+
+.au-auth__head {
+	margin-bottom: var(--au-space-5);
+}
+
+.au-auth__switch {
+	margin: var(--au-space-5) 0 0;
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--au-text-muted);
+}
+
+.au-auth__switch a {
+	font-weight: 700;
+	color: var(--au-brown);
+	text-decoration: none;
+}
+
+.au-auth__switch a:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* --- Catatan / notice -------------------------------------------------- */
+
+.au-notice {
+	padding: var(--au-space-5) clamp(1.25rem, 2.4vw, 1.75rem);
+	border-radius: var(--au-radius-sm);
+	background-color: var(--au-cream);
+	color: var(--au-brown-dark);
+	font-size: 0.875rem;
+	line-height: 1.65;
+}
+
+.au-notice strong {
+	font-weight: 700;
+}
+
+.au-notice--line {
+	background-color: transparent;
+	border: 1px solid var(--au-line);
+	color: var(--au-text-muted);
+}
+
+.au-notice--dark {
+	background: linear-gradient(150deg, var(--au-brown), var(--au-brown-dark));
+	color: var(--au-white);
+}
+
+/* --- Carousel program -------------------------------------------------- */
+
+.au-carousel {
+	position: relative;
+}
+
+.au-carousel__bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--au-space-3);
+	margin-bottom: var(--au-space-4);
+}
+
+.au-carousel__track {
+	display: flex;
+	gap: var(--au-space-5);
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	padding-bottom: 0.5rem;
+}
+
+.au-carousel__slide {
+	flex: 0 0 86%;
+	scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+	.au-carousel__slide {
+		flex-basis: calc((100% - var(--au-space-5)) / 2);
+	}
+}
+
+@media (min-width: 1024px) {
+	.au-carousel__slide {
+		flex-basis: calc((100% - 2 * var(--au-space-5)) / 3);
+	}
+}
+
+@media (min-width: 1440px) {
+	.au-carousel__slide {
+		flex-basis: calc((100% - 3 * var(--au-space-5)) / 4);
+	}
+}
+
+.au-carousel__media {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	background-color: var(--au-cream);
+}
+
+.au-carousel__media > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.au-carousel__nav {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 42px;
+	height: 42px;
+	border: 1px solid var(--au-line-strong);
+	border-radius: 50%;
+	background-color: var(--au-white);
+	color: var(--au-brown);
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-carousel__nav:hover {
+	background-color: var(--au-cream);
+	border-color: var(--au-caramel);
+}
+
+.au-carousel__nav:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.au-carousel__nav svg {
+	width: 18px;
+	height: 18px;
+}
+
+.au-carousel__dots {
+	display: flex;
+	justify-content: center;
+	gap: 6px;
+	margin-top: var(--au-space-3);
+}
+
+.au-carousel__dot {
+	width: 7px;
+	height: 7px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background-color: var(--au-line-strong);
+	cursor: pointer;
+	transition: var(--au-transition);
+}
+
+.au-carousel__dot--active {
+	width: 20px;
+	border-radius: var(--au-radius-pill);
+	background-color: var(--au-brown);
+}
+
+/* --- Penyesuaian mobile ----------------------------------------------- */
+
+@media (max-width: 767px) {
+	.au-page-head {
+		align-items: flex-start;
+	}
+
+	.au-page-head__actions {
+		width: 100%;
+	}
+
+	.au-page-head__actions .au-home-button {
+		flex: 1 1 160px;
+	}
+
+	.au-detail-list > div {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.15rem;
+	}
+
+	.au-detail-list dd {
+		text-align: left;
+	}
+
+	.au-tabs {
+		width: 100%;
+	}
+
+	.au-tab {
+		flex: 1 1 0;
+		padding-inline: 0.5rem;
+		text-align: center;
+	}
+
+	.au-filter-bar__actions .au-home-button {
+		flex: 1 1 140px;
+	}
+}
+
+/* --- Formulir halaman publik ------------------------------------------- */
+
+.au-form-page {
+	width: 100%;
+	max-width: 760px;
+	margin-inline: auto;
+}
+
+.au-form-stack {
+	display: grid;
+	gap: var(--au-space-4);
+}
+
+.au-form-grid {
+	display: grid;
+	gap: var(--au-space-4);
+	grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) {
+	.au-form-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.au-field--full {
+	grid-column: 1 / -1;
+}
+
+.au-field--sm {
+	width: 100%;
+	max-width: 220px;
+}
+
+.au-form-errors {
+	display: grid;
+	gap: 2px;
+	margin-bottom: var(--au-space-4);
+	padding: 0.85rem 1rem;
+	border: 1px solid rgba(179, 38, 30, 0.35);
+	border-radius: var(--au-radius-xs);
+	background-color: rgba(179, 38, 30, 0.06);
+}
+
+.au-form-errors .au-error {
+	margin: 0;
+}
+
+/* --- Logo pada panel auth ---------------------------------------------- */
+
+.au-auth__logo {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	padding: 0.5rem 0.85rem;
+	border-radius: var(--au-radius-pill);
+	background-color: var(--au-white);
+	text-decoration: none;
+}
+
+.au-auth__logo img {
+	display: block;
+	height: 34px;
+	width: auto;
+}
+
+.au-auth__logo .au-home-logo__fallback {
+	color: var(--au-brown-dark);
+	font-size: 0.9375rem;
+}
+
+/* --- Pemilih dua arah: langkah & aksi --------------------------------- */
+
+.au-pilih-form {
+	display: grid;
+	gap: var(--au-space-5);
+}
+
+.au-pilih-step {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0 0 var(--au-space-3);
+	font-family: var(--au-font-heading);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	color: var(--au-brown-dark);
+}
+
+.au-pilih-step > span {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background-color: var(--au-brown);
+	color: var(--au-white);
+	font-size: 0.75rem;
+	font-weight: 800;
+}
+
+.au-pilih-grup {
+	display: grid;
+	gap: var(--au-space-4);
+}
+
+.au-pilih-grup__blok + .au-pilih-grup__blok {
+	margin-top: 0;
+}
+
+.au-pilih-grup__judul {
+	margin: 0 0 0.5rem;
+	font-family: var(--au-font-heading);
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--au-text-muted);
+}
+
+.au-pilih-kosong {
+	margin: 0.6rem 0 0;
+	padding: 0.65rem 0.9rem;
+	border-radius: var(--au-radius-xs);
+	background-color: rgba(var(--au-gold-rgb), 0.18);
+	color: var(--au-brown-dark);
+	font-size: 0.8125rem;
+}
+
+.au-pilih-aksi {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: var(--au-space-3);
+	padding-top: var(--au-space-2);
+}
+
+@media (max-width: 479px) {
+	.au-pilih-aksi .au-home-button {
+		width: 100%;
+	}
+
+	.au-field--sm {
+		max-width: none;
+	}
+}
+
+/* --- Penyesuaian kecil komponen publik -------------------------------- */
+
+/* Daftar langkah bernomor (panel "Cara mendaftar"). */
+.au-steps {
+	padding-left: 1.15rem;
+	display: grid;
+	gap: 0.5rem;
+	list-style: decimal;
+}
+
+.au-steps li::marker {
+	font-family: var(--au-font-heading);
+	font-weight: 700;
+	color: var(--au-brown);
+}
+
+/* Varian tanpa garis atas — harga di dalam panel samping. */
+.au-kelas-card__price--flush {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: 0;
+}
+
+/* Tautan kecil di bawah panel auth. */
+.au-auth__foot {
+	margin: var(--au-space-4) 0 0;
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--au-text-muted);
+}
+
+.au-auth__foot a {
+	font-weight: 600;
+	color: var(--au-brown);
+	text-decoration: none;
+}
+
+.au-auth__foot a:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* Bar filter dengan dua field (mis. halaman program): aksi mengisi kolom
+   terakhir agar tidak menyisakan kolom kosong di kanan. */
+@media (min-width: 640px) {
+	.au-filter-bar--duo {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.au-filter-bar--duo .au-filter-bar__actions {
+		grid-column: 1 / -1;
+		justify-content: flex-end;
+	}
+}
+
+@media (min-width: 1024px) {
+	.au-filter-bar--duo {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.au-filter-bar--duo .au-filter-bar__actions {
+		grid-column: auto;
+	}
+}

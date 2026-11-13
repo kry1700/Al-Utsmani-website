@@ -205,6 +205,48 @@ if (! function_exists('hero_gambar'))
 	}
 }
 
+if (! function_exists('hero_foto'))
+{
+	/**
+	 * Foto/ilustrasi utama hero homepage (aset gabungan foto + dekorasi lingkaran).
+	 * Mengembalikan NULL bila tidak ada aset sama sekali → view tidak merender
+	 * elemen gambar (teks hero tetap tampil).
+	 *
+	 * Urutan: `assets/img/utsmani/foto hero.png` → fallback `hero_gambar()`
+	 * (hero.jpg lama). Nama berkas mengandung spasi → di-encode agar aman di URL.
+	 *
+	 * @return string|null URL gambar atau NULL
+	 */
+	function hero_foto()
+	{
+		$nama = 'foto hero.png';
+		if (is_file(FCPATH.'assets/img/utsmani/'.$nama)) {
+			return base_url('assets/img/utsmani/'.rawurlencode($nama));
+		}
+		return hero_gambar();
+	}
+}
+
+if (! function_exists('hero_aset'))
+{
+	/**
+	 * URL aset hero di `assets/img/utsmani/` (mis. headline SVG atau foto program).
+	 * Mengembalikan NULL bila berkas tidak ada → view memakai teks fallback.
+	 * Nama berkas boleh mengandung spasi; di-encode agar aman di URL.
+	 *
+	 * @param string $nama nama berkas, mis. "Bersama quran.svg"
+	 * @return string|null URL aset atau NULL
+	 */
+	function hero_aset($nama)
+	{
+		$nama = trim((string) $nama);
+		if ($nama === '' || ! is_file(FCPATH.'assets/img/utsmani/'.$nama)) {
+			return NULL;
+		}
+		return base_url('assets/img/utsmani/'.rawurlencode($nama));
+	}
+}
+
 if (! function_exists('logo'))
 {
 	/**
@@ -220,6 +262,27 @@ if (! function_exists('logo'))
 			return NULL;
 		}
 		return base_url('assets/img/logo-utsmani.jpg');
+	}
+}
+
+if (! function_exists('logo_home'))
+{
+	/**
+	 * URL logo tanpa latar untuk navbar homepage.
+	 * Fallback ke logo lembaga (logo-utsmani.jpg) bila berkas belum tersedia,
+	 * lalu NULL bila keduanya tidak ada (view memakai wordmark teks).
+	 *
+	 * Catatan: nama berkas mengandung spasi, jadi di-encode agar aman di URL.
+	 *
+	 * @return string|null URL logo atau NULL
+	 */
+	function logo_home()
+	{
+		$nama = 'logo tanpa bg.png';
+		if (is_file(FCPATH.'assets/img/'.$nama)) {
+			return base_url('assets/img/'.rawurlencode($nama));
+		}
+		return logo();
 	}
 }
 
@@ -322,13 +385,13 @@ if (! function_exists('baris_kelas_html'))
 		$mode = isset($k['mode']) ? (string) $k['mode'] : '';
 		$chip = '';
 		if ($mode === 'online') {
-			$chip = '<span class="shrink-0 inline-block text-[10px] font-medium rounded px-1.5 py-0.5 bg-sky-100 text-sky-800">Online</span>';
+			$chip = '<span class="au-chip au-chip--online">Online</span>';
 		} elseif ($mode === 'offline') {
-			$chip = '<span class="shrink-0 inline-block text-[10px] font-medium rounded px-1.5 py-0.5 bg-violet-100 text-violet-800">Offline</span>';
+			$chip = '<span class="au-chip au-chip--offline">Offline</span>';
 		}
 
-		return '<li class="flex items-start justify-between gap-2">'
-			.'<span class="text-xs text-slate-600 leading-snug">'.html_escape(baris_kelas($k)).'</span>'
+		return '<li class="au-kelas-baris">'
+			.'<span>'.html_escape(baris_kelas($k)).'</span>'
 			.$chip.'</li>';
 	}
 }

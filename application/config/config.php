@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/Al-Utsmani/';
+$config['base_url'] = 'http://localhost/Al-Utsmani-redesign/';
 
 /*
 |--------------------------------------------------------------------------
@@ -464,7 +464,9 @@ $config['csrf_expire'] = 7200;
 // FALSE agar halaman yang memuat beberapa form (mis. daftar upload bukti) tetap
 // bisa disubmit bergantian tanpa token basi. Token tetap acak per sesi (aman CSRF).
 $config['csrf_regenerate'] = FALSE;
-$config['csrf_exclude_uris'] = array();
+// Endpoint REST API mobile memakai Bearer Token (bukan cookie/session form),
+// sehingga tidak bisa membawa token CSRF. Kecualikan seluruh rute api/*.
+$config['csrf_exclude_uris'] = array('api/.*');
 
 /*
 |--------------------------------------------------------------------------

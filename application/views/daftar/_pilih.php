@@ -42,26 +42,26 @@ $kelasJson = json_encode(
 	JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
 );
 ?>
-<div class="card p-5 sm:p-6">
-	<div class="mb-5 flex flex-wrap items-center justify-between gap-3">
-		<h2 class="text-lg font-bold text-ink">Mulai dari mana?</h2>
-		<div class="inline-flex overflow-hidden rounded-full border border-line text-sm" role="tablist">
-			<button type="button" class="js-tab px-4 py-1.5 bg-emerald-600 text-white font-semibold" data-target="panel-cabang">Pilih Cabang</button>
-			<button type="button" class="js-tab px-4 py-1.5 bg-white text-slate-600 font-semibold" data-target="panel-program">Pilih Program</button>
+<section class="au-panel">
+	<div class="au-panel__head">
+		<h2 class="au-panel__title">Mulai dari mana?</h2>
+		<div class="au-tabs" role="tablist" aria-label="Arah pemilihan">
+			<button type="button" class="js-tab au-tab au-tab--active" data-target="panel-cabang" role="tab" aria-selected="true">Pilih Cabang</button>
+			<button type="button" class="js-tab au-tab" data-target="panel-program" role="tab" aria-selected="false">Pilih Program</button>
 		</div>
 	</div>
 
-	<!-- ALUR A: Cabang → Program -->
-	<div id="panel-cabang" class="js-panel"
-		data-utama="#grup-cabang-a" data-arah="program-dari-cabang" data-peta='<?= html_escape($petaJson) ?>'>
-		<?= form_open($aksi, array('method' => 'get', 'class' => 'space-y-4')) ?>
-			<div>
-				<span class="block text-sm font-semibold text-ink mb-2">1. Pilih Cabang</span>
-				<div id="grup-cabang-a" class="space-y-3">
+	<div class="au-panel__body">
+		<!-- ALUR A: Cabang → Program -->
+		<div id="panel-cabang" class="js-panel"
+			data-utama="#grup-cabang-a" data-arah="program-dari-cabang" data-peta='<?= html_escape($petaJson) ?>'>
+			<?= form_open($aksi, array('method' => 'get', 'class' => 'au-pilih-form')) ?>
+				<p class="au-pilih-step"><span>1</span> Pilih cabang</p>
+				<div id="grup-cabang-a" class="au-pilih-grup">
 					<?php foreach ($perWilayah as $wilayah => $daftar): ?>
-						<div>
-							<div class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted"><?= html_escape($wilayah) ?></div>
-							<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+						<div class="au-pilih-grup__blok">
+							<p class="au-pilih-grup__judul"><?= html_escape($wilayah) ?></p>
+							<div class="au-pilih-grid">
 								<?php foreach ($daftar as $c): ?>
 									<?= $this->load->view('daftar/_kartu_cabang', array('c' => $c), TRUE) ?>
 								<?php endforeach; ?>
@@ -69,67 +69,65 @@ $kelasJson = json_encode(
 						</div>
 					<?php endforeach; ?>
 				</div>
-			</div>
-			<div>
-				<span class="block text-sm font-semibold text-ink mb-2">2. Pilih Program</span>
-				<div id="grup-program-a" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-					<?php foreach ($programs as $p): ?>
-						<?= $this->load->view('daftar/_kartu_program', array('p' => $p, 'rekap' => $rekap, 'maksBaris' => $maksBaris), TRUE) ?>
-					<?php endforeach; ?>
-				</div>
-				<p class="js-kosong hidden text-sm text-amber-700 mt-2">Belum ada program yang tersedia di cabang ini.</p>
-			</div>
-			<div class="flex flex-wrap items-end gap-3">
-				<div>
-					<label class="block text-sm font-medium text-slate-700 mb-1" for="mode-a">Mode</label>
-					<select id="mode-a" name="mode" class="input w-auto">
-						<option value="">Online &amp; Offline</option>
-						<option value="online">Online</option>
-						<option value="offline">Offline</option>
-					</select>
-				</div>
-				<button type="submit" class="btn-primary">Lihat Kelas</button>
-			</div>
-		<?= form_close() ?>
-	</div>
 
-	<!-- ALUR B: Program → Cabang -->
-	<div id="panel-program" class="js-panel hidden"
-		data-utama="#grup-program-b" data-arah="cabang-dari-program" data-peta='<?= html_escape($petaJson) ?>'>
-		<?= form_open($aksi, array('method' => 'get', 'class' => 'space-y-4')) ?>
-			<div>
-				<span class="block text-sm font-semibold text-ink mb-2">1. Pilih Program</span>
-				<div id="grup-program-b" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+				<p class="au-pilih-step"><span>2</span> Pilih program</p>
+				<div id="grup-program-a" class="au-pilih-grid">
 					<?php foreach ($programs as $p): ?>
 						<?= $this->load->view('daftar/_kartu_program', array('p' => $p, 'rekap' => $rekap, 'maksBaris' => $maksBaris), TRUE) ?>
 					<?php endforeach; ?>
 				</div>
-			</div>
-			<div>
-				<span class="block text-sm font-semibold text-ink mb-2">2. Pilih Cabang</span>
-				<div id="grup-cabang-b" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+				<p class="js-kosong au-pilih-kosong hidden">Belum ada program yang tersedia di cabang ini.</p>
+
+				<div class="au-pilih-aksi">
+					<div class="au-field au-field--sm">
+						<label class="au-label" for="mode-a">Mode</label>
+						<select id="mode-a" name="mode" class="au-select">
+							<option value="">Online &amp; Offline</option>
+							<option value="online">Online</option>
+							<option value="offline">Offline</option>
+						</select>
+					</div>
+					<button type="submit" class="au-home-button au-home-button-primary">Lihat Kelas</button>
+				</div>
+			<?= form_close() ?>
+		</div>
+
+		<!-- ALUR B: Program → Cabang -->
+		<div id="panel-program" class="js-panel hidden"
+			data-utama="#grup-program-b" data-arah="cabang-dari-program" data-peta='<?= html_escape($petaJson) ?>'>
+			<?= form_open($aksi, array('method' => 'get', 'class' => 'au-pilih-form')) ?>
+				<p class="au-pilih-step"><span>1</span> Pilih program</p>
+				<div id="grup-program-b" class="au-pilih-grid">
+					<?php foreach ($programs as $p): ?>
+						<?= $this->load->view('daftar/_kartu_program', array('p' => $p, 'rekap' => $rekap, 'maksBaris' => $maksBaris), TRUE) ?>
+					<?php endforeach; ?>
+				</div>
+
+				<p class="au-pilih-step"><span>2</span> Pilih cabang</p>
+				<div id="grup-cabang-b" class="au-pilih-grid">
 					<?php foreach ($cabangs as $c): ?>
 						<?= $this->load->view('daftar/_kartu_cabang', array('c' => $c), TRUE) ?>
 					<?php endforeach; ?>
 				</div>
-				<p class="js-kosong hidden text-sm text-amber-700 mt-2">Belum ada cabang yang menyediakan program ini.</p>
-			</div>
-			<div class="flex flex-wrap items-end gap-3">
-				<div>
-					<label class="block text-sm font-medium text-slate-700 mb-1" for="mode-b">Mode</label>
-					<select id="mode-b" name="mode" class="input w-auto">
-						<option value="">Online &amp; Offline</option>
-						<option value="online">Online</option>
-						<option value="offline">Offline</option>
-					</select>
-				</div>
-				<button type="submit" class="btn-primary">Lihat Kelas</button>
-			</div>
-		<?= form_close() ?>
-	</div>
+				<p class="js-kosong au-pilih-kosong hidden">Belum ada cabang yang menyediakan program ini.</p>
 
-	<p class="mt-4 text-xs text-muted">Level tidak dipilih di sini — level peserta ditetapkan pengelola lewat proses <strong>penempatan</strong> setelah Anda mendaftar.</p>
-</div>
+				<div class="au-pilih-aksi">
+					<div class="au-field au-field--sm">
+						<label class="au-label" for="mode-b">Mode</label>
+						<select id="mode-b" name="mode" class="au-select">
+							<option value="">Online &amp; Offline</option>
+							<option value="online">Online</option>
+							<option value="offline">Offline</option>
+						</select>
+					</div>
+					<button type="submit" class="au-home-button au-home-button-primary">Lihat Kelas</button>
+				</div>
+			<?= form_close() ?>
+		</div>
+
+		<p class="au-hint mt-4">Level tidak dipilih di sini — level peserta ditetapkan pengelola lewat proses <strong>penempatan</strong> setelah Anda mendaftar.</p>
+	</div>
+</section>
 
 <script type="application/json" id="data-pilih"><?= $kelasJson ?></script>
 <script>
@@ -163,23 +161,23 @@ $kelasJson = json_encode(
 		return bagian.join(' \u00b7 ');
 	}
 	function chipMode(mode) {
-		if (mode === 'online') { return '<span class="shrink-0 inline-block text-[10px] font-medium rounded px-1.5 py-0.5 bg-sky-100 text-sky-800">Online</span>'; }
-		if (mode === 'offline') { return '<span class="shrink-0 inline-block text-[10px] font-medium rounded px-1.5 py-0.5 bg-violet-100 text-violet-800">Offline</span>'; }
+		if (mode === 'online') { return '<span class="au-chip au-chip--online">Online</span>'; }
+		if (mode === 'offline') { return '<span class="au-chip au-chip--offline">Offline</span>'; }
 		return '';
 	}
 	function renderKelas(list, maks) {
 		if (! list || ! list.length) {
-			return '<li class="text-xs text-slate-400">Belum ada kelas di cabang ini.</li>';
+			return '<li class="au-home-caption">Belum ada kelas di cabang ini.</li>';
 		}
 		var n = Math.min(list.length, maks);
 		var html = '';
 		for (var i = 0; i < n; i++) {
-			html += '<li class="flex items-start justify-between gap-2">'
-				+ '<span class="text-xs text-slate-600 leading-snug">' + esc(teksBaris(list[i])) + '</span>'
+			html += '<li class="au-kelas-baris">'
+				+ '<span>' + esc(teksBaris(list[i])) + '</span>'
 				+ chipMode(list[i].mode) + '</li>';
 		}
 		if (list.length > n) {
-			html += '<li class="text-xs text-slate-400">+' + (list.length - n) + ' kelas lainnya</li>';
+			html += '<li class="au-home-caption">+' + (list.length - n) + ' kelas lainnya</li>';
 		}
 		return html;
 	}
@@ -187,11 +185,11 @@ $kelasJson = json_encode(
 	document.querySelectorAll('.js-tab').forEach(function (tab) {
 		tab.addEventListener('click', function () {
 			document.querySelectorAll('.js-tab').forEach(function (t) {
-				t.classList.remove('bg-emerald-600', 'text-white');
-				t.classList.add('bg-white', 'text-slate-600');
+				t.classList.remove('au-tab--active');
+				t.setAttribute('aria-selected', 'false');
 			});
-			tab.classList.remove('bg-white', 'text-slate-600');
-			tab.classList.add('bg-emerald-600', 'text-white');
+			tab.classList.add('au-tab--active');
+			tab.setAttribute('aria-selected', 'true');
 
 			document.querySelectorAll('.js-panel').forEach(function (p) { p.classList.add('hidden'); });
 			var target = document.getElementById(tab.dataset.target);

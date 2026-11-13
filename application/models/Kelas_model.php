@@ -12,7 +12,7 @@ class Kelas_model extends CI_Model {
 	{
 		return 'k.*,
 			p.kode AS program_kode, p.nama AS program_nama,
-			l.nama AS level_nama,
+			l.nama AS level_nama, l.urutan AS level_urutan,
 			c.nama AS cabang_nama, c.wilayah AS cabang_wilayah,
 			g.nama AS guru_nama';
 	}

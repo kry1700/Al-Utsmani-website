@@ -87,6 +87,7 @@ class Beranda extends MY_Controller {
 			'rekap' => $rekap,
 			'jumlah_kelas' => $this->Kelas_model->countAktif(),
 			'jumlah_cabang' => $this->Cabang_model->countAktif(),
+			'jumlah_peserta' => $this->Peserta_model->countSemua(),
 			'gelombang' => $gelombang,
 			'gambarHeroSlider' => $slider,
 		);

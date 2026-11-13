@@ -18,6 +18,15 @@ class Katalog extends MY_Api_Controller {
 
 		$data = array();
 		foreach ($programs as $p) {
+			$cabang = array();
+			if (isset($rekap[$p->id])) {
+				foreach ($rekap[$p->id]['cabang'] as $c) {
+					if (! in_array($c['nama'], $cabang, TRUE)) {
+						$cabang[] = $c['nama'];
+					}
+				}
+			}
+
 			$data[] = array(
 				'id' => (int) $p->id,
 				'kode' => $p->kode,
@@ -25,7 +34,7 @@ class Katalog extends MY_Api_Controller {
 				'deskripsi' => $p->deskripsi,
 				'urutan' => (int) $p->urutan,
 				'jumlah_kelas' => isset($rekap[$p->id]) ? (int) $rekap[$p->id]['jumlah'] : 0,
-				'cabang' => isset($rekap[$p->id]) ? $rekap[$p->id]['cabang'] : array(),
+				'cabang' => $cabang,
 			);
 		}
 
@@ -40,8 +49,10 @@ class Katalog extends MY_Api_Controller {
 			$this->error('Program tidak ditemukan', 404);
 		}
 
-		$rekap = $this->Kelas_model->rekapProgram();
-		$kelas_list = isset($rekap[$program_id]) ? $rekap[$program_id]['kelas'] : array();
+		$kelas_list = $this->Kelas_model->daftar(array(
+			'program_id' => $program_id,
+			'status' => 'aktif',
+		));
 
 		$data = array(
 			'program' => array(
@@ -54,15 +65,12 @@ class Katalog extends MY_Api_Controller {
 		);
 
 		foreach ($kelas_list as $k) {
-			if ($k->status !== 'aktif') {
-				continue;
-			}
 			$data['kelas'][] = array(
 				'id' => (int) $k->id,
 				'program_kode' => $k->program_kode,
 				'program_nama' => $k->program_nama,
 				'level_nama' => $k->level_nama,
-				'level_urutan' => isset($k->level_urutan) ? (int) $k->level_urutan : 0,
+				'level_urutan' => (int) $k->level_urutan,
 				'cabang_nama' => $k->cabang_nama,
 				'cabang_wilayah' => $k->cabang_wilayah,
 				'mode' => $k->mode,
@@ -70,7 +78,7 @@ class Katalog extends MY_Api_Controller {
 				'zona_waktu' => $k->zona_waktu,
 				'biaya_pendaftaran' => (int) $k->biaya_pendaftaran,
 				'biaya_spp' => (int) $k->biaya_spp,
-				'guru_nama' => isset($k->guru_nama) ? $k->guru_nama : null,
+				'guru_nama' => $k->guru_nama,
 			);
 		}
 

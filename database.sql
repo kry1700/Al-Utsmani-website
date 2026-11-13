@@ -38,6 +38,22 @@ CREATE TABLE users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ---------------------------------------------------------------------
+-- api_tokens — token Bearer untuk aplikasi mobile (POST /api/auth/login)
+-- ---------------------------------------------------------------------
+CREATE TABLE api_tokens (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	user_id INT UNSIGNED NOT NULL,
+	token CHAR(64) NOT NULL,
+	device_info VARCHAR(255) NULL,
+	expires_at DATETIME NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),
+	UNIQUE KEY uq_api_tokens_token (token),
+	KEY idx_api_tokens_user (user_id),
+	CONSTRAINT fk_api_tokens_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ---------------------------------------------------------------------
 -- program — di-seed, tanpa CRUD
 -- ---------------------------------------------------------------------
 CREATE TABLE program (

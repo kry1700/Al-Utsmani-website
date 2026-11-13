@@ -9,23 +9,20 @@
  */
 $gambar = cabang_gambar($c->wilayah);
 ?>
-<label class="cursor-pointer group" data-opsi-item data-cabang="<?= (int) $c->id ?>">
-	<input type="radio" name="cabang" value="<?= (int) $c->id ?>" class="peer sr-only">
-	<div class="flex items-center gap-3 rounded-xl border border-line bg-white p-2
-		peer-checked:border-emerald-600 peer-checked:ring-2 peer-checked:ring-emerald-200
-		peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400 group-hover:border-emerald-400">
-		<div class="h-12 w-16 shrink-0 rounded overflow-hidden">
-			<?php if ($gambar): ?>
-				<img src="<?= html_escape($gambar) ?>" alt="<?= html_escape($c->wilayah) ?>" loading="lazy" class="w-full h-full object-cover">
-			<?php else: ?>
-				<div class="w-full h-full bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center">
-					<span class="text-xs font-black text-white/90 tracking-wider"><?= html_escape(singkatan($c->nama)) ?></span>
-				</div>
-			<?php endif; ?>
-		</div>
-		<div class="min-w-0">
-			<div class="truncate text-sm font-medium text-ink"><?= html_escape($c->nama) ?></div>
-			<div class="truncate text-xs text-muted"><?= html_escape($c->wilayah) ?></div>
-		</div>
-	</div>
+<label class="au-cabang-card" data-opsi-item data-cabang="<?= (int) $c->id ?>">
+	<input type="radio" name="cabang" value="<?= (int) $c->id ?>" class="sr-only">
+	<span class="au-cabang-card__media" aria-hidden="true">
+		<?php if ($gambar): ?>
+			<img src="<?= html_escape($gambar) ?>" alt="" loading="lazy">
+		<?php else: ?>
+			<span class="au-cabang-card__fallback"><?= html_escape(singkatan($c->nama)) ?></span>
+		<?php endif; ?>
+	</span>
+	<span class="au-cabang-card__body">
+		<span class="au-cabang-card__nama"><?= html_escape($c->nama) ?></span>
+		<span class="au-cabang-card__wilayah"><?= html_escape($c->wilayah) ?></span>
+	</span>
+	<span class="au-cabang-card__check" aria-hidden="true">
+		<svg fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+	</span>
 </label>

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Gelombang extends CI_Controller {
+class Gelombang extends MY_Controller {
 
 	public function __construct()
 	{
@@ -12,16 +12,15 @@ class Gelombang extends CI_Controller {
 
 	public function index()
 	{
-		$this->load->view('layouts/header', array('title' => 'Pendaftaran Gelombang'));
-		$this->load->view('gelombang/index', array(
+		$this->render('gelombang/index', array(
+			'title' => 'Pendaftaran Gelombang',
 			'gelombang' => $this->Gelombang_model->aktifBisaDaftar(),
 		));
-		$this->load->view('layouts/footer');
 	}
 
 	public function daftar($id = 0)
 	{
-		if (! $this->session->userdata('logged_in')) {
+		if (! $this->isLoggedIn()) {
 			$this->session->set_flashdata('gagal', 'Silakan login terlebih dahulu untuk mendaftar minat gelombang.');
 			redirect('auth/login');
 			return;
@@ -37,20 +36,17 @@ class Gelombang extends CI_Controller {
 			redirect('gelombang');
 			return;
 		}
-		$userId = (int) $this->session->userdata('user_id');
+		$userId = (int) $this->user['id'];
 		if ($this->Pendaftaran_gelombang_model->sudahDaftar((int) $g->id, $userId)) {
 			$this->session->set_flashdata('gagal', 'Kamu sudah mendaftar minat di gelombang ini.');
 			redirect('peserta/gelombang');
 			return;
 		}
 		if ($this->input->method() === 'post') {
-			$this->load->library('form_validation');
 			$this->form_validation->set_rules('nama_calon', 'Nama Calon', 'required|trim|max_length[100]');
 			$this->form_validation->set_rules('no_hp', 'No. HP', 'required|trim|max_length[20]');
 			if ($this->form_validation->run() === FALSE) {
-				$this->load->view('layouts/header', array('title' => 'Daftar Minat - '.$g->angkatan));
-				$this->load->view('gelombang/daftar', array('gelombang' => $g));
-				$this->load->view('layouts/footer');
+				$this->render('gelombang/daftar', $this->dataDaftar($g));
 				return;
 			}
 			$email = trim((string) $this->input->post('email'));
@@ -69,10 +65,24 @@ class Gelombang extends CI_Controller {
 			redirect('peserta/gelombang');
 			return;
 		}
-		$user = $this->db->where('id', $userId)->get('users')->row();
+		$this->render('gelombang/daftar', $this->dataDaftar($g));
+	}
+
+	/**
+	 * Data view formulir daftar minat: gelombang + profil peserta + email akun
+	 * (untuk prefill). `user` disuntikkan otomatis oleh MY_Controller::render().
+	 */
+	private function dataDaftar($g)
+	{
+		$userId = (int) $this->user['id'];
+		$akun = $this->db->where('id', $userId)->get('users')->row();
 		$peserta = $this->db->where('user_id', $userId)->get('peserta')->row();
-		$this->load->view('layouts/header', array('title' => 'Daftar Minat - '.$g->angkatan));
-		$this->load->view('gelombang/daftar', array('gelombang' => $g, 'user' => $user, 'peserta' => $peserta));
-		$this->load->view('layouts/footer');
+
+		return array(
+			'title' => 'Daftar Minat - '.$g->angkatan,
+			'gelombang' => $g,
+			'peserta' => $peserta,
+			'email_akun' => $akun ? (string) $akun->email : '',
+		);
 	}
 }
