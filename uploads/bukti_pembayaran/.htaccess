@@ -1,3 +1,11 @@
 # Semua file bukti pembayaran hanya boleh diakses lewat controller
 # (pembayaran/bukti/<id>) yang memeriksa pemilik/admin.
-Require all denied
+# Dibatasi per-modul agar tidak 500 di Apache 2.2 / hosting dengan AllowOverride
+# terbatas (direktif "Require" hanya dikenal Apache 2.4+).
+<IfModule authz_core_module>
+	Require all denied
+</IfModule>
+<IfModule !authz_core_module>
+	Order allow,deny
+	Deny from all
+</IfModule>

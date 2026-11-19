@@ -534,3 +534,23 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+/*
+|--------------------------------------------------------------------------
+| Penyesuaian otomatis untuk production
+|--------------------------------------------------------------------------
+| ENVIRONMENT ditetapkan di index.php (development di XAMPP, production di
+| hosting). Blok ini hanya aktif saat production, jadi dev lokal tidak berubah.
+*/
+if (ENVIRONMENT === 'production')
+{
+	// Cookie hanya dikirim lewat HTTPS dan tidak bisa dibaca JavaScript.
+	// Pastikan base_url produksi memakai https://.
+	$config['cookie_secure']   = TRUE;
+	$config['cookie_httponly'] = TRUE;
+
+	// Simpan error PHP/CI ke application/logs (tidak tampil ke pengunjung)
+	// agar masalah di hosting tetap bisa didiagnosis. Folder harus writable;
+	// bila tidak writable, CI hanya melewati penulisan log (tidak fatal).
+	$config['log_threshold'] = 1;
+}

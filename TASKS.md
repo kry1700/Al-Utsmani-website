@@ -764,6 +764,17 @@ Cakupan: `/katalog`, `/katalog/program/<id>`, `/katalog/detail/<id>`, `/daftar`,
 - [x] **Tidak diubah**: backend/DB/routing (kecuali `Gelombang.php` yang hanya pindah base controller + `render()`), halaman admin/guru/peserta, aset gambar (tanpa gambar baru), data program/cabang/kelas, JS beranda.
 - [x] **File**: `application/views/layouts/{header,footer,_nav_home}.php`, `application/views/katalog/{index,carousel,program,detail}.php`, `application/views/daftar/{pilih,kelas,registrasi,_pilih,_kartu_program,_kartu_cabang}.php`, `application/views/auth/{login,registrasi}.php`, `application/views/gelombang/{index,daftar}.php`, `application/controllers/Gelombang.php`, `application/helpers/format_helper.php`, `assets/css/alutsmani-home.css`, `TASKS.md`.
 
+## Fase 43 — Perbaikan deploy produksi (500 di hosting)
+
+- [x] **Akar masalah 500 saat deploy**: `database.sql` belum memuat 2 tabel fitur Gelombang (`gelombang`, `pendaftaran_gelombang`), padahal `Beranda::index()` selalu memanggil `Gelombang_model::aktifBisaDaftar()`. Di production `db_debug = FALSE` menyembunyikan error DB → `->result()` pada `FALSE` → fatal error, tampil 500 kosong. Dikonfirmasi dari error hosting: `Table 'karn3777_projek.gelombang' doesn't exist`.
+- [x] `database.sql`: tambah DDL `gelombang` (setelah `program`) dan `pendaftaran_gelombang` (setelah `pendaftaran`). Diuji import ke database sementara: **16 tabel**, skema kolom identik dengan DB lokal (diff kosong).
+- [x] `database.sql`: perjelas instruksi import untuk shared hosting — buang `CREATE DATABASE`/`USE`, pilih database dulu di phpMyAdmin.
+- [x] `.htaccess` root: blok dotfile `Require all denied` dibungkus `<IfModule authz_core_module>` + fallback Apache 2.2, agar tidak 500 di hosting dengan `AllowOverride` terbatas.
+- [x] `uploads/bukti_pembayaran/.htaccess`: `Require all denied` juga dibungkus per-modul.
+- [x] `application/config/config.php`: blok production otomatis (`cookie_secure`, `cookie_httponly`, `log_threshold = 1`) — tidak mengubah dev lokal.
+- [x] `DEPLOY.md`: checklist deploy + troubleshooting error 500.
+- [x] File: `database.sql`, `.htaccess`, `uploads/bukti_pembayaran/.htaccess`, `application/config/config.php`, `DEPLOY.md`, `TASKS.md`.
+
 ## Di luar scope (jangan dikerjakan)
 
 Payment gateway, notifikasi WA/email, sertifikat, aplikasi mobile, automated testing (kecuali diminta user).

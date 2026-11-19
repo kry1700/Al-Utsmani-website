@@ -2,9 +2,16 @@
 -- LBQ Al-Utsmani — Skema Database + Seed
 -- ---------------------------------------------------------------------
 -- Cara import (pilih salah satu):
---   1. phpMyAdmin > Import > pilih file ini (nama database di atas file
---      dibuat otomatis oleh perintah CREATE DATABASE di bawah)
---   2. CLI: C:\xampp\mysql\bin\mysql.exe -u root < database.sql
+--   1. Lokal (XAMPP): phpMyAdmin > Import > pilih file ini, atau CLI:
+--      C:\xampp\mysql\bin\mysql.exe -u root < database.sql
+--   2. Hosting/shared hosting (cPanel): BUAT dulu database lewat panel, pilih
+--      database itu di phpMyAdmin, lalu HAPUS dua baris berikut sebelum import:
+--          CREATE DATABASE ... ;
+--          USE ... ;
+--      User database di shared hosting biasanya tidak boleh CREATE DATABASE,
+--      dan nama database-nya bukan "al_utsmani_lms" (mis. user_lms). Kalau
+--      baris itu dibiarkan, import bisa berhenti dan tabel tidak terbentuk.
+--      Sesuaikan juga database.php dengan nama database dari panel.
 --
 -- Catatan:
 --   * Semua tabel InnoDB + utf8mb4 (mendukung foreign key & emoji).
@@ -64,6 +71,28 @@ CREATE TABLE program (
 	urutan TINYINT UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY (id),
 	UNIQUE KEY uq_program_kode (kode)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ---------------------------------------------------------------------
+-- gelombang — periode pendaftaran/angkatan per program (dibuat admin)
+-- status: draft (belum tampil) > buka (tampil di beranda/pendaftaran) > tutup
+-- ---------------------------------------------------------------------
+CREATE TABLE gelombang (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	program_id INT UNSIGNED NOT NULL,
+	angkatan VARCHAR(30) NOT NULL,
+	tgl_buka DATE NOT NULL,
+	tgl_tutup DATE NOT NULL,
+	kuota INT UNSIGNED NULL,
+	keterangan TEXT NULL,
+	status ENUM('draft','buka','tutup') NOT NULL DEFAULT 'draft',
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),
+	KEY idx_gelombang_program (program_id),
+	KEY idx_gelombang_status (status),
+	KEY idx_gelombang_tanggal (tgl_buka, tgl_tutup),
+	CONSTRAINT fk_gelombang_program FOREIGN KEY (program_id) REFERENCES program (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ---------------------------------------------------------------------
@@ -209,6 +238,41 @@ CREATE TABLE pendaftaran (
 	KEY idx_pendaftaran_status (status),
 	CONSTRAINT fk_pendaftaran_kelas FOREIGN KEY (kelas_id) REFERENCES kelas (id),
 	CONSTRAINT fk_pendaftaran_peserta FOREIGN KEY (peserta_id) REFERENCES peserta (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ---------------------------------------------------------------------
+-- pendaftaran_gelombang — calon peserta yang mendaftar lewat gelombang.
+-- Admin menindaklanjuti (dihubungi / diterima ke kelas / ditolak).
+-- UNIQUE mencegah satu akun mendaftar gelombang yang sama dua kali.
+-- ---------------------------------------------------------------------
+CREATE TABLE pendaftaran_gelombang (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	gelombang_id INT UNSIGNED NOT NULL,
+	user_id INT UNSIGNED NOT NULL,
+	peserta_id INT UNSIGNED NULL,
+	nama_calon VARCHAR(100) NOT NULL,
+	no_hp VARCHAR(20) NOT NULL,
+	email VARCHAR(100) NULL,
+	status ENUM('menunggu','dihubungi','diterima_ke_kelas','ditolak') NOT NULL DEFAULT 'menunggu',
+	kelas_id INT UNSIGNED NULL,
+	catatan_admin TEXT NULL,
+	diproses_by INT UNSIGNED NULL,
+	diproses_at DATETIME NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),
+	UNIQUE KEY uq_pdg_user_gelombang (gelombang_id, user_id),
+	KEY idx_pdg_gelombang (gelombang_id),
+	KEY idx_pdg_user (user_id),
+	KEY idx_pdg_peserta (peserta_id),
+	KEY idx_pdg_status (status),
+	KEY fk_pdg_kelas (kelas_id),
+	KEY fk_pdg_diproses (diproses_by),
+	CONSTRAINT fk_pdg_diproses FOREIGN KEY (diproses_by) REFERENCES users (id) ON DELETE SET NULL,
+	CONSTRAINT fk_pdg_gelombang FOREIGN KEY (gelombang_id) REFERENCES gelombang (id) ON DELETE CASCADE,
+	CONSTRAINT fk_pdg_kelas FOREIGN KEY (kelas_id) REFERENCES kelas (id) ON DELETE SET NULL,
+	CONSTRAINT fk_pdg_peserta FOREIGN KEY (peserta_id) REFERENCES peserta (id) ON DELETE SET NULL,
+	CONSTRAINT fk_pdg_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ---------------------------------------------------------------------

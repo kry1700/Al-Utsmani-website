@@ -1,9 +1,20 @@
 RewriteEngine On
 
 # Block direct access to all dotfiles (.env, .gitignore, .htaccess, ...)
-<FilesMatch "^\.">
-	Require all denied
-</FilesMatch>
+# Dibatasi per-modul: direktif "Require" hanya ada di Apache 2.4. Tanpa guard
+# ini, hosting Apache 2.2 / AllowOverride terbatas bisa membalas 500 untuk
+# SEMUA request (termasuk gambar & CSS).
+<IfModule authz_core_module>
+	<FilesMatch "^\.">
+		Require all denied
+	</FilesMatch>
+</IfModule>
+<IfModule !authz_core_module>
+	<FilesMatch "^\.">
+		Order allow,deny
+		Deny from all
+	</FilesMatch>
+</IfModule>
 
 # Block direct access to sensitive files: database.sql, *.md, logs, dumps, etc.
 <FilesMatch "\.(sql|md|markdown|log|bak|old|orig|swp|dist|ini|sh|lock|yml|yaml|json)$">
